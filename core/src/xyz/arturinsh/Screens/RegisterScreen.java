@@ -19,30 +19,33 @@ import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;
 import xyz.arturinsh.gameclient.MainGame;
 
-public class LoginScreen implements Screen {
+public class RegisterScreen implements Screen {
 	private MainGame game;
 	private GameWorld world;
-
 	private Stage stage;
 	private Skin skin;
 	private Table table;
 
-	private TextButton loginButton, registerButton;
-	private Label passwordLabel, userNameLabel, errorMessage;
-	private TextField passwordTextField, userNameTextField;
+	private TextButton registerButton, backButton;
+	private Label passwordLabel, passwordLabel2, userNameLabel, dialogMessage;
+	private TextField passwordTextField, passwordTextField2, userNameTextField;
 	private Dialog dialog;
 
-	public LoginScreen(GameWorld _world, MainGame _game) {
-		game = _game;
-		world = _world;
-		initUI();
-	}
+	private boolean registerSuccesful;
 
+	public RegisterScreen(GameWorld _world, MainGame _game) {
+		world = _world;
+		game = _game;
+		initUI();
+		registerSuccesful = false;
+	}
+	
+	
 	private void initUI() {
 		skin = AssetsLoader.getSkin();
 		stage = new Stage(new ScreenViewport());
-		loginButton = new TextButton("Login", skin, "default");
 		registerButton = new TextButton("Register", skin, "default");
+		backButton = new TextButton("Return to Login", skin);
 
 		userNameLabel = new Label("Username", skin);
 		userNameTextField = new TextField("", skin);
@@ -52,15 +55,12 @@ public class LoginScreen implements Screen {
 		passwordTextField.setPasswordCharacter('*');
 		passwordTextField.setPasswordMode(true);
 
-		errorMessage = new Label("", skin);
-		
-		registerButton.addListener(new ClickListener() {
-			@Override
-			public void clicked(InputEvent event, float x, float y) {
-				game.setScreen(new RegisterScreen(world, game));
-			}
-		});
-		
+		passwordLabel2 = new Label("Confirm PSW", skin);
+		passwordTextField2 = new TextField("", skin);
+		passwordTextField2.setPasswordCharacter('*');
+		passwordTextField2.setPasswordMode(true);
+
+		dialogMessage = new Label("", skin);
 		table = new Table();
 		table.setWidth(stage.getWidth());
 		table.align(Align.center | Align.top);
@@ -74,23 +74,33 @@ public class LoginScreen implements Screen {
 		table.add(passwordLabel).space(10);
 		table.add(passwordTextField).minWidth(200).space(10);
 		table.row();
-		table.add(loginButton).minWidth(150).colspan(2).space(10);
+		table.add(passwordLabel2).space(10);
+		table.add(passwordTextField2).minWidth(200).space(10);
 		table.row();
-		table.add(registerButton).space(80).colspan(2).right();
+		table.add(registerButton).space(10).colspan(2);
+		table.row();
+		table.add(backButton).space(30).colspan(2).right();
 		stage.addActor(table);
+		
+		backButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				game.setScreen(new LoginScreen(world, game));
+			}
+		});
 
 		Gdx.input.setInputProcessor(stage);
 	}
 
+
 	@Override
 	public void show() {
-	
+		
 	}
 
 	@Override
 	public void render(float delta) {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		Gdx.gl.glClearColor(0, 0, 0, 0);
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();
 	}
@@ -106,22 +116,22 @@ public class LoginScreen implements Screen {
 
 	@Override
 	public void pause() {
-
+		
 	}
 
 	@Override
 	public void resume() {
-
+		
 	}
 
 	@Override
 	public void hide() {
-
+		
 	}
 
 	@Override
 	public void dispose() {
-
+		
 	}
 
 }
