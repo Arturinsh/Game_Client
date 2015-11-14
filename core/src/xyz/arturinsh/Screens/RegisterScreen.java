@@ -19,10 +19,7 @@ import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;
 import xyz.arturinsh.gameclient.MainGame;
 
-public class RegisterScreen implements Screen {
-	private MainGame game;
-	private GameWorld world;
-	private Stage stage;
+public class RegisterScreen extends GameScreen {
 	private Skin skin;
 	private Table table;
 
@@ -33,17 +30,14 @@ public class RegisterScreen implements Screen {
 
 	private boolean registerSuccesful;
 
-	public RegisterScreen(GameWorld _world, MainGame _game) {
-		world = _world;
-		game = _game;
+	public RegisterScreen(GameWorld _world) {
+		super(_world);
 		initUI();
-		registerSuccesful = false;
 	}
 	
 	
 	private void initUI() {
 		skin = AssetsLoader.getSkin();
-		stage = new Stage(new ScreenViewport());
 		registerButton = new TextButton("Register", skin, "default");
 		backButton = new TextButton("Return to Login", skin);
 
@@ -85,7 +79,14 @@ public class RegisterScreen implements Screen {
 		backButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				game.setScreen(new LoginScreen(world, game));
+				game.setScreen(new LoginScreen(world));
+			}
+		});
+		
+		registerButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				world.showDialog("Registering");
 			}
 		});
 
@@ -131,7 +132,5 @@ public class RegisterScreen implements Screen {
 
 	@Override
 	public void dispose() {
-		
 	}
-
 }

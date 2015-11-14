@@ -1,10 +1,8 @@
 package xyz.arturinsh.Screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -13,17 +11,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;
-import xyz.arturinsh.gameclient.MainGame;
 
-public class LoginScreen implements Screen {
-	private MainGame game;
-	private GameWorld world;
+public class LoginScreen extends GameScreen {
 
-	private Stage stage;
 	private Skin skin;
 	private Table table;
 
@@ -32,15 +25,13 @@ public class LoginScreen implements Screen {
 	private TextField passwordTextField, userNameTextField;
 	private Dialog dialog;
 
-	public LoginScreen(GameWorld _world, MainGame _game) {
-		game = _game;
-		world = _world;
+	public LoginScreen(GameWorld _world) {
+		super(_world);
 		initUI();
 	}
 
 	private void initUI() {
 		skin = AssetsLoader.getSkin();
-		stage = new Stage(new ScreenViewport());
 		loginButton = new TextButton("Login", skin, "default");
 		registerButton = new TextButton("Register", skin, "default");
 
@@ -53,14 +44,19 @@ public class LoginScreen implements Screen {
 		passwordTextField.setPasswordMode(true);
 
 		errorMessage = new Label("", skin);
-		
+
 		registerButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				game.setScreen(new RegisterScreen(world, game));
+				game.setScreen(new RegisterScreen(world));
 			}
 		});
-		
+		loginButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				world.showDialog("Loging in");
+			}
+		});
 		table = new Table();
 		table.setWidth(stage.getWidth());
 		table.align(Align.center | Align.top);
@@ -84,7 +80,7 @@ public class LoginScreen implements Screen {
 
 	@Override
 	public void show() {
-	
+
 	}
 
 	@Override
@@ -121,7 +117,5 @@ public class LoginScreen implements Screen {
 
 	@Override
 	public void dispose() {
-
 	}
-
 }
