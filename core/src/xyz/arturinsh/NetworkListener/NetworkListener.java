@@ -30,7 +30,7 @@ public class NetworkListener extends Listener {
 	@Override
 	public void received(Connection connection, Object object) {
 		if (object instanceof LogInSuccess) {
-			world.showDialog("LogInSucces");
+			world.logiInSucess();
 		}
 		if (object instanceof LogInFailed) {
 			world.showDialog("LogInFailed");
@@ -44,12 +44,12 @@ public class NetworkListener extends Listener {
 			world.registerFailed();
 		}
 		if (object instanceof AddPlayer) {
-			AddPlayer player = (AddPlayer) object;
-			world.showDialog(player.username + " joinded");
+//			AddPlayer player = (AddPlayer) object;
+//			world.showDialog(player.username + " joined");
 		}
 		if (object instanceof RemovePlayer) {
-			RemovePlayer player = (RemovePlayer) object;
-			world.showDialog(player.username + " left");
+//			RemovePlayer player = (RemovePlayer) object;
+//			world.showDialog(player.username + " left");
 		}
 	}
 }

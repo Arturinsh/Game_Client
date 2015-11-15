@@ -15,6 +15,7 @@ import xyz.arturinsh.NetworkListener.Packets.Register;
 import xyz.arturinsh.NetworkListener.Packets.RegisterFailed;
 import xyz.arturinsh.NetworkListener.Packets.RegisterSuccess;
 import xyz.arturinsh.NetworkListener.Packets.RemovePlayer;
+import xyz.arturinsh.Screens.CharacterSelectScreen;
 import xyz.arturinsh.Screens.GameScreen;
 import xyz.arturinsh.Screens.LoginScreen;
 import xyz.arturinsh.gameclient.MainGame;
@@ -45,6 +46,15 @@ public class GameWorld {
 		login.userName = username;
 		login.password = psw;
 		client.sendTCP(login);
+	}
+	
+	public void logiInSucess(){
+		Gdx.app.postRunnable(new Runnable(){
+			@Override
+			public void run() {
+				changeScreen(new CharacterSelectScreen(GameWorld.this));
+			}
+		});
 	}
 
 	public void register(String username, String psw) {
@@ -97,6 +107,7 @@ public class GameWorld {
 
 	private void changeScreen(GameScreen screen) {
 		GameScreen current = getCurrentScreen();
+		current.dispose();
 		current.changeScreen(screen);
 	}
 }
