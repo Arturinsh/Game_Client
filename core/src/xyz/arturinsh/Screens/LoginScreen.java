@@ -54,7 +54,10 @@ public class LoginScreen extends GameScreen {
 		loginButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				world.showDialog("Loging in");
+				String usrName, psw;
+				usrName = userNameTextField.getText();
+				psw = passwordTextField.getText();
+				world.logIn(usrName, psw);
 			}
 		});
 		table = new Table();

@@ -86,7 +86,10 @@ public class RegisterScreen extends GameScreen {
 		registerButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				world.showDialog("Registering");
+				String username, psw;
+				username = userNameTextField.getText();
+				psw = passwordTextField.getText();
+				world.register(username, psw);
 			}
 		});
 
