@@ -36,7 +36,11 @@ public class GameScreen implements Screen {
 	public Stage getStage() {
 		return stage;
 	}
-
+	
+	public void changeScreen(GameScreen screen){
+		game.setScreen(screen);
+	}
+	
 	@Override
 	public void show() {
 

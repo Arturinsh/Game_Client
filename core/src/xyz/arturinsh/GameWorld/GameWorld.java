@@ -2,6 +2,7 @@ package xyz.arturinsh.GameWorld;
 
 import java.io.IOException;
 
+import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 
@@ -15,21 +16,56 @@ import xyz.arturinsh.NetworkListener.Packets.RegisterFailed;
 import xyz.arturinsh.NetworkListener.Packets.RegisterSuccess;
 import xyz.arturinsh.NetworkListener.Packets.RemovePlayer;
 import xyz.arturinsh.Screens.GameScreen;
+import xyz.arturinsh.Screens.LoginScreen;
 import xyz.arturinsh.gameclient.MainGame;
 
 public class GameWorld {
 	private Client client = new Client();
 	private MainGame game;
 	private final String ipAddress = "127.0.0.1";
-
+	
 	public GameWorld(MainGame _game) {
 		game = _game;
 		registerKryo();
 		startNetworkClient();
+		game.setScreen(new LoginScreen(this));
 	}
 
 	public MainGame getGame() {
 		return game;
+	}
+
+	public void showDialog(String message) {
+		GameScreen current = getCurrentScreen();
+		current.showDialog(message);
+	}
+
+	public void logIn(String username, String psw) {
+		LogIn login = new LogIn();
+		login.userName = username;
+		login.password = psw;
+		client.sendTCP(login);
+	}
+
+	public void register(String username, String psw) {
+		Register register = new Register();
+		register.userName = username;
+		register.password = psw;
+		client.sendTCP(register);
+	}
+
+	public void registerSuccess() {
+		Gdx.app.postRunnable(new Runnable(){
+			@Override
+			public void run() {
+				changeScreen(new LoginScreen(GameWorld.this));
+				showDialog("Registration successful!");
+			}
+		});
+	}
+
+	public void registerFailed() {
+		showDialog("Registration failed!");
 	}
 
 	private void registerKryo() {
@@ -54,22 +90,13 @@ public class GameWorld {
 		}
 	}
 
-	public void showDialog(String message) {
-		GameScreen temp = (GameScreen) game.getScreen();
-		temp.showDialog(message);
+	private GameScreen getCurrentScreen() {
+		GameScreen current = (GameScreen) game.getScreen();
+		return current;
 	}
 
-	public void logIn(String username, String psw) {
-		LogIn login = new LogIn();
-		login.userName = username;
-		login.password = psw;
-		client.sendTCP(login);
-	}
-
-	public void register(String username, String psw) {
-		Register register = new Register();
-		register.userName = username;
-		register.password = psw;
-		client.sendTCP(register);
+	private void changeScreen(GameScreen screen) {
+		GameScreen current = getCurrentScreen();
+		current.changeScreen(screen);
 	}
 }

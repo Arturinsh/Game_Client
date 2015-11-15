@@ -34,8 +34,7 @@ public class RegisterScreen extends GameScreen {
 		super(_world);
 		initUI();
 	}
-	
-	
+
 	private void initUI() {
 		skin = AssetsLoader.getSkin();
 		registerButton = new TextButton("Register", skin, "default");
@@ -43,16 +42,19 @@ public class RegisterScreen extends GameScreen {
 
 		userNameLabel = new Label("Username", skin);
 		userNameTextField = new TextField("", skin);
+		userNameTextField.setMaxLength(32);
 
 		passwordLabel = new Label("Password", skin);
 		passwordTextField = new TextField("", skin);
 		passwordTextField.setPasswordCharacter('*');
 		passwordTextField.setPasswordMode(true);
+		passwordTextField.setMaxLength(32);
 
 		passwordLabel2 = new Label("Confirm PSW", skin);
 		passwordTextField2 = new TextField("", skin);
 		passwordTextField2.setPasswordCharacter('*');
 		passwordTextField2.setPasswordMode(true);
+		passwordTextField2.setMaxLength(32);
 
 		dialogMessage = new Label("", skin);
 		table = new Table();
@@ -75,31 +77,57 @@ public class RegisterScreen extends GameScreen {
 		table.row();
 		table.add(backButton).space(30).colspan(2).right();
 		stage.addActor(table);
-		
+
 		backButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				game.setScreen(new LoginScreen(world));
 			}
 		});
-		
+
 		registerButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				String username, psw;
 				username = userNameTextField.getText();
 				psw = passwordTextField.getText();
-				world.register(username, psw);
+
+				// TODO regex check for username and psw
+
+				if (!psw.matches(passwordTextField2.getText())) {
+					showDialog("Passwords do not match!");
+					passwordTextField.setText("");
+					passwordTextField2.setText("");
+				} else if (userNameOk(username) && pswOk(psw)) {
+					world.register(username, psw);
+				} else if (!userNameOk(username)) {
+					showDialog("Username can contain only alphanumeric characters\n "
+							+ "and must be atleast 6 characters long");
+				} else if (!pswOk(psw)) {
+					showDialog("Password contains illegal characters "
+							+ "or is shorter than 6 characters");
+				}
 			}
 		});
 
 		Gdx.input.setInputProcessor(stage);
 	}
 
+	private boolean userNameOk(String username) {
+		if (username.length() >= 6 && username.length() <= 32 && username.matches("[a-zA-Z0-9]*"))
+			return true;
+		return false;
+	}
+
+	private boolean pswOk(String psw) {
+		if (psw.length() >= 6 && psw.length() <= 32 && psw.matches("[a-zA-Z0-9_.@]*"))
+			return true;
+		return false;
+	}
 
 	@Override
 	public void show() {
-		
+
 	}
 
 	@Override
@@ -120,17 +148,17 @@ public class RegisterScreen extends GameScreen {
 
 	@Override
 	public void pause() {
-		
+
 	}
 
 	@Override
 	public void resume() {
-		
+
 	}
 
 	@Override
 	public void hide() {
-		
+
 	}
 
 	@Override

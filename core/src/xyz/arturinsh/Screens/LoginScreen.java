@@ -37,11 +37,13 @@ public class LoginScreen extends GameScreen {
 
 		userNameLabel = new Label("Username", skin);
 		userNameTextField = new TextField("", skin);
+		userNameTextField.setMaxLength(32);
 
 		passwordLabel = new Label("Password", skin);
 		passwordTextField = new TextField("", skin);
 		passwordTextField.setPasswordCharacter('*');
 		passwordTextField.setPasswordMode(true);
+		passwordTextField.setMaxLength(32);
 
 		errorMessage = new Label("", skin);
 

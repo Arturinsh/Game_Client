@@ -10,6 +10,7 @@ import xyz.arturinsh.NetworkListener.Packets.LogInSuccess;
 import xyz.arturinsh.NetworkListener.Packets.RegisterFailed;
 import xyz.arturinsh.NetworkListener.Packets.RegisterSuccess;
 import xyz.arturinsh.NetworkListener.Packets.RemovePlayer;
+import xyz.arturinsh.Screens.LoginScreen;
 
 public class NetworkListener extends Listener {
 	private GameWorld world;
@@ -35,10 +36,12 @@ public class NetworkListener extends Listener {
 			world.showDialog("LogInFailed");
 		}
 		if (object instanceof RegisterSuccess) {
-			world.showDialog("Register Succes");
+			System.out.println("Reg ok");
+			world.registerSuccess();
 		}
 		if (object instanceof RegisterFailed) {
-			world.showDialog("Register Failed");
+			System.out.println("Reg fail");
+			world.registerFailed();
 		}
 		if (object instanceof AddPlayer) {
 			AddPlayer player = (AddPlayer) object;
