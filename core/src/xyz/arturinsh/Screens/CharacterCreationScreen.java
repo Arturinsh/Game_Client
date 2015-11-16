@@ -2,25 +2,29 @@ package xyz.arturinsh.Screens;
 
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationDesc;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationListener;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.UBJsonReader;
 
@@ -29,9 +33,10 @@ import xyz.arturinsh.Helpers.AssetsLoader;
 
 public class CharacterCreationScreen extends GameScreen {
 	private Skin skin;
-	private Table table;
+	private Table mainTable, nameTable, classTable, rightTable;
 	private TextField characterNameField;
-	private Label charNameLabel;
+	private TextButton class1, class2, class3;
+	private Label charNameLabel, rightLabel;
 
 	private PerspectiveCamera camera;
 	private ModelBatch modelBatch;
@@ -44,6 +49,7 @@ public class CharacterCreationScreen extends GameScreen {
 	public CharacterCreationScreen(GameWorld _world) {
 		super(_world);
 		initUI();
+		init3D();
 	}
 
 	private void initUI() {
@@ -51,19 +57,79 @@ public class CharacterCreationScreen extends GameScreen {
 
 		characterNameField = new TextField("", skin);
 		charNameLabel = new Label("Name", skin);
+		rightLabel = new Label("Text", skin);
 
-		table = new Table();
-		table.setWidth(stage.getWidth());
-		table.align(Align.center | Align.bottom);
+		class1 = new TextButton("Green", skin);
+		class2 = new TextButton("Red", skin);
+		class3 = new TextButton("Blue", skin);
+		
+		class1.setHeight(100);
+		
+		class1.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				model.materials.first().set(new Material(ColorAttribute.createDiffuse(Color.GREEN)));
+				modelInstance = new ModelInstance(model);
+			}
+		});
+
+		class2.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				model.materials.first().set(new Material(ColorAttribute.createDiffuse(Color.RED)));
+				modelInstance = new ModelInstance(model);
+			}
+		});
+
+		class3.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				model.materials.first().set(new Material(ColorAttribute.createDiffuse(Color.BLUE)));
+				modelInstance = new ModelInstance(model);
+			}
+		});
+
+		mainTable = new Table();
+		nameTable = new Table();
+
+		classTable = new Table();
+
+		rightTable = new Table();
+		//mainTable.debug();
+		mainTable.setWidth(stage.getWidth());
+		mainTable.setFillParent(true);
+		// mainTable.align(Align.center | Align.bottom);
 		// table.setPosition(0, Gdx.graphics.getHeight());
 		// table.debug();
-		table.padBottom(stage.getHeight() / 8);
-		table.add(charNameLabel);
-		table.row();
-		table.add(characterNameField);
-		stage.addActor(table);
+		// table.padBottom(stage.getHeight() / 8);
+		// table.add(class1).align(Align.left);
+		// table.add(class2).align(Align.left);
+		// table.add(class3).align(Align.left);
+		// table.row();
+		// table.add(charNameLabel).colspan(3);
+		// table.row();
+		// table.add(characterNameField).colspan(3);
+
+		classTable.add(class1).height(50).width(70);
+		classTable.row();
+		classTable.add(class2).height(50).width(70);
+		classTable.row();
+		classTable.add(class3).height(50).width(70);
+
+		nameTable.add(charNameLabel);
+		nameTable.row();
+		nameTable.add(characterNameField);
+		
+		rightTable.add(rightLabel);
+
+		mainTable.add(classTable).expand().top().padTop(30).padLeft(30).align(Align.left | Align.top);
+		mainTable.add(nameTable).expand().bottom().padBottom(30).padLeft(-30).align(Align.center | Align.bottom);
+		mainTable.add(rightTable).expand().top().padTop(30).padRight(30);
+
+		stage.addActor(mainTable);
+
 		Gdx.input.setInputProcessor(stage);
-		init3D();
+
 	}
 
 	private void init3D() {
@@ -91,6 +157,8 @@ public class CharacterCreationScreen extends GameScreen {
 		model = modelLoader.loadModel(Gdx.files.getFileHandle("bot_monkey.g3db", FileType.Internal));
 		// Now create an instance. Instance holds the positioning data, etc of
 		// an instance of your model
+		System.out.println("Hello" + model.materials.size);
+
 		modelInstance = new ModelInstance(model);
 
 		// fbx-conv is supposed to perform this rotation for you... it doesnt
@@ -106,12 +174,16 @@ public class CharacterCreationScreen extends GameScreen {
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.8f, 0.8f, 0.8f, 1.0f));
 		environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
-		environment.add(new PointLight().set(0.5f, 0.1f, 0.1f, 0f, 2f, 5f, 5f));
-		environment.add(new PointLight().set(0.5f, 0.1f, 0.1f, 0f, 2f, -5f, 5f));
-		environment.add(new PointLight().set(0.5f, 0.1f, 0.1f, 5f, 2f, 0f, 5f));
-		environment.add(new PointLight().set(0.5f, 0.1f, 0.1f, -5f, 2f, 0f, 5f));
+		// environment.add(new PointLight().set(0.5f, 0.1f, 0.1f, 0f, 2f, 5f,
+		// 5f));
+		// environment.add(new PointLight().set(0.5f, 0.1f, 0.1f, 0f, 2f, -5f,
+		// 5f));
+		// environment.add(new PointLight().set(0.5f, 0.1f, 0.1f, 5f, 2f, 0f,
+		// 5f));
+		// environment.add(new PointLight().set(0.5f, 0.1f, 0.1f, -5f, 2f, 0f,
+		// 5f));
 		camController = new CameraInputController(camera);
-		//Gdx.input.setInputProcessor(camController);
+		// Gdx.input.setInputProcessor(camController);
 		// You use an AnimationController to um, control animations. Each
 		// control is tied to the model instance
 		controller = new AnimationController(modelInstance);
@@ -129,29 +201,25 @@ public class CharacterCreationScreen extends GameScreen {
 			@Override
 			public void onLoop(AnimationDesc animation) {
 				// TODO Auto-generated method stub
-				controller.current.speed += 0.1f;
+				// controller.current.speed += 0.1f;
 			}
 
 		});
+		model.materials.first().set(new Material(ColorAttribute.createDiffuse(Color.GREEN)));
+		modelInstance = new ModelInstance(model);
 	}
 
-	private void render3D()
-	{
-		
-	}
-	
 	@Override
 	public void render(float delta) {
-//		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-		//Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		// Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+		// Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(),
+		// Gdx.graphics.getHeight());
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-		
-		stage.act(Gdx.graphics.getDeltaTime());
-		stage.draw();
+
 		camera.update();
-		camera.rotateAround(Vector3.Zero, new Vector3(0,1,0),1f);
+		camera.rotateAround(Vector3.Zero, new Vector3(0, 1, 0), 1f);
 		// You need to call update on the animation controller so it will
 		// advance the animation. Pass in frame delta
 		controller.update(Gdx.graphics.getDeltaTime());
@@ -160,7 +228,8 @@ public class CharacterCreationScreen extends GameScreen {
 		modelBatch.begin(camera);
 		modelBatch.render(modelInstance, environment);
 		modelBatch.end();
-		
+		stage.act(Gdx.graphics.getDeltaTime());
+		stage.draw();
 	}
 
 	@Override
@@ -169,6 +238,6 @@ public class CharacterCreationScreen extends GameScreen {
 		// table.setPosition(0, Gdx.graphics.getHeight());
 
 		// table.padTop(Gdx.graphics.getHeight() / 3);
-		table.setWidth(stage.getWidth());
+		mainTable.setWidth(stage.getWidth());
 	}
 }
