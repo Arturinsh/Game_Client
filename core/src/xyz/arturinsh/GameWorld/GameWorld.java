@@ -15,7 +15,7 @@ import xyz.arturinsh.NetworkListener.Packets.Register;
 import xyz.arturinsh.NetworkListener.Packets.RegisterFailed;
 import xyz.arturinsh.NetworkListener.Packets.RegisterSuccess;
 import xyz.arturinsh.NetworkListener.Packets.RemovePlayer;
-import xyz.arturinsh.Screens.CharacterSelectScreen;
+import xyz.arturinsh.Screens.CharacterCreationScreen;
 import xyz.arturinsh.Screens.GameScreen;
 import xyz.arturinsh.Screens.LoginScreen;
 import xyz.arturinsh.gameclient.MainGame;
@@ -52,7 +52,7 @@ public class GameWorld {
 		Gdx.app.postRunnable(new Runnable(){
 			@Override
 			public void run() {
-				changeScreen(new CharacterSelectScreen(GameWorld.this));
+				changeScreen(new CharacterCreationScreen(GameWorld.this));
 			}
 		});
 	}

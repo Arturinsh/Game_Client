@@ -26,9 +26,9 @@ public class RegisterScreen extends GameScreen {
 	private TextButton registerButton, backButton;
 	private Label passwordLabel, passwordLabel2, userNameLabel, dialogMessage;
 	private TextField passwordTextField, passwordTextField2, userNameTextField;
-	private Dialog dialog;
+	//private Dialog dialog;
 
-	private boolean registerSuccesful;
+	//private boolean registerSuccesful;
 
 	public RegisterScreen(GameWorld _world) {
 		super(_world);

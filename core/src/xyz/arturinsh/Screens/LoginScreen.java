@@ -21,9 +21,9 @@ public class LoginScreen extends GameScreen {
 	private Table table;
 
 	private TextButton loginButton, registerButton;
-	private Label passwordLabel, userNameLabel, errorMessage;
+	private Label passwordLabel, userNameLabel;//, errorMessage;
 	private TextField passwordTextField, userNameTextField;
-	private Dialog dialog;
+//	private Dialog dialog;
 
 	public LoginScreen(GameWorld _world) {
 		super(_world);
@@ -45,7 +45,7 @@ public class LoginScreen extends GameScreen {
 		passwordTextField.setPasswordMode(true);
 		passwordTextField.setMaxLength(32);
 
-		errorMessage = new Label("", skin);
+		//errorMessage = new Label("", skin);
 
 		registerButton.addListener(new ClickListener() {
 			@Override
