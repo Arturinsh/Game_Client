@@ -28,6 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.UBJsonReader;
 
+import xyz.arturinsh.GameObjects.CharacterClass;
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;
 
@@ -35,7 +36,7 @@ public class CharacterCreationScreen extends GameScreen {
 	private Skin skin;
 	private Table mainTable, nameTable, classTable, rightTable;
 	private TextField characterNameField;
-	private TextButton class1, class2, class3;
+	private TextButton class1, class2, class3, submit;
 	private Label charNameLabel, rightLabel;
 
 	private PerspectiveCamera camera;
@@ -45,11 +46,13 @@ public class CharacterCreationScreen extends GameScreen {
 	private Environment environment;
 	private AnimationController controller;
 	private CameraInputController camController;
+	private CharacterClass charClass;
 
 	public CharacterCreationScreen(GameWorld _world) {
 		super(_world);
 		initUI();
 		init3D();
+		charClass = CharacterClass.GREEN;
 	}
 
 	private void initUI() {
@@ -62,14 +65,16 @@ public class CharacterCreationScreen extends GameScreen {
 		class1 = new TextButton("Green", skin);
 		class2 = new TextButton("Red", skin);
 		class3 = new TextButton("Blue", skin);
-		
+		submit = new TextButton("Submit", skin);
+
 		class1.setHeight(100);
-		
+
 		class1.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				model.materials.first().set(new Material(ColorAttribute.createDiffuse(Color.GREEN)));
 				modelInstance = new ModelInstance(model);
+				charClass = CharacterClass.GREEN;
 			}
 		});
 
@@ -78,6 +83,7 @@ public class CharacterCreationScreen extends GameScreen {
 			public void clicked(InputEvent event, float x, float y) {
 				model.materials.first().set(new Material(ColorAttribute.createDiffuse(Color.RED)));
 				modelInstance = new ModelInstance(model);
+				charClass = CharacterClass.RED;
 			}
 		});
 
@@ -86,6 +92,15 @@ public class CharacterCreationScreen extends GameScreen {
 			public void clicked(InputEvent event, float x, float y) {
 				model.materials.first().set(new Material(ColorAttribute.createDiffuse(Color.BLUE)));
 				modelInstance = new ModelInstance(model);
+				charClass = CharacterClass.BLUE;
+			}
+		});
+
+		submit.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				String charName = characterNameField.getText();
+				world.createCharacter(charName, charClass);
 			}
 		});
 
@@ -95,7 +110,7 @@ public class CharacterCreationScreen extends GameScreen {
 		classTable = new Table();
 
 		rightTable = new Table();
-		//mainTable.debug();
+		// mainTable.debug();
 		mainTable.setWidth(stage.getWidth());
 		mainTable.setFillParent(true);
 		// mainTable.align(Align.center | Align.bottom);
@@ -119,7 +134,9 @@ public class CharacterCreationScreen extends GameScreen {
 		nameTable.add(charNameLabel);
 		nameTable.row();
 		nameTable.add(characterNameField);
-		
+		nameTable.row();
+		nameTable.add(submit);
+
 		rightTable.add(rightLabel);
 
 		mainTable.add(classTable).expand().top().padTop(30).padLeft(30).align(Align.left | Align.top);

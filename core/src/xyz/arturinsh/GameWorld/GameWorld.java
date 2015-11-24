@@ -6,8 +6,12 @@ import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 
+import xyz.arturinsh.GameObjects.CharacterClass;
 import xyz.arturinsh.NetworkListener.NetworkListener;
 import xyz.arturinsh.NetworkListener.Packets.AddPlayer;
+import xyz.arturinsh.NetworkListener.Packets.CharacterCreateFailed;
+import xyz.arturinsh.NetworkListener.Packets.CharacterCreateSuccess;
+import xyz.arturinsh.NetworkListener.Packets.CreateCharacter;
 import xyz.arturinsh.NetworkListener.Packets.LogIn;
 import xyz.arturinsh.NetworkListener.Packets.LogInFailed;
 import xyz.arturinsh.NetworkListener.Packets.LogInSuccess;
@@ -24,7 +28,7 @@ public class GameWorld {
 	private Client client = new Client();
 	private MainGame game;
 	private final String ipAddress = "127.0.0.1";
-	
+
 	public GameWorld(MainGame _game) {
 		game = _game;
 		registerKryo();
@@ -47,9 +51,9 @@ public class GameWorld {
 		login.password = psw;
 		client.sendTCP(login);
 	}
-	
-	public void logiInSucess(){
-		Gdx.app.postRunnable(new Runnable(){
+
+	public void logiInSucess() {
+		Gdx.app.postRunnable(new Runnable() {
 			@Override
 			public void run() {
 				changeScreen(new CharacterCreationScreen(GameWorld.this));
@@ -65,7 +69,7 @@ public class GameWorld {
 	}
 
 	public void registerSuccess() {
-		Gdx.app.postRunnable(new Runnable(){
+		Gdx.app.postRunnable(new Runnable() {
 			@Override
 			public void run() {
 				changeScreen(new LoginScreen(GameWorld.this));
@@ -78,6 +82,14 @@ public class GameWorld {
 		showDialog("Registration failed!");
 	}
 
+	public void createCharacter(String charName, CharacterClass charClass) {
+		CreateCharacter create = new CreateCharacter();
+		create.charClass = charClass;
+		create.charName = charName;
+
+		client.sendTCP(create);
+	}
+
 	private void registerKryo() {
 		Kryo kryo = client.getKryo();
 		kryo.register(LogIn.class);
@@ -88,6 +100,10 @@ public class GameWorld {
 		kryo.register(RegisterFailed.class);
 		kryo.register(AddPlayer.class);
 		kryo.register(RemovePlayer.class);
+		kryo.register(CharacterClass.class);
+		kryo.register(CreateCharacter.class);
+		kryo.register(CharacterCreateSuccess.class);
+		kryo.register(CharacterCreateFailed.class);
 	}
 
 	private void startNetworkClient() {
