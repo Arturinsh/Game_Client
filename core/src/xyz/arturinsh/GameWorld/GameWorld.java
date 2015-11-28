@@ -32,8 +32,8 @@ public class GameWorld {
 	public GameWorld(MainGame _game) {
 		game = _game;
 		registerKryo();
-		startNetworkClient();
-		game.setScreen(new LoginScreen(this));
+		//startNetworkClient();
+		//game.setScreen(new LoginScreen(this));
 	}
 
 	public MainGame getGame() {

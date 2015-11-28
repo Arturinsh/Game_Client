@@ -5,6 +5,7 @@ import com.badlogic.gdx.Game;
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;
 import xyz.arturinsh.Screens.CharacterCreationScreen;
+import xyz.arturinsh.Screens.CharacterSelectScreen;
 import xyz.arturinsh.Screens.LoginScreen;
 
 public class MainGame extends Game {
@@ -15,6 +16,6 @@ public class MainGame extends Game {
 		//TODO Add loading screen
 		
 		GameWorld world = new GameWorld(this);
-		//this.setScreen(new CharacterCreationScreen(world));
+		this.setScreen(new CharacterSelectScreen(world));
 	}
 }
