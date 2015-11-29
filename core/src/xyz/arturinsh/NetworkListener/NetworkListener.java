@@ -10,6 +10,7 @@ import xyz.arturinsh.NetworkListener.Packets.LogInSuccess;
 import xyz.arturinsh.NetworkListener.Packets.RegisterFailed;
 import xyz.arturinsh.NetworkListener.Packets.RegisterSuccess;
 import xyz.arturinsh.NetworkListener.Packets.RemovePlayer;
+import xyz.arturinsh.NetworkListener.Packets.UserCharacter;
 import xyz.arturinsh.Screens.LoginScreen;
 
 public class NetworkListener extends Listener {
@@ -30,6 +31,8 @@ public class NetworkListener extends Listener {
 	@Override
 	public void received(Connection connection, Object object) {
 		if (object instanceof LogInSuccess) {
+			LogInSuccess login = (LogInSuccess)object;
+			world.setCharacters(login.characters);
 			world.logiInSucess();
 		}
 		if (object instanceof LogInFailed) {

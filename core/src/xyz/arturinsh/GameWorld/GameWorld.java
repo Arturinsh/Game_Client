@@ -1,6 +1,7 @@
 package xyz.arturinsh.GameWorld;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryo.Kryo;
@@ -11,7 +12,6 @@ import xyz.arturinsh.NetworkListener.NetworkListener;
 import xyz.arturinsh.NetworkListener.Packets.AddPlayer;
 import xyz.arturinsh.NetworkListener.Packets.CharacterCreateFailed;
 import xyz.arturinsh.NetworkListener.Packets.CharacterCreateSuccess;
-import xyz.arturinsh.NetworkListener.Packets.UserCharacter;
 import xyz.arturinsh.NetworkListener.Packets.LogIn;
 import xyz.arturinsh.NetworkListener.Packets.LogInFailed;
 import xyz.arturinsh.NetworkListener.Packets.LogInSuccess;
@@ -19,7 +19,7 @@ import xyz.arturinsh.NetworkListener.Packets.Register;
 import xyz.arturinsh.NetworkListener.Packets.RegisterFailed;
 import xyz.arturinsh.NetworkListener.Packets.RegisterSuccess;
 import xyz.arturinsh.NetworkListener.Packets.RemovePlayer;
-import xyz.arturinsh.Screens.CharacterCreationScreen;
+import xyz.arturinsh.NetworkListener.Packets.UserCharacter;
 import xyz.arturinsh.Screens.CharacterSelectScreen;
 import xyz.arturinsh.Screens.GameScreen;
 import xyz.arturinsh.Screens.LoginScreen;
@@ -29,7 +29,9 @@ public class GameWorld {
 	private Client client = new Client();
 	private MainGame game;
 	private final String ipAddress = "127.0.0.1";
-
+	private List<UserCharacter> characters;
+	
+	
 	public GameWorld(MainGame _game) {
 		game = _game;
 		registerKryo();
@@ -54,11 +56,10 @@ public class GameWorld {
 	}
 
 	public void logiInSucess() {
-		final String[] test = {"hi1", "hi2"};
 		Gdx.app.postRunnable(new Runnable() {
 			@Override
 			public void run() {
-				CharacterSelectScreen try1 = new CharacterSelectScreen(GameWorld.this, test);
+				CharacterSelectScreen try1 = new CharacterSelectScreen(GameWorld.this);
 				changeScreen(try1);
 			}
 		});
@@ -95,6 +96,7 @@ public class GameWorld {
 
 	private void registerKryo() {
 		Kryo kryo = client.getKryo();
+		kryo.register(java.util.ArrayList.class);
 		kryo.register(LogIn.class);
 		kryo.register(Register.class);
 		kryo.register(LogInSuccess.class);
@@ -128,5 +130,13 @@ public class GameWorld {
 		GameScreen current = getCurrentScreen();
 		current.dispose();
 		current.changeScreen(screen);
+	}
+
+	public List<UserCharacter> getCharacters() {
+		return characters;
+	}
+
+	public void setCharacters(List<UserCharacter> characters) {
+		this.characters = characters;
 	}
 }

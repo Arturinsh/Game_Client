@@ -1,5 +1,7 @@
 package xyz.arturinsh.Screens;
 
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -18,6 +20,7 @@ import com.badlogic.gdx.utils.Align;
 
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;
+import xyz.arturinsh.NetworkListener.Packets.UserCharacter;
 
 public class CharacterSelectScreen extends GameScreen {
 
@@ -114,7 +117,10 @@ public class CharacterSelectScreen extends GameScreen {
 
 	@Override
 	public void show() {
-
+		List<UserCharacter> chars = world.getCharacters();
+		for (UserCharacter userCharacter : chars) {
+			System.out.println(userCharacter.charName);
+		}
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package xyz.arturinsh.NetworkListener;
 
+import java.util.List;
+
 import xyz.arturinsh.GameObjects.CharacterClass;
 
 public class Packets {
@@ -14,6 +16,7 @@ public class Packets {
 	}
 
 	public static class LogInSuccess {
+		public List<UserCharacter> characters;
 	}
 
 	public static class RegisterSuccess {
