@@ -11,7 +11,7 @@ import xyz.arturinsh.NetworkListener.NetworkListener;
 import xyz.arturinsh.NetworkListener.Packets.AddPlayer;
 import xyz.arturinsh.NetworkListener.Packets.CharacterCreateFailed;
 import xyz.arturinsh.NetworkListener.Packets.CharacterCreateSuccess;
-import xyz.arturinsh.NetworkListener.Packets.CreateCharacter;
+import xyz.arturinsh.NetworkListener.Packets.UserCharacter;
 import xyz.arturinsh.NetworkListener.Packets.LogIn;
 import xyz.arturinsh.NetworkListener.Packets.LogInFailed;
 import xyz.arturinsh.NetworkListener.Packets.LogInSuccess;
@@ -20,6 +20,7 @@ import xyz.arturinsh.NetworkListener.Packets.RegisterFailed;
 import xyz.arturinsh.NetworkListener.Packets.RegisterSuccess;
 import xyz.arturinsh.NetworkListener.Packets.RemovePlayer;
 import xyz.arturinsh.Screens.CharacterCreationScreen;
+import xyz.arturinsh.Screens.CharacterSelectScreen;
 import xyz.arturinsh.Screens.GameScreen;
 import xyz.arturinsh.Screens.LoginScreen;
 import xyz.arturinsh.gameclient.MainGame;
@@ -32,8 +33,8 @@ public class GameWorld {
 	public GameWorld(MainGame _game) {
 		game = _game;
 		registerKryo();
-		//startNetworkClient();
-		//game.setScreen(new LoginScreen(this));
+		startNetworkClient();
+		game.setScreen(new LoginScreen(this));
 	}
 
 	public MainGame getGame() {
@@ -53,10 +54,12 @@ public class GameWorld {
 	}
 
 	public void logiInSucess() {
+		final String[] test = {"hi1", "hi2"};
 		Gdx.app.postRunnable(new Runnable() {
 			@Override
 			public void run() {
-				changeScreen(new CharacterCreationScreen(GameWorld.this));
+				CharacterSelectScreen try1 = new CharacterSelectScreen(GameWorld.this, test);
+				changeScreen(try1);
 			}
 		});
 	}
@@ -83,7 +86,7 @@ public class GameWorld {
 	}
 
 	public void createCharacter(String charName, CharacterClass charClass) {
-		CreateCharacter create = new CreateCharacter();
+		UserCharacter create = new UserCharacter();
 		create.charClass = charClass;
 		create.charName = charName;
 
@@ -101,7 +104,7 @@ public class GameWorld {
 		kryo.register(AddPlayer.class);
 		kryo.register(RemovePlayer.class);
 		kryo.register(CharacterClass.class);
-		kryo.register(CreateCharacter.class);
+		kryo.register(UserCharacter.class);
 		kryo.register(CharacterCreateSuccess.class);
 		kryo.register(CharacterCreateFailed.class);
 	}

@@ -6,11 +6,13 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 
@@ -20,20 +22,43 @@ import xyz.arturinsh.Helpers.AssetsLoader;
 public class CharacterSelectScreen extends GameScreen {
 
 	private Skin skin;
-	private Table mainTable, centerTable, scrollTable, infoTable;
+	private Table mainTable, centerTable, scrollTable, infoTable, leftTable;
 	private ScrollPane charScroll;
-	private TextButton enterCharacter, test;
+	private TextButton enterCharacter, test, createCharacter;
 	private Label charInfo;
+	private String[] testStrings;
 
 	public CharacterSelectScreen(GameWorld _world) {
 		super(_world);
 		initUI();
 	}
 
+	public CharacterSelectScreen(GameWorld _world, String[] test) {
+		super(_world);
+		testStrings = test;
+		initUI();
+		for (String string : testStrings) {
+			System.out.println(string);
+		}
+	}
+
+	public void setTest(String[] test) {
+		testStrings = test;
+	}
+
 	private void initUI() {
 		skin = AssetsLoader.getSkin();
 
 		enterCharacter = new TextButton("Enter", skin);
+		createCharacter = new TextButton("Create Character", skin);
+		createCharacter.addListener(new ClickListener(){
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				game.setScreen(new CharacterCreationScreen(world));
+			}
+		});
+		
+		
 		test = new TextButton("test", skin);
 		charInfo = new Label("Info about char", skin);
 
@@ -41,6 +66,9 @@ public class CharacterSelectScreen extends GameScreen {
 		centerTable = new Table();
 		scrollTable = new Table();
 		infoTable = new Table();
+		leftTable = new Table();
+
+//		mainTable.debug();
 
 		TextButton text = new TextButton("This is a short string!", skin);
 		TextButton text2 = new TextButton("This is a short string!", skin);
@@ -65,17 +93,28 @@ public class CharacterSelectScreen extends GameScreen {
 		scrollTable.row();
 		scrollTable.add(text3);
 		scrollTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(pm1))));
-
+		
+		leftTable.add(charScroll).padTop(20).padRight(20).top();
+		leftTable.row();
+		leftTable.add(createCharacter).bottom().expand().padBottom(20);
+//		leftTable.debug();
+		
 		mainTable.setWidth(stage.getWidth());
 		mainTable.setFillParent(true);
 
 		mainTable.add(infoTable).pad(20, 20, 0, 0).align(Align.top | Align.center);
 		mainTable.add(centerTable).expand().bottom().center().align(Align.bottom | Align.center).padBottom(20);
-		mainTable.add(charScroll).align(Align.right | Align.top).padTop(20).padRight(20);
-
+		mainTable.add(leftTable).fillY();
+		
+		
 		stage.addActor(mainTable);
 
 		Gdx.input.setInputProcessor(stage);
+	}
+
+	@Override
+	public void show() {
+
 	}
 
 	@Override

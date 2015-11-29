@@ -16,6 +16,6 @@ public class MainGame extends Game {
 		//TODO Add loading screen
 		
 		GameWorld world = new GameWorld(this);
-		this.setScreen(new CharacterSelectScreen(world));
+		//this.setScreen(new CharacterSelectScreen(world));
 	}
 }

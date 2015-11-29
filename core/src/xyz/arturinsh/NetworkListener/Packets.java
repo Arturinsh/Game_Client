@@ -33,7 +33,7 @@ public class Packets {
 		public String username;
 	}
 
-	public static class CreateCharacter {
+	public static class UserCharacter {
 		public String charName;
 		public CharacterClass charClass;
 	}

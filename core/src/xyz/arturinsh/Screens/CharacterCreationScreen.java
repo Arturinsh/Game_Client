@@ -36,7 +36,7 @@ public class CharacterCreationScreen extends GameScreen {
 	private Skin skin;
 	private Table mainTable, nameTable, classTable, rightTable;
 	private TextField characterNameField;
-	private TextButton class1, class2, class3, submit;
+	private TextButton class1, class2, class3, submit, backButton;
 	private Label charNameLabel, rightLabel;
 
 	private PerspectiveCamera camera;
@@ -66,7 +66,8 @@ public class CharacterCreationScreen extends GameScreen {
 		class2 = new TextButton("Red", skin);
 		class3 = new TextButton("Blue", skin);
 		submit = new TextButton("Submit", skin);
-
+		backButton = new TextButton("Back",skin);
+		
 		class1.setHeight(100);
 
 		class1.addListener(new ClickListener() {
@@ -103,27 +104,23 @@ public class CharacterCreationScreen extends GameScreen {
 				world.createCharacter(charName, charClass);
 			}
 		});
-
+		
+		backButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				game.setScreen(new CharacterSelectScreen(world));
+			}
+		});
+		
 		mainTable = new Table();
 		nameTable = new Table();
 
 		classTable = new Table();
 
 		rightTable = new Table();
-		// mainTable.debug();
+//		mainTable.debug();
 		mainTable.setWidth(stage.getWidth());
 		mainTable.setFillParent(true);
-		// mainTable.align(Align.center | Align.bottom);
-		// table.setPosition(0, Gdx.graphics.getHeight());
-		// table.debug();
-		// table.padBottom(stage.getHeight() / 8);
-		// table.add(class1).align(Align.left);
-		// table.add(class2).align(Align.left);
-		// table.add(class3).align(Align.left);
-		// table.row();
-		// table.add(charNameLabel).colspan(3);
-		// table.row();
-		// table.add(characterNameField).colspan(3);
 
 		classTable.add(class1).height(50).width(70);
 		classTable.row();
@@ -138,10 +135,12 @@ public class CharacterCreationScreen extends GameScreen {
 		nameTable.add(submit);
 
 		rightTable.add(rightLabel);
+		rightTable.row();
+		rightTable.add(backButton).bottom().expand().padBottom(20);
 
 		mainTable.add(classTable).expand().top().padTop(30).padLeft(30).align(Align.left | Align.top);
 		mainTable.add(nameTable).expand().bottom().padBottom(30).padLeft(-30).align(Align.center | Align.bottom);
-		mainTable.add(rightTable).expand().top().padTop(30).padRight(30);
+		mainTable.add(rightTable).expand().top().padTop(30).padRight(30).fillY();
 
 		stage.addActor(mainTable);
 
@@ -152,37 +151,19 @@ public class CharacterCreationScreen extends GameScreen {
 	private void init3D() {
 		camera = new PerspectiveCamera(75, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-		// Move the camera 5 units back along the z-axis and look at the origin
 		camera.position.set(0f, 4f, 7f);
 		camera.lookAt(0f, 2f, 0f);
-		// Near and Far (plane) represent the minimum and maximum ranges of the
-		// camera in, um, units
 		camera.near = 0.1f;
 		camera.far = 300.0f;
 
-		// A ModelBatch is like a SpriteBatch, just for models. Use it to batch
-		// up geometry for OpenGL
 		modelBatch = new ModelBatch();
 
-		// Model loader needs a binary json reader to decode
 		UBJsonReader jsonReader = new UBJsonReader();
-		// Create a model loader passing in our json reader
 		G3dModelLoader modelLoader = new G3dModelLoader(jsonReader);
-		// Now load the model by name
-		// Note, the model (g3db file ) and textures need to be added to the
-		// assets folder of the Android proj
 		model = modelLoader.loadModel(Gdx.files.getFileHandle("bot_monkey.g3db", FileType.Internal));
-		// Now create an instance. Instance holds the positioning data, etc of
-		// an instance of your model
-		System.out.println("Hello" + model.materials.size);
 
 		modelInstance = new ModelInstance(model);
 
-		// fbx-conv is supposed to perform this rotation for you... it doesnt
-		// seem to
-		// modelInstance.transform.rotate(1, 0, 0, -90);
-		// move the model down a bit on the screen ( in a z-up world, down is -z
-		// ).
 		modelInstance.transform.translate(0, 0, 0);
 		// Finally we want some light, or we wont see our color. The environment
 		// gets passed in during
@@ -228,20 +209,12 @@ public class CharacterCreationScreen extends GameScreen {
 
 	@Override
 	public void render(float delta) {
-		// Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-		// Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(),
-		// Gdx.graphics.getHeight());
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
 		camera.update();
 		camera.rotateAround(Vector3.Zero, new Vector3(0, 1, 0), 1f);
-		// You need to call update on the animation controller so it will
-		// advance the animation. Pass in frame delta
 		controller.update(Gdx.graphics.getDeltaTime());
-		// Like spriteBatch, just with models! pass in the box Instance and the
-		// environment
 		modelBatch.begin(camera);
 		modelBatch.render(modelInstance, environment);
 		modelBatch.end();
