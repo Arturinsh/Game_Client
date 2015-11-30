@@ -102,10 +102,10 @@ public class RegisterScreen extends GameScreen {
 					world.register(username, psw);
 				} else if (!userNameOk(username)) {
 					showDialog("Username can contain only alphanumeric characters\n "
-							+ "and must be atleast 6 characters long");
+							+ "and must be atleast 5 characters long");
 				} else if (!pswOk(psw)) {
 					showDialog("Password contains illegal characters "
-							+ "or is shorter than 6 characters");
+							+ "or is shorter than 5 characters");
 				}
 			}
 		});
