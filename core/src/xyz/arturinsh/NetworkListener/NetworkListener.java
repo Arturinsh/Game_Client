@@ -35,6 +35,7 @@ public class NetworkListener extends Listener {
 			world.setCharacters(login.characters);
 			world.logiInSucess();
 		}
+		
 		if (object instanceof LogInFailed) {
 			world.showDialog("LogInFailed");
 		}
