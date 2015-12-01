@@ -94,6 +94,17 @@ public class GameWorld {
 		client.sendTCP(create);
 	}
 
+	public void createCharacterSuccess()
+	{
+		Gdx.app.postRunnable(new Runnable() {
+			@Override
+			public void run() {
+				changeScreen(new CharacterSelectScreen(GameWorld.this));
+				showDialog("Character created");
+			}
+		});
+	}
+	
 	private void registerKryo() {
 		Kryo kryo = client.getKryo();
 		kryo.register(java.util.ArrayList.class);

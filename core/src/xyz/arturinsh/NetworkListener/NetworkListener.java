@@ -5,13 +5,13 @@ import com.esotericsoftware.kryonet.Listener;
 
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.NetworkListener.Packets.AddPlayer;
+import xyz.arturinsh.NetworkListener.Packets.CharacterCreateFailed;
+import xyz.arturinsh.NetworkListener.Packets.CharacterCreateSuccess;
 import xyz.arturinsh.NetworkListener.Packets.LogInFailed;
 import xyz.arturinsh.NetworkListener.Packets.LogInSuccess;
 import xyz.arturinsh.NetworkListener.Packets.RegisterFailed;
 import xyz.arturinsh.NetworkListener.Packets.RegisterSuccess;
 import xyz.arturinsh.NetworkListener.Packets.RemovePlayer;
-import xyz.arturinsh.NetworkListener.Packets.UserCharacter;
-import xyz.arturinsh.Screens.LoginScreen;
 
 public class NetworkListener extends Listener {
 	private GameWorld world;
@@ -54,6 +54,16 @@ public class NetworkListener extends Listener {
 		if (object instanceof RemovePlayer) {
 //			RemovePlayer player = (RemovePlayer) object;
 //			world.showDialog(player.username + " left");
+		}
+		if(object instanceof CharacterCreateSuccess)
+		{
+			CharacterCreateSuccess success = (CharacterCreateSuccess) object;
+			world.setCharacters(success.characters);
+			world.createCharacterSuccess();
+		}
+		if(object instanceof CharacterCreateFailed)
+		{
+			world.showDialog("Character name already exists");
 		}
 	}
 }
