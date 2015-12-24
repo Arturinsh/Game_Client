@@ -1,5 +1,6 @@
 package xyz.arturinsh.NetworkListener;
 
+import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
@@ -12,6 +13,7 @@ import xyz.arturinsh.NetworkListener.Packets.LogInSuccess;
 import xyz.arturinsh.NetworkListener.Packets.RegisterFailed;
 import xyz.arturinsh.NetworkListener.Packets.RegisterSuccess;
 import xyz.arturinsh.NetworkListener.Packets.RemovePlayer;
+import xyz.arturinsh.NetworkListener.Packets.TestUDP;
 
 public class NetworkListener extends Listener {
 	private GameWorld world;
@@ -31,11 +33,12 @@ public class NetworkListener extends Listener {
 	@Override
 	public void received(Connection connection, Object object) {
 		if (object instanceof LogInSuccess) {
-			LogInSuccess login = (LogInSuccess)object;
+			LogInSuccess login = (LogInSuccess) object;
 			world.setCharacters(login.characters);
 			world.logiInSucess();
+			Gdx.app.debug("Test", "HI");
 		}
-		
+
 		if (object instanceof LogInFailed) {
 			world.showDialog("LogInFailed");
 		}
@@ -48,22 +51,24 @@ public class NetworkListener extends Listener {
 			world.registerFailed();
 		}
 		if (object instanceof AddPlayer) {
-//			AddPlayer player = (AddPlayer) object;
-//			world.showDialog(player.username + " joined");
+			// AddPlayer player = (AddPlayer) object;
+			// world.showDialog(player.username + " joined");
 		}
 		if (object instanceof RemovePlayer) {
-//			RemovePlayer player = (RemovePlayer) object;
-//			world.showDialog(player.username + " left");
+			// RemovePlayer player = (RemovePlayer) object;
+			// world.showDialog(player.username + " left");
 		}
-		if(object instanceof CharacterCreateSuccess)
-		{
+		if (object instanceof CharacterCreateSuccess) {
 			CharacterCreateSuccess success = (CharacterCreateSuccess) object;
 			world.setCharacters(success.characters);
 			world.createCharacterSuccess();
 		}
-		if(object instanceof CharacterCreateFailed)
-		{
+		if (object instanceof CharacterCreateFailed) {
 			world.showDialog("Character name already exists");
+		}
+
+		if (object instanceof TestUDP) {
+			Gdx.app.debug("Test", "HI");
 		}
 	}
 }

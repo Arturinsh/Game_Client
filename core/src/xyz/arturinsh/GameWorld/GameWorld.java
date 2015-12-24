@@ -3,6 +3,7 @@ package xyz.arturinsh.GameWorld;
 import java.io.IOException;
 import java.util.List;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
@@ -19,6 +20,7 @@ import xyz.arturinsh.NetworkListener.Packets.Register;
 import xyz.arturinsh.NetworkListener.Packets.RegisterFailed;
 import xyz.arturinsh.NetworkListener.Packets.RegisterSuccess;
 import xyz.arturinsh.NetworkListener.Packets.RemovePlayer;
+import xyz.arturinsh.NetworkListener.Packets.TestUDP;
 import xyz.arturinsh.NetworkListener.Packets.UserCharacter;
 import xyz.arturinsh.Screens.CharacterSelectScreen;
 import xyz.arturinsh.Screens.GameScreen;
@@ -28,11 +30,11 @@ import xyz.arturinsh.gameclient.MainGame;
 public class GameWorld {
 	private Client client = new Client();
 	private MainGame game;
-	private final String ipAddress = "127.0.0.1";
+	private final String ipAddress = "192.168.1.3";
 	private List<UserCharacter> characters;
-	
-	
+
 	public GameWorld(MainGame _game) {
+		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 		game = _game;
 		registerKryo();
 		startNetworkClient();
@@ -94,8 +96,7 @@ public class GameWorld {
 		client.sendTCP(create);
 	}
 
-	public void createCharacterSuccess()
-	{
+	public void createCharacterSuccess() {
 		Gdx.app.postRunnable(new Runnable() {
 			@Override
 			public void run() {
@@ -104,7 +105,7 @@ public class GameWorld {
 			}
 		});
 	}
-	
+
 	private void registerKryo() {
 		Kryo kryo = client.getKryo();
 		kryo.register(java.util.ArrayList.class);
@@ -120,15 +121,17 @@ public class GameWorld {
 		kryo.register(UserCharacter.class);
 		kryo.register(CharacterCreateSuccess.class);
 		kryo.register(CharacterCreateFailed.class);
+		kryo.register(TestUDP.class);
 	}
 
 	private void startNetworkClient() {
 		client.start();
 		client.addListener(new NetworkListener(this));
 		try {
-			client.connect(5000, ipAddress, 54555, 54777);
+			client.connect(5000, ipAddress, 2300, 54777);
 		} catch (IOException e) {
 			System.out.print(e);
+			Gdx.app.debug("Test", e.toString());
 		}
 	}
 
@@ -149,5 +152,13 @@ public class GameWorld {
 
 	public void setCharacters(List<UserCharacter> characters) {
 		this.characters = characters;
+	}
+
+	public void sendUDPTest(String text) {
+		TestUDP test = new TestUDP();
+		for (int i = 0; i < 100; i++) {
+			test.text = i+"";
+			client.sendUDP(test);
+		}
 	}
 }

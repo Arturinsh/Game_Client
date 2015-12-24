@@ -47,4 +47,8 @@ public class Packets {
 
 	public static class CharacterCreateFailed {
 	}
+
+	public static class TestUDP {
+		public String text;
+	}
 }

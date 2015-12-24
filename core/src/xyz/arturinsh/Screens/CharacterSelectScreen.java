@@ -170,6 +170,7 @@ public class CharacterSelectScreen extends GameScreen {
 			scrollTable.add(charButton).fillX();
 			scrollTable.row();
 		}
+		world.sendUDPTest("Hi");
 	}
 
 	private void setSelectedChar(UserCharacter userChar) {
@@ -212,6 +213,8 @@ public class CharacterSelectScreen extends GameScreen {
 
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();
+		
+		
 	}
 
 	@Override
