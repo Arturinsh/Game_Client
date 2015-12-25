@@ -43,7 +43,7 @@ public class CharacterSelectScreen extends GameScreen {
 	private Skin skin;
 	private Table mainTable, centerTable, scrollTable, infoTable, leftTable;
 	private ScrollPane charScroll;
-	private TextButton enterCharacter, test, createCharacter;
+	private TextButton enterCharacter, createCharacter;
 	private Label charInfo;
 	private String[] testStrings;
 
@@ -83,7 +83,6 @@ public class CharacterSelectScreen extends GameScreen {
 			}
 		});
 
-		test = new TextButton("test", skin);
 		charInfo = new Label("Info about char", skin);
 
 		mainTable = new Table();
@@ -99,7 +98,7 @@ public class CharacterSelectScreen extends GameScreen {
 		infoTable.add(charInfo);
 		infoTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(pm1))));
 
-		centerTable.add(enterCharacter);
+		centerTable.add(enterCharacter).height(40).width(100);
 
 		charScroll = new ScrollPane(scrollTable);
 
@@ -107,7 +106,7 @@ public class CharacterSelectScreen extends GameScreen {
 
 		leftTable.add(charScroll).padTop(20).padRight(20).top();
 		leftTable.row();
-		leftTable.add(createCharacter).bottom().expand().padBottom(20);
+		leftTable.add(createCharacter).bottom().expand().padBottom(20).height(40);
 
 		mainTable.setWidth(stage.getWidth());
 		mainTable.setFillParent(true);
@@ -167,7 +166,7 @@ public class CharacterSelectScreen extends GameScreen {
 					setSelectedChar(userCharacter);
 				}
 			});
-			scrollTable.add(charButton).fillX();
+			scrollTable.add(charButton).fillX().height(30).width(80);
 			scrollTable.row();
 		}
 		world.sendUDPTest("Hi");

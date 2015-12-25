@@ -99,9 +99,8 @@ public class LoginScreen extends GameScreen {
 	@Override
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
-		table.setPosition(0, Gdx.graphics.getHeight());
-
-		table.padTop(Gdx.graphics.getHeight() / 3);
+		table.setPosition(0, stage.getHeight());
+		table.padTop(stage.getHeight() / 3);
 		table.setWidth(stage.getWidth());
 	}
 

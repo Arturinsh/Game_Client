@@ -4,7 +4,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;
@@ -20,7 +20,7 @@ public class GameScreen implements Screen {
 	public GameScreen(GameWorld _world) {
 		world = _world;
 		game = world.getGame();
-		stage = new Stage(new ScreenViewport());
+		stage = new Stage(new StretchViewport(1024, 576));
 		
 		worldMessage = new Label("", AssetsLoader.getSkin());
 		worldDialog = new Dialog("", AssetsLoader.getSkin());

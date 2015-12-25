@@ -68,8 +68,6 @@ public class CharacterCreationScreen extends GameScreen {
 		submit = new TextButton("Submit", skin);
 		backButton = new TextButton("Back",skin);
 		
-		class1.setHeight(100);
-
 		class1.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -132,11 +130,11 @@ public class CharacterCreationScreen extends GameScreen {
 		nameTable.row();
 		nameTable.add(characterNameField);
 		nameTable.row();
-		nameTable.add(submit);
+		nameTable.add(submit).height(30).width(140);
 
 		rightTable.add(rightLabel);
 		rightTable.row();
-		rightTable.add(backButton).bottom().expand().padBottom(20);
+		rightTable.add(backButton).bottom().expand().padBottom(20).height(50).width(100);
 
 		mainTable.add(classTable).expand().top().padTop(30).padLeft(30).align(Align.left | Align.top);
 		mainTable.add(nameTable).expand().bottom().padBottom(30).padLeft(-30).align(Align.center | Align.bottom);
