@@ -1,22 +1,12 @@
 package xyz.arturinsh.Screens;
 
-import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
-import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
-import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationDesc;
-import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationListener;
-import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -26,9 +16,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.UBJsonReader;
 
 import xyz.arturinsh.GameObjects.CharacterClass;
+import xyz.arturinsh.GameObjects.CharacterInstance;
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;
 
@@ -41,11 +31,8 @@ public class CharacterCreationScreen extends GameScreen {
 
 	private PerspectiveCamera camera;
 	private ModelBatch modelBatch;
-	private Model model;
-	private ModelInstance modelInstance;
+	private CharacterInstance characterInstance;
 	private Environment environment;
-	private AnimationController controller;
-	private CameraInputController camController;
 	private CharacterClass charClass;
 
 	public CharacterCreationScreen(GameWorld _world) {
@@ -71,8 +58,7 @@ public class CharacterCreationScreen extends GameScreen {
 		class1.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				model.materials.first().set(new Material(ColorAttribute.createDiffuse(Color.GREEN)));
-				modelInstance = new ModelInstance(model);
+				characterInstance.changeClass(CharacterClass.GREEN);
 				charClass = CharacterClass.GREEN;
 			}
 		});
@@ -80,8 +66,7 @@ public class CharacterCreationScreen extends GameScreen {
 		class2.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				model.materials.first().set(new Material(ColorAttribute.createDiffuse(Color.RED)));
-				modelInstance = new ModelInstance(model);
+				characterInstance.changeClass(CharacterClass.RED);
 				charClass = CharacterClass.RED;
 			}
 		});
@@ -89,8 +74,7 @@ public class CharacterCreationScreen extends GameScreen {
 		class3.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				model.materials.first().set(new Material(ColorAttribute.createDiffuse(Color.BLUE)));
-				modelInstance = new ModelInstance(model);
+				characterInstance.changeClass(CharacterClass.BLUE);
 				charClass = CharacterClass.BLUE;
 			}
 		});
@@ -156,53 +140,11 @@ public class CharacterCreationScreen extends GameScreen {
 
 		modelBatch = new ModelBatch();
 
-		UBJsonReader jsonReader = new UBJsonReader();
-		G3dModelLoader modelLoader = new G3dModelLoader(jsonReader);
-		model = modelLoader.loadModel(Gdx.files.getFileHandle("bot_monkey.g3db", FileType.Internal));
+		characterInstance = new CharacterInstance(CharacterClass.RED);
 
-		modelInstance = new ModelInstance(model);
-
-		modelInstance.transform.translate(0, 0, 0);
-		// Finally we want some light, or we wont see our color. The environment
-		// gets passed in during
-		// the rendering process. Create one, then create an Ambient (
-		// non-positioned, non-directional ) light.
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.8f, 0.8f, 0.8f, 1.0f));
 		environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
-		// environment.add(new PointLight().set(0.5f, 0.1f, 0.1f, 0f, 2f, 5f,
-		// 5f));
-		// environment.add(new PointLight().set(0.5f, 0.1f, 0.1f, 0f, 2f, -5f,
-		// 5f));
-		// environment.add(new PointLight().set(0.5f, 0.1f, 0.1f, 5f, 2f, 0f,
-		// 5f));
-		// environment.add(new PointLight().set(0.5f, 0.1f, 0.1f, -5f, 2f, 0f,
-		// 5f));
-		camController = new CameraInputController(camera);
-		// Gdx.input.setInputProcessor(camController);
-		// You use an AnimationController to um, control animations. Each
-		// control is tied to the model instance
-		controller = new AnimationController(modelInstance);
-		// Pick the current animation by name
-		controller.setAnimation("Armature|ArmatureAction", -1, new AnimationListener() {
-			@Override
-			public void onEnd(AnimationDesc animation) {
-				// this will be called when the current animation is done.
-				// queue up another animation called "balloon".
-				// Passing a negative to loop count loops forever. 1f for speed
-				// is normal speed.
-				// controller.queue("Armature|Test", -1, 1f, null, 0f);
-			}
-
-			@Override
-			public void onLoop(AnimationDesc animation) {
-				// TODO Auto-generated method stub
-				// controller.current.speed += 0.1f;
-			}
-
-		});
-		model.materials.first().set(new Material(ColorAttribute.createDiffuse(Color.GREEN)));
-		modelInstance = new ModelInstance(model);
 	}
 
 	@Override
@@ -212,9 +154,8 @@ public class CharacterCreationScreen extends GameScreen {
 
 		camera.update();
 		camera.rotateAround(Vector3.Zero, new Vector3(0, 1, 0), 1f);
-		controller.update(Gdx.graphics.getDeltaTime());
 		modelBatch.begin(camera);
-		modelBatch.render(modelInstance, environment);
+		modelBatch.render(characterInstance.getModelInstance(), environment);
 		modelBatch.end();
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();
@@ -223,9 +164,6 @@ public class CharacterCreationScreen extends GameScreen {
 	@Override
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
-		// table.setPosition(0, Gdx.graphics.getHeight());
-
-		// table.padTop(Gdx.graphics.getHeight() / 3);
 		mainTable.setWidth(stage.getWidth());
 	}
 }

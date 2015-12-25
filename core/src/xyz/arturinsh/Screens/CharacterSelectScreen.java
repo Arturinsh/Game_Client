@@ -34,6 +34,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.UBJsonReader;
 
+import xyz.arturinsh.GameObjects.CharacterClass;
+import xyz.arturinsh.GameObjects.CharacterInstance;
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;
 import xyz.arturinsh.NetworkListener.Packets.UserCharacter;
@@ -49,10 +51,8 @@ public class CharacterSelectScreen extends GameScreen {
 
 	private PerspectiveCamera camera;
 	private ModelBatch modelBatch;
-	private Model model;
-	private ModelInstance modelInstance;
+	private CharacterInstance characterInstance;
 	private Environment environment;
-	private AnimationController controller;
 	private UserCharacter selectedChar;
 
 	public CharacterSelectScreen(GameWorld _world) {
@@ -130,29 +130,11 @@ public class CharacterSelectScreen extends GameScreen {
 
 		modelBatch = new ModelBatch();
 
-		UBJsonReader jsonReader = new UBJsonReader();
-		G3dModelLoader modelLoader = new G3dModelLoader(jsonReader);
-		model = modelLoader.loadModel(Gdx.files.getFileHandle("bot_monkey.g3db", FileType.Internal));
+		characterInstance = new CharacterInstance(CharacterClass.GREEN);
 
-		modelInstance = new ModelInstance(model);
-
-		modelInstance.transform.translate(0, 0, 0);
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.8f, 0.8f, 0.8f, 1.0f));
 		environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
-		controller = new AnimationController(modelInstance);
-		controller.setAnimation("Armature|ArmatureAction", -1, new AnimationListener() {
-			@Override
-			public void onEnd(AnimationDesc animation) {
-			}
-
-			@Override
-			public void onLoop(AnimationDesc animation) {
-			}
-
-		});
-		model.materials.first().set(new Material(ColorAttribute.createDiffuse(Color.GREEN)));
-		modelInstance = new ModelInstance(model);
 	}
 
 	@Override
@@ -177,16 +159,13 @@ public class CharacterSelectScreen extends GameScreen {
 		charInfo.setText(selectedChar.charName);
 		switch (selectedChar.charClass) {
 		case RED:
-			model.materials.first().set(new Material(ColorAttribute.createDiffuse(Color.RED)));
-			modelInstance = new ModelInstance(model);
+			characterInstance.changeClass(CharacterClass.RED);
 			break;
 		case GREEN:
-			model.materials.first().set(new Material(ColorAttribute.createDiffuse(Color.GREEN)));
-			modelInstance = new ModelInstance(model);
+			characterInstance.changeClass(CharacterClass.GREEN);
 			break;
 		case BLUE:
-			model.materials.first().set(new Material(ColorAttribute.createDiffuse(Color.BLUE)));
-			modelInstance = new ModelInstance(model);
+			characterInstance.changeClass(CharacterClass.BLUE);
 			break;
 		default:
 			selectedChar = null;
@@ -203,10 +182,9 @@ public class CharacterSelectScreen extends GameScreen {
 
 			camera.update();
 			camera.rotateAround(Vector3.Zero, new Vector3(0, 1, 0), 1f);
-			controller.update(Gdx.graphics.getDeltaTime());
 
 			modelBatch.begin(camera);
-			modelBatch.render(modelInstance, environment);
+			modelBatch.render(characterInstance.getModelInstance(), environment);
 			modelBatch.end();
 		}
 

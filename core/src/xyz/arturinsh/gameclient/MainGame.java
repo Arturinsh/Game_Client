@@ -13,9 +13,6 @@ public class MainGame extends Game {
 	@Override
 	public void create() {
 		AssetsLoader.initUI();
-		//TODO Add loading screen
-		
 		GameWorld world = new GameWorld(this);
-		//this.setScreen(new CharacterSelectScreen(world));
 	}
 }
