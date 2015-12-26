@@ -75,6 +75,18 @@ public class CharacterSelectScreen extends GameScreen {
 		skin = AssetsLoader.getSkin();
 
 		enterCharacter = new TextButton("Enter", skin);
+		enterCharacter.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				// TODO add dialog to show if not seleceted or disable button
+				if (selectedChar != null) {
+					WorldScreen worldScreen = new WorldScreen(world);
+					worldScreen.setUsersCharacter(characterInstance);
+					game.setScreen(worldScreen);
+				}
+			}
+		});
+
 		createCharacter = new TextButton("Create Character", skin);
 		createCharacter.addListener(new ClickListener() {
 			@Override
@@ -190,8 +202,7 @@ public class CharacterSelectScreen extends GameScreen {
 
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();
-		
-		
+
 	}
 
 	@Override

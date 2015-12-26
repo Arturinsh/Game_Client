@@ -1,21 +1,32 @@
 package xyz.arturinsh.Helpers;
 
-import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.VertexAttributes.Usage;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.UBJsonReader;
 
 public class AssetsLoader {
 	private static Skin skin;
-	private static Model monkeyModel;
+	private static Model monkeyModel, ground;
+	private static AssetManager assets;
 
 	public static void initUI() {
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
-		UBJsonReader jsonReader = new UBJsonReader();
-		G3dModelLoader modelLoader = new G3dModelLoader(jsonReader);
-		monkeyModel = modelLoader.loadModel(Gdx.files.getFileHandle("bot_monkey.g3db", FileType.Internal));
+		 ModelBuilder modelBuilder = new ModelBuilder();
+		 ground = modelBuilder.createBox(60f, 1f, 60f, 
+	            new Material(ColorAttribute.createDiffuse(Color.DARK_GRAY)),
+	            Usage.Position | Usage.Normal);
+	     
+		assets = new AssetManager();
+		assets.load("bot_monkey.g3db", Model.class);
+		assets.finishLoading();
+		monkeyModel = assets.get("bot_monkey.g3db", Model.class);
 	}
 
 	public static Skin getSkin() {
@@ -24,5 +35,9 @@ public class AssetsLoader {
 
 	public static Model getMonkeyModel() {
 		return monkeyModel;
+	}
+
+	public static Model getGround() {
+		return ground;
 	}
 }

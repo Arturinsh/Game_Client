@@ -9,6 +9,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 
 import xyz.arturinsh.GameObjects.CharacterClass;
+import xyz.arturinsh.GameObjects.CharacterInstance;
 import xyz.arturinsh.NetworkListener.NetworkListener;
 import xyz.arturinsh.NetworkListener.Packets.AddPlayer;
 import xyz.arturinsh.NetworkListener.Packets.CharacterCreateFailed;
@@ -32,7 +33,9 @@ public class GameWorld {
 	private MainGame game;
 	private final String ipAddress = "192.168.1.3";
 	private List<UserCharacter> characters;
-
+	private CharacterInstance usersCharacterInstance;
+	
+	
 	public GameWorld(MainGame _game) {
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 		game = _game;
@@ -160,5 +163,13 @@ public class GameWorld {
 			test.text = i+"";
 			client.sendUDP(test);
 		}
+	}
+
+	public CharacterInstance getUsersCharacterInstance() {
+		return usersCharacterInstance;
+	}
+
+	public void setUsersCharacterInstance(CharacterInstance usersCharacterInstance) {
+		this.usersCharacterInstance = usersCharacterInstance;
 	}
 }
