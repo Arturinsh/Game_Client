@@ -31,7 +31,7 @@ import xyz.arturinsh.gameclient.MainGame;
 public class GameWorld {
 	private Client client = new Client();
 	private MainGame game;
-	private final String ipAddress = "192.168.1.3";
+	private final String ipAddress = "212.71.246.224";
 	private List<UserCharacter> characters;
 	private CharacterInstance usersCharacterInstance;
 	

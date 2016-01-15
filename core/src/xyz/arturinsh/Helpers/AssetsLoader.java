@@ -3,10 +3,10 @@ package xyz.arturinsh.Helpers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -15,8 +15,13 @@ public class AssetsLoader {
 	private static Skin skin;
 	private static Model monkeyModel, ground;
 	private static AssetManager assets;
+	private static Texture up, down, right, left;
 
 	public static void initUI() {
+		up = new Texture(Gdx.files.internal("triangle_up.png"));
+		down = new Texture(Gdx.files.internal("triangle_down.png"));
+		right = new Texture(Gdx.files.internal("triangle_right.png"));
+		left = new Texture(Gdx.files.internal("triangle_left.png"));
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
 		 ModelBuilder modelBuilder = new ModelBuilder();
 		 ground = modelBuilder.createBox(60f, 1f, 60f, 
@@ -39,5 +44,21 @@ public class AssetsLoader {
 
 	public static Model getGround() {
 		return ground;
+	}
+
+	public static Texture getUp() {
+		return up;
+	}
+
+	public static Texture getDown() {
+		return down;
+	}
+
+	public static Texture getRight() {
+		return right;
+	}
+
+	public static Texture getLeft() {
+		return left;
 	}
 }

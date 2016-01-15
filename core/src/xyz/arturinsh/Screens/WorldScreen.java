@@ -1,13 +1,23 @@
 package xyz.arturinsh.Screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import xyz.arturinsh.GameObjects.CharacterClass;
 import xyz.arturinsh.GameObjects.CharacterInstance;
@@ -25,9 +35,81 @@ public class WorldScreen extends GameScreen {
 	private CharacterInstance usersCharacterInstance, testInstance;
 	private ModelInstance groundInstance;
 
+	private Button upButton, downButton, leftButton, rightButton;
+	private Skin skin;
+	private Table table;
+
 	public WorldScreen(GameWorld _world) {
 		super(_world);
 		init3D();
+		initUI();
+	}
+
+	private void initUI() {
+		table = new Table();
+		skin = AssetsLoader.getSkin();
+		TextureRegion upImage = new TextureRegion(AssetsLoader.getUp());
+		TextureRegion downImage = new TextureRegion(AssetsLoader.getDown());
+		TextureRegion leftImage = new TextureRegion(AssetsLoader.getLeft());
+		TextureRegion rightImage = new TextureRegion(AssetsLoader.getRight());
+		upButton = new Button(new Image(upImage), skin);
+		upButton.addListener(new InputListener() {
+
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				usersCharacterInstance.moveChar(new Vector3(0, 0, 20));
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				usersCharacterInstance.stopMove();
+			}
+
+		});
+		downButton = new Button(new Image(downImage), skin);
+		downButton.addListener(new InputListener() {
+
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				usersCharacterInstance.moveChar(new Vector3(0, 0, -20));
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				usersCharacterInstance.stopMove();
+			}
+
+		});
+		leftButton = new Button(new Image(leftImage), skin);
+		leftButton.addListener(new InputListener() {
+
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				usersCharacterInstance.rotate(360);
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				usersCharacterInstance.stopRotate();
+			}
+
+		});
+		rightButton = new Button(new Image(rightImage), skin);
+		rightButton.addListener(new InputListener() {
+
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				usersCharacterInstance.rotate(-360);
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				usersCharacterInstance.stopRotate();
+			}
+
+		});
+		table.add(upButton);
+		table.add(downButton);
+		table.add(leftButton);
+		table.add(rightButton);
+		table.padBottom(80);
+		stage.addActor(table);
 	}
 
 	private void init3D() {
@@ -61,6 +143,7 @@ public class WorldScreen extends GameScreen {
 		// Gdx.input.setInputProcessor(camController);
 		chaseCamera.desiredOffset.set(0, 3, -7);
 		chaseCamera.desiredLocation.set(0, 6.1f, -7);
+		chaseCamera.targetOffset.set(0, 4, -2);
 	}
 
 	@Override
@@ -79,11 +162,22 @@ public class WorldScreen extends GameScreen {
 		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
 		modelBatch.render(testInstance.getModelInstance(), environment);
 		modelBatch.end();
+		stage.act(Gdx.graphics.getDeltaTime());
+		stage.draw();
 	}
 
 	public void setUsersCharacter(CharacterInstance character) {
 		usersCharacterInstance = character;
 		world.setUsersCharacterInstance(usersCharacterInstance);
-		Gdx.input.setInputProcessor(new InputHandler(world));
+		InputMultiplexer multiplexer = new InputMultiplexer(new InputHandler(world), stage);
+		Gdx.input.setInputProcessor(multiplexer);
 	}
+
+	@Override
+	public void resize(int width, int height) {
+		stage.getViewport().update(width, height, true);
+
+		table.setWidth(stage.getWidth());
+	}
+
 }
