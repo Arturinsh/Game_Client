@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
 import xyz.arturinsh.Helpers.AssetsLoader;
+import xyz.arturinsh.Network.Packets.UserCharacter;
 
 public class CharacterInstance {
 
@@ -18,17 +19,18 @@ public class CharacterInstance {
 	private ModelInstance modelInstance;
 	private Model model;
 	private boolean move, rotate;
-	private String name;
 	private float rotateDegrees;
 	private Vector3 moveVector;
+	private UserCharacter character;
 
-	public CharacterInstance(CharacterClass charClass) {
+	public CharacterInstance(UserCharacter _character) {
 		model = AssetsLoader.getMonkeyModel();
-		changeModelMaterial(charClass);
+
+		character = _character;
+		changeModelMaterial(_character.charClass);
 		modelInstance = new ModelInstance(model);
 		move = false;
 		rotate = false;
-		name = "Unknown Name";
 	}
 
 	public void changeClass(CharacterClass charClass) {
@@ -95,7 +97,8 @@ public class CharacterInstance {
 		move = true;
 		Quaternion test = new Quaternion();
 		this.modelInstance.transform.getRotation(test);
-		//System.out.println("w=" + test.w + " x=" + test.x + " y=" + test.y + " z=" + test.z);
+		// System.out.println("w=" + test.w + " x=" + test.x + " y=" + test.y +
+		// " z=" + test.z);
 	}
 
 	public void rotate(float degrees) {
@@ -103,7 +106,8 @@ public class CharacterInstance {
 		rotate = true;
 		Quaternion test = new Quaternion();
 		this.modelInstance.transform.getRotation(test);
-		//System.out.println("w=" + test.w + " x=" + test.x + " y=" + test.y + " z=" + test.z + " l=");
+		// System.out.println("w=" + test.w + " x=" + test.x + " y=" + test.y +
+		// " z=" + test.z + " l=");
 
 	}
 
@@ -139,11 +143,18 @@ public class CharacterInstance {
 		animController.update(delta);
 	}
 
-	public String getName() {
-		return name;
+	public UserCharacter getCharacter() {
+		return character;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setCharacter(UserCharacter character) {
+		this.character = character;
 	}
+
+	public boolean matchesCharacter(UserCharacter _character) {
+//		System.out.println(_character.charName+"="+character.charName);
+//		System.out.println(_character.charClass+"="+character.charClass);
+		return _character.charName.matches(character.charName) && _character.charClass == character.charClass;
+	}
+
 }

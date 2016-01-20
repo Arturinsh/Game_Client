@@ -1,4 +1,4 @@
-package xyz.arturinsh.NetworkListener;
+package xyz.arturinsh.Network;
 
 import java.util.List;
 
@@ -29,9 +29,8 @@ public class Packets {
 	}
 
 	public static class AddPlayer {
-		public String username;
-		public float x,y,z;
-		public CharacterClass charClass;
+		public UserCharacter character;
+		public float x, y, z;
 	}
 
 	public static class RemovePlayer {
@@ -54,11 +53,16 @@ public class Packets {
 		public String text;
 	}
 
-	public static class Position {
+	public static class EnterWorld {
+		public UserCharacter character;
+	}
+
+	public static class PositionUpdate {
+		public UserCharacter character;
 		public float x, y, z;
 	}
 
-	public static class EnterWorld {
-
+	public static class PlayersSnapShot {
+		public List<PositionUpdate> snapshot;
 	}
 }

@@ -25,13 +25,14 @@ import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;
 import xyz.arturinsh.Helpers.ChaseCamera;
 import xyz.arturinsh.Helpers.InputHandler;
+import xyz.arturinsh.Network.Packets.UserCharacter;
 
 public class WorldScreen extends GameScreen {
 
 	private ChaseCamera chaseCamera;
 	private ModelBatch modelBatch;
 	private Environment environment;
-	private CharacterInstance usersCharacterInstance, testInstance;
+	private CharacterInstance usersCharacterInstance;
 	private ModelInstance groundInstance;
 
 	private Button upButton, downButton, leftButton, rightButton;
@@ -112,9 +113,9 @@ public class WorldScreen extends GameScreen {
 	}
 
 	private void init3D() {
-		usersCharacterInstance = new CharacterInstance(CharacterClass.RED);
-		testInstance = new CharacterInstance(CharacterClass.GREEN);
-		testInstance.setPosition(2, 0, 3);
+		UserCharacter defChar = new UserCharacter();
+		defChar.charClass = CharacterClass.RED;
+		usersCharacterInstance = new CharacterInstance(defChar);
 
 		groundInstance = new ModelInstance(AssetsLoader.getGround());
 		groundInstance.transform.translate(0, -0.5f, 0);

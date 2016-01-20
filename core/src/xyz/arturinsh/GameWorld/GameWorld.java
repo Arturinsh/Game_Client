@@ -3,6 +3,7 @@ package xyz.arturinsh.GameWorld;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
@@ -11,24 +12,26 @@ import com.esotericsoftware.kryonet.Client;
 
 import xyz.arturinsh.GameObjects.CharacterClass;
 import xyz.arturinsh.GameObjects.CharacterInstance;
-import xyz.arturinsh.NetworkListener.NetworkListener;
-import xyz.arturinsh.NetworkListener.Packets.AddPlayer;
-import xyz.arturinsh.NetworkListener.Packets.CharacterCreateFailed;
-import xyz.arturinsh.NetworkListener.Packets.CharacterCreateSuccess;
-import xyz.arturinsh.NetworkListener.Packets.EnterWorld;
-import xyz.arturinsh.NetworkListener.Packets.LogIn;
-import xyz.arturinsh.NetworkListener.Packets.LogInFailed;
-import xyz.arturinsh.NetworkListener.Packets.LogInSuccess;
-import xyz.arturinsh.NetworkListener.Packets.Register;
-import xyz.arturinsh.NetworkListener.Packets.RegisterFailed;
-import xyz.arturinsh.NetworkListener.Packets.RegisterSuccess;
-import xyz.arturinsh.NetworkListener.Packets.RemovePlayer;
-import xyz.arturinsh.NetworkListener.Packets.TestUDP;
-import xyz.arturinsh.NetworkListener.Packets.UserCharacter;
+import xyz.arturinsh.Network.NetworkListener;
+import xyz.arturinsh.Network.Packets.AddPlayer;
+import xyz.arturinsh.Network.Packets.CharacterCreateFailed;
+import xyz.arturinsh.Network.Packets.CharacterCreateSuccess;
+import xyz.arturinsh.Network.Packets.EnterWorld;
+import xyz.arturinsh.Network.Packets.LogIn;
+import xyz.arturinsh.Network.Packets.LogInFailed;
+import xyz.arturinsh.Network.Packets.LogInSuccess;
+import xyz.arturinsh.Network.Packets.PlayersSnapShot;
+import xyz.arturinsh.Network.Packets.PositionUpdate;
+import xyz.arturinsh.Network.Packets.Register;
+import xyz.arturinsh.Network.Packets.RegisterFailed;
+import xyz.arturinsh.Network.Packets.RegisterSuccess;
+import xyz.arturinsh.Network.Packets.RemovePlayer;
+import xyz.arturinsh.Network.Packets.TestUDP;
+import xyz.arturinsh.Network.Packets.UserCharacter;
+import xyz.arturinsh.Network.UDPSender;
 import xyz.arturinsh.Screens.CharacterSelectScreen;
 import xyz.arturinsh.Screens.GameScreen;
 import xyz.arturinsh.Screens.LoginScreen;
-import xyz.arturinsh.Screens.WorldScreen;
 import xyz.arturinsh.gameclient.MainGame;
 
 public class GameWorld {
@@ -38,6 +41,7 @@ public class GameWorld {
 	private List<UserCharacter> characters;
 	private CharacterInstance usersCharacterInstance;
 	private List<CharacterInstance> otherPlayers;
+	private Timer timer;
 
 	public GameWorld(MainGame _game) {
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
@@ -46,6 +50,7 @@ public class GameWorld {
 		startNetworkClient();
 		otherPlayers = new ArrayList<CharacterInstance>();
 		game.setScreen(new LoginScreen(this));
+		timer = new Timer();
 	}
 
 	public MainGame getGame() {
@@ -62,6 +67,7 @@ public class GameWorld {
 		login.userName = username;
 		login.password = psw;
 		client.sendTCP(login);
+
 	}
 
 	public void logiInSucess() {
@@ -113,8 +119,11 @@ public class GameWorld {
 		});
 	}
 
-	public void enterWorld() {
-		client.sendTCP(new EnterWorld());
+	public void enterWorld(UserCharacter character) {
+		EnterWorld enterWorld = new EnterWorld();
+		enterWorld.character = character;
+		client.sendTCP(enterWorld);
+		timer.schedule(new UDPSender(client), 0, 1000);
 	}
 
 	private void registerKryo() {
@@ -134,6 +143,8 @@ public class GameWorld {
 		kryo.register(CharacterCreateFailed.class);
 		kryo.register(TestUDP.class);
 		kryo.register(EnterWorld.class);
+		kryo.register(PositionUpdate.class);
+		kryo.register(PlayersSnapShot.class);
 	}
 
 	private void startNetworkClient() {
@@ -184,5 +195,30 @@ public class GameWorld {
 
 	public void setOtherPlayers(List<CharacterInstance> otherPlayers) {
 		this.otherPlayers = otherPlayers;
+	}
+
+	public void updatePlayers(PlayersSnapShot snapShot) {
+		for (PositionUpdate update : snapShot.snapshot) {
+			if (usersCharacterInstance.matchesCharacter(update.character)) {
+//				System.out.println("Update ME");
+			} else if (hasCharacter(update, otherPlayers)) {
+//				System.out.println("Update " + update.character.charName);
+			} else {
+				CharacterInstance playerInstance = new CharacterInstance(update.character);
+				playerInstance.setPosition(update.x, update.y, update.z);
+				otherPlayers.add(playerInstance);
+				System.out.println("Add Player " + update.character.charName);
+			}
+		}
+	}
+
+	private boolean hasCharacter(PositionUpdate update, List<CharacterInstance> list) {
+		for (CharacterInstance player : list) {
+			if (player.matchesCharacter(update.character)) {
+				player.setPosition(update.x, update.y, update.z);
+				return true;
+			}
+		}
+		return false;
 	}
 }

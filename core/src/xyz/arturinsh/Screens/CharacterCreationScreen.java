@@ -21,6 +21,7 @@ import xyz.arturinsh.GameObjects.CharacterClass;
 import xyz.arturinsh.GameObjects.CharacterInstance;
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;
+import xyz.arturinsh.Network.Packets.UserCharacter;
 
 public class CharacterCreationScreen extends GameScreen {
 	private Skin skin;
@@ -140,7 +141,10 @@ public class CharacterCreationScreen extends GameScreen {
 
 		modelBatch = new ModelBatch();
 
-		characterInstance = new CharacterInstance(CharacterClass.RED);
+		
+		UserCharacter defChar = new UserCharacter();
+		defChar.charClass = CharacterClass.RED;
+		characterInstance = new CharacterInstance(defChar);
 
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.8f, 0.8f, 0.8f, 1.0f));

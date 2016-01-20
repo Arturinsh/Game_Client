@@ -1,4 +1,4 @@
-package xyz.arturinsh.NetworkListener;
+package xyz.arturinsh.Network;
 
 import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Connection;
@@ -6,15 +6,17 @@ import com.esotericsoftware.kryonet.Listener;
 
 import xyz.arturinsh.GameObjects.CharacterInstance;
 import xyz.arturinsh.GameWorld.GameWorld;
-import xyz.arturinsh.NetworkListener.Packets.AddPlayer;
-import xyz.arturinsh.NetworkListener.Packets.CharacterCreateFailed;
-import xyz.arturinsh.NetworkListener.Packets.CharacterCreateSuccess;
-import xyz.arturinsh.NetworkListener.Packets.LogInFailed;
-import xyz.arturinsh.NetworkListener.Packets.LogInSuccess;
-import xyz.arturinsh.NetworkListener.Packets.RegisterFailed;
-import xyz.arturinsh.NetworkListener.Packets.RegisterSuccess;
-import xyz.arturinsh.NetworkListener.Packets.RemovePlayer;
-import xyz.arturinsh.NetworkListener.Packets.TestUDP;
+import xyz.arturinsh.Network.Packets.AddPlayer;
+import xyz.arturinsh.Network.Packets.CharacterCreateFailed;
+import xyz.arturinsh.Network.Packets.CharacterCreateSuccess;
+import xyz.arturinsh.Network.Packets.LogInFailed;
+import xyz.arturinsh.Network.Packets.LogInSuccess;
+import xyz.arturinsh.Network.Packets.PlayersSnapShot;
+import xyz.arturinsh.Network.Packets.PositionUpdate;
+import xyz.arturinsh.Network.Packets.RegisterFailed;
+import xyz.arturinsh.Network.Packets.RegisterSuccess;
+import xyz.arturinsh.Network.Packets.RemovePlayer;
+import xyz.arturinsh.Network.Packets.TestUDP;
 
 public class NetworkListener extends Listener {
 	private GameWorld world;
@@ -37,7 +39,6 @@ public class NetworkListener extends Listener {
 			LogInSuccess login = (LogInSuccess) object;
 			world.setCharacters(login.characters);
 			world.logiInSucess();
-			Gdx.app.debug("Test", "HI");
 		}
 
 		if (object instanceof LogInFailed) {
@@ -53,10 +54,10 @@ public class NetworkListener extends Listener {
 		}
 		if (object instanceof AddPlayer) {
 			AddPlayer player = (AddPlayer) object;
-			
-			CharacterInstance playerInstance = new CharacterInstance(player.charClass);
+
+			CharacterInstance playerInstance = new CharacterInstance(player.character);
 			playerInstance.setPosition(player.x, player.y, player.z);
-			
+
 			world.addPlayer(playerInstance);
 			System.out.println("AddPlayer");
 		}
@@ -75,7 +76,12 @@ public class NetworkListener extends Listener {
 
 		if (object instanceof TestUDP) {
 			String test = ((TestUDP) object).text;
-			//Gdx.app.debug("Test", test);
+			// Gdx.app.debug("Test", test);
+		}
+
+		if (object instanceof PlayersSnapShot) {
+			PlayersSnapShot snapShot = (PlayersSnapShot) object;
+			world.updatePlayers(snapShot);
 		}
 	}
 }
