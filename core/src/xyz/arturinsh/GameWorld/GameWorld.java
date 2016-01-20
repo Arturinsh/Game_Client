@@ -123,7 +123,7 @@ public class GameWorld {
 		EnterWorld enterWorld = new EnterWorld();
 		enterWorld.character = character;
 		client.sendTCP(enterWorld);
-		timer.schedule(new UDPSender(client), 0, 1000);
+		timer.schedule(new UDPSender(client, this), 0, 50);
 	}
 
 	private void registerKryo() {
@@ -206,8 +206,9 @@ public class GameWorld {
 			} else {
 				CharacterInstance playerInstance = new CharacterInstance(update.character);
 				playerInstance.setPosition(update.x, update.y, update.z);
+				playerInstance.setRotation(update.qx, update.qy, update.qz, update.qw);
 				otherPlayers.add(playerInstance);
-				System.out.println("Add Player " + update.character.charName);
+//				System.out.println("Add Player " + update.character.charName);
 			}
 		}
 	}
@@ -215,7 +216,7 @@ public class GameWorld {
 	private boolean hasCharacter(PositionUpdate update, List<CharacterInstance> list) {
 		for (CharacterInstance player : list) {
 			if (player.matchesCharacter(update.character)) {
-				player.setPosition(update.x, update.y, update.z);
+				player.updatePositionOrientation(update.x, update.y, update.z, update.qx, update.qy, update.qz, update.qw);
 				return true;
 			}
 		}

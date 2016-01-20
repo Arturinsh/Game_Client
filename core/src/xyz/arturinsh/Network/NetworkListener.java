@@ -1,6 +1,5 @@
 package xyz.arturinsh.Network;
 
-import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
@@ -12,7 +11,6 @@ import xyz.arturinsh.Network.Packets.CharacterCreateSuccess;
 import xyz.arturinsh.Network.Packets.LogInFailed;
 import xyz.arturinsh.Network.Packets.LogInSuccess;
 import xyz.arturinsh.Network.Packets.PlayersSnapShot;
-import xyz.arturinsh.Network.Packets.PositionUpdate;
 import xyz.arturinsh.Network.Packets.RegisterFailed;
 import xyz.arturinsh.Network.Packets.RegisterSuccess;
 import xyz.arturinsh.Network.Packets.RemovePlayer;

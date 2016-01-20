@@ -83,8 +83,8 @@ public class CharacterInstance {
 	}
 
 	public Quaternion getRotation() {
-		Quaternion rotation = new Quaternion(0, 0, 0, 0);
-		this.modelInstance.transform.getRotation(rotation, false);
+		Quaternion rotation = new Quaternion();
+		this.modelInstance.transform.getRotation(rotation);
 		return rotation;
 	}
 
@@ -104,8 +104,8 @@ public class CharacterInstance {
 	public void rotate(float degrees) {
 		rotateDegrees = degrees;
 		rotate = true;
-		Quaternion test = new Quaternion();
-		this.modelInstance.transform.getRotation(test);
+		// Quaternion test = new Quaternion();
+		// this.modelInstance.transform.getRotation(test);
 		// System.out.println("w=" + test.w + " x=" + test.x + " y=" + test.y +
 		// " z=" + test.z + " l=");
 
@@ -117,8 +117,9 @@ public class CharacterInstance {
 		return test;
 	}
 
-	public void setRotation(Quaternion rot) {
-		this.modelInstance.transform.set(rot);
+	public void setRotation(float x, float y, float z, float w) {
+		Quaternion orientation = new Quaternion(x, y, z, w);
+		this.modelInstance.transform.set(orientation);
 	}
 
 	public void stopMove() {
@@ -152,9 +153,12 @@ public class CharacterInstance {
 	}
 
 	public boolean matchesCharacter(UserCharacter _character) {
-//		System.out.println(_character.charName+"="+character.charName);
-//		System.out.println(_character.charClass+"="+character.charClass);
 		return _character.charName.matches(character.charName) && _character.charClass == character.charClass;
 	}
 
+	public void updatePositionOrientation(float x, float y, float z, float qx, float qy, float qz, float qw) {
+		Quaternion orientation = new Quaternion(qx, qy, qz, qw);
+		Vector3 position = new Vector3(x,y,z);
+		this.modelInstance.transform.set(position, orientation);
+	}
 }
