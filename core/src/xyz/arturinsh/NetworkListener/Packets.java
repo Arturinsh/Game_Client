@@ -30,6 +30,8 @@ public class Packets {
 
 	public static class AddPlayer {
 		public String username;
+		public float x,y,z;
+		public CharacterClass charClass;
 	}
 
 	public static class RemovePlayer {
@@ -50,5 +52,13 @@ public class Packets {
 
 	public static class TestUDP {
 		public String text;
+	}
+
+	public static class Position {
+		public float x, y, z;
+	}
+
+	public static class EnterWorld {
+
 	}
 }

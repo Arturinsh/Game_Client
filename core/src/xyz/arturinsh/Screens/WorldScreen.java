@@ -2,6 +2,7 @@ package xyz.arturinsh.Screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -17,7 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import xyz.arturinsh.GameObjects.CharacterClass;
 import xyz.arturinsh.GameObjects.CharacterInstance;
@@ -28,7 +28,6 @@ import xyz.arturinsh.Helpers.InputHandler;
 
 public class WorldScreen extends GameScreen {
 
-	private PerspectiveCamera camera;
 	private ChaseCamera chaseCamera;
 	private ModelBatch modelBatch;
 	private Environment environment;
@@ -123,11 +122,6 @@ public class WorldScreen extends GameScreen {
 		// Gdx.graphics.getHeight());
 		chaseCamera = new ChaseCamera(75, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-		// camera.position.set(0f, 6f, -7f);
-		// camera.lookAt(0f, 4f, 0f);
-		// camera.near = 0.1f;
-		// camera.far = 300.0f;
-
 		chaseCamera.position.set(0f, 6f, -7f);
 		chaseCamera.lookAt(0f, 4f, 0f);
 		chaseCamera.near = 0.1f;
@@ -146,6 +140,12 @@ public class WorldScreen extends GameScreen {
 		chaseCamera.targetOffset.set(0, 4, -2);
 	}
 
+	private void renderOtherPlayers(ModelBatch batch, Environment env) {
+		for (CharacterInstance player : world.getOtherPlayers()) {
+			batch.render(player.getModelInstance(), env);
+		}
+	}
+
 	@Override
 	public void render(float delta) {
 		Gdx.gl.glClearColor(1, 1, 1, 0);
@@ -154,13 +154,16 @@ public class WorldScreen extends GameScreen {
 		chaseCamera.transform = usersCharacterInstance.getTransform();
 
 		// chaseCamera.targetOffset.set(usersCharacterInstance.getPosition());
-
 		chaseCamera.update(delta, true);
+		chaseCamera.up.set(0, 1, 0);
+
 		usersCharacterInstance.update(delta);
+		//testInstance.setRotation(usersCharacterInstance.getRotation());
 		modelBatch.begin(chaseCamera);
 		modelBatch.render(groundInstance, environment);
 		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
-		modelBatch.render(testInstance.getModelInstance(), environment);
+		//modelBatch.render(testInstance.getModelInstance(), environment);
+		renderOtherPlayers(modelBatch, environment);
 		modelBatch.end();
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();

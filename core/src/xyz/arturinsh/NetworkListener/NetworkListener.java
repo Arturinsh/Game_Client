@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
+import xyz.arturinsh.GameObjects.CharacterInstance;
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.NetworkListener.Packets.AddPlayer;
 import xyz.arturinsh.NetworkListener.Packets.CharacterCreateFailed;
@@ -51,8 +52,13 @@ public class NetworkListener extends Listener {
 			world.registerFailed();
 		}
 		if (object instanceof AddPlayer) {
-			// AddPlayer player = (AddPlayer) object;
-			// world.showDialog(player.username + " joined");
+			AddPlayer player = (AddPlayer) object;
+			
+			CharacterInstance playerInstance = new CharacterInstance(player.charClass);
+			playerInstance.setPosition(player.x, player.y, player.z);
+			
+			world.addPlayer(playerInstance);
+			System.out.println("AddPlayer");
 		}
 		if (object instanceof RemovePlayer) {
 			// RemovePlayer player = (RemovePlayer) object;
@@ -68,7 +74,8 @@ public class NetworkListener extends Listener {
 		}
 
 		if (object instanceof TestUDP) {
-			Gdx.app.debug("Test", "HI");
+			String test = ((TestUDP) object).text;
+			//Gdx.app.debug("Test", test);
 		}
 	}
 }

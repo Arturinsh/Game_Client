@@ -32,6 +32,7 @@ public class AssetsLoader {
 		assets.load("bot_monkey.g3db", Model.class);
 		assets.finishLoading();
 		monkeyModel = assets.get("bot_monkey.g3db", Model.class);
+		
 	}
 
 	public static Skin getSkin() {

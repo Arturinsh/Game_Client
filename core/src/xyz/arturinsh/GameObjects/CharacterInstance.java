@@ -1,6 +1,5 @@
 package xyz.arturinsh.GameObjects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -19,7 +18,7 @@ public class CharacterInstance {
 	private ModelInstance modelInstance;
 	private Model model;
 	private boolean move, rotate;
-
+	private String name;
 	private float rotateDegrees;
 	private Vector3 moveVector;
 
@@ -29,7 +28,7 @@ public class CharacterInstance {
 		modelInstance = new ModelInstance(model);
 		move = false;
 		rotate = false;
-
+		name = "Unknown Name";
 	}
 
 	public void changeClass(CharacterClass charClass) {
@@ -71,7 +70,7 @@ public class CharacterInstance {
 		}
 	}
 
-	public void setPosition(int x, int y, int z) {
+	public void setPosition(float x, float y, float z) {
 		this.modelInstance.transform.setTranslation(new Vector3(x, y, z));
 	}
 
@@ -94,11 +93,28 @@ public class CharacterInstance {
 	public void moveChar(Vector3 moveV) {
 		moveVector = moveV;
 		move = true;
+		Quaternion test = new Quaternion();
+		this.modelInstance.transform.getRotation(test);
+		//System.out.println("w=" + test.w + " x=" + test.x + " y=" + test.y + " z=" + test.z);
 	}
 
 	public void rotate(float degrees) {
 		rotateDegrees = degrees;
 		rotate = true;
+		Quaternion test = new Quaternion();
+		this.modelInstance.transform.getRotation(test);
+		//System.out.println("w=" + test.w + " x=" + test.x + " y=" + test.y + " z=" + test.z + " l=");
+
+	}
+
+	public Quaternion rotation() {
+		Quaternion test = new Quaternion();
+		this.modelInstance.transform.getRotation(test);
+		return test;
+	}
+
+	public void setRotation(Quaternion rot) {
+		this.modelInstance.transform.set(rot);
 	}
 
 	public void stopMove() {
@@ -121,5 +137,13 @@ public class CharacterInstance {
 			animController.setAnimation(null);
 
 		animController.update(delta);
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

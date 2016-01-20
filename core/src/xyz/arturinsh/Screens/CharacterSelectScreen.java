@@ -82,6 +82,7 @@ public class CharacterSelectScreen extends GameScreen {
 				if (selectedChar != null) {
 					WorldScreen worldScreen = new WorldScreen(world);
 					worldScreen.setUsersCharacter(characterInstance);
+					world.enterWorld();
 					game.setScreen(worldScreen);
 				}
 			}
@@ -163,7 +164,6 @@ public class CharacterSelectScreen extends GameScreen {
 			scrollTable.add(charButton).fillX().height(30).width(80);
 			scrollTable.row();
 		}
-		world.sendUDPTest("Hi");
 	}
 
 	private void setSelectedChar(UserCharacter userChar) {

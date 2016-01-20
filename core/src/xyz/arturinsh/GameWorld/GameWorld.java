@@ -1,6 +1,7 @@
 package xyz.arturinsh.GameWorld;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.Application;
@@ -14,6 +15,7 @@ import xyz.arturinsh.NetworkListener.NetworkListener;
 import xyz.arturinsh.NetworkListener.Packets.AddPlayer;
 import xyz.arturinsh.NetworkListener.Packets.CharacterCreateFailed;
 import xyz.arturinsh.NetworkListener.Packets.CharacterCreateSuccess;
+import xyz.arturinsh.NetworkListener.Packets.EnterWorld;
 import xyz.arturinsh.NetworkListener.Packets.LogIn;
 import xyz.arturinsh.NetworkListener.Packets.LogInFailed;
 import xyz.arturinsh.NetworkListener.Packets.LogInSuccess;
@@ -26,21 +28,23 @@ import xyz.arturinsh.NetworkListener.Packets.UserCharacter;
 import xyz.arturinsh.Screens.CharacterSelectScreen;
 import xyz.arturinsh.Screens.GameScreen;
 import xyz.arturinsh.Screens.LoginScreen;
+import xyz.arturinsh.Screens.WorldScreen;
 import xyz.arturinsh.gameclient.MainGame;
 
 public class GameWorld {
 	private Client client = new Client();
 	private MainGame game;
-	private final String ipAddress = "212.71.246.224";
+	private final String ipAddress = "127.0.0.1";
 	private List<UserCharacter> characters;
 	private CharacterInstance usersCharacterInstance;
-	
-	
+	private List<CharacterInstance> otherPlayers;
+
 	public GameWorld(MainGame _game) {
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 		game = _game;
 		registerKryo();
 		startNetworkClient();
+		otherPlayers = new ArrayList<CharacterInstance>();
 		game.setScreen(new LoginScreen(this));
 	}
 
@@ -109,6 +113,10 @@ public class GameWorld {
 		});
 	}
 
+	public void enterWorld() {
+		client.sendTCP(new EnterWorld());
+	}
+
 	private void registerKryo() {
 		Kryo kryo = client.getKryo();
 		kryo.register(java.util.ArrayList.class);
@@ -125,6 +133,7 @@ public class GameWorld {
 		kryo.register(CharacterCreateSuccess.class);
 		kryo.register(CharacterCreateFailed.class);
 		kryo.register(TestUDP.class);
+		kryo.register(EnterWorld.class);
 	}
 
 	private void startNetworkClient() {
@@ -157,19 +166,23 @@ public class GameWorld {
 		this.characters = characters;
 	}
 
-	public void sendUDPTest(String text) {
-		TestUDP test = new TestUDP();
-		for (int i = 0; i < 100; i++) {
-			test.text = i+"";
-			client.sendUDP(test);
-		}
-	}
-
 	public CharacterInstance getUsersCharacterInstance() {
 		return usersCharacterInstance;
 	}
 
 	public void setUsersCharacterInstance(CharacterInstance usersCharacterInstance) {
 		this.usersCharacterInstance = usersCharacterInstance;
+	}
+
+	public void addPlayer(CharacterInstance playerInstance) {
+		otherPlayers.add(playerInstance);
+	}
+
+	public List<CharacterInstance> getOtherPlayers() {
+		return otherPlayers;
+	}
+
+	public void setOtherPlayers(List<CharacterInstance> otherPlayers) {
+		this.otherPlayers = otherPlayers;
 	}
 }
