@@ -182,7 +182,6 @@ public class GameWorld {
 	}
 
 	public void setUsersCharacterInstance(CharacterInstance usersCharacterInstance) {
-		System.out.println("set"+ usersCharacterInstance.getCharacter().charName+usersCharacterInstance.getRotation());
 		this.usersCharacterInstance = usersCharacterInstance;
 	}
 

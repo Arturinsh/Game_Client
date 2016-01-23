@@ -10,10 +10,12 @@ import xyz.arturinsh.GameWorld.GameWorld;
 public class InputHandler implements InputProcessor {
 	private GameWorld world;
 	private CharacterInstance userCharacter;
+	private PersonCamera camera;
 
-	public InputHandler(GameWorld _world) {
+	public InputHandler(GameWorld _world, PersonCamera _camera) {
 		world = _world;
 		userCharacter = world.getUsersCharacterInstance();
+		camera = _camera;
 	}
 
 	@Override
@@ -30,6 +32,12 @@ public class InputHandler implements InputProcessor {
 			break;
 		case Keys.D:
 			userCharacter.rotate(-360);
+			break;
+		case Keys.Q:
+			camera.rotateAroundPlayer(-180);
+			break;
+		case Keys.E:
+			camera.rotateAroundPlayer(180);
 			break;
 		}
 		return false;
@@ -50,6 +58,12 @@ public class InputHandler implements InputProcessor {
 		case Keys.D:
 			userCharacter.stopRotate();
 			break;
+		case Keys.Q:
+			camera.stopRotate();
+			break;
+		case Keys.E:
+			camera.stopRotate();
+			break;
 		}
 		return false;
 	}
@@ -62,7 +76,7 @@ public class InputHandler implements InputProcessor {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
+		System.out.println(screenX+" "+ screenY+" "+ pointer+" "+button);
 		return false;
 	}
 
@@ -74,7 +88,7 @@ public class InputHandler implements InputProcessor {
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// TODO Auto-generated method stub
+		System.out.println("drag");
 		return false;
 	}
 

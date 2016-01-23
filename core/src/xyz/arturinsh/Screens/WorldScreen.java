@@ -3,13 +3,13 @@ package xyz.arturinsh.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -18,13 +18,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
-import xyz.arturinsh.GameObjects.CharacterClass;
 import xyz.arturinsh.GameObjects.CharacterInstance;
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;
 import xyz.arturinsh.Helpers.InputHandler;
 import xyz.arturinsh.Helpers.PersonCamera;
-import xyz.arturinsh.Network.Packets.UserCharacter;
 
 public class WorldScreen extends GameScreen {
 
@@ -40,13 +38,12 @@ public class WorldScreen extends GameScreen {
 
 	public WorldScreen(GameWorld _world) {
 		super(_world);
-		usersCharacterInstance = world.getUsersCharacterInstance();
-		InputMultiplexer multiplexer = new InputMultiplexer(new InputHandler(world), stage);
-		Gdx.input.setInputProcessor(multiplexer);
 		init3D();
 		initUI();
+		InputMultiplexer multiplexer = new InputMultiplexer(new InputHandler(world, camera), stage);
+		Gdx.input.setInputProcessor(multiplexer);
 	}
-
+	
 	private void initUI() {
 		table = new Table();
 		skin = AssetsLoader.getSkin();
@@ -115,11 +112,11 @@ public class WorldScreen extends GameScreen {
 	}
 
 	private void init3D() {
+		usersCharacterInstance = world.getUsersCharacterInstance();
 		groundInstance = new ModelInstance(AssetsLoader.getGround());
 		groundInstance.transform.translate(0, -0.5f, 0);
 
-
-		camera = new PersonCamera(75,Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), usersCharacterInstance);
+		camera = new PersonCamera(75, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), usersCharacterInstance);
 		camera.far = 100;
 		modelBatch = new ModelBatch();
 
@@ -139,11 +136,9 @@ public class WorldScreen extends GameScreen {
 		Gdx.gl.glClearColor(1, 1, 1, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-		
-		
 		usersCharacterInstance.update(delta);
-		camera.update();
-		
+		camera.update(delta);
+
 		modelBatch.begin(camera);
 		modelBatch.render(groundInstance, environment);
 		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
@@ -156,7 +151,6 @@ public class WorldScreen extends GameScreen {
 	@Override
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
-
 		table.setWidth(stage.getWidth());
 	}
 
