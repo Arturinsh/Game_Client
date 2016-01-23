@@ -2,7 +2,6 @@ package xyz.arturinsh.Screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -38,6 +37,8 @@ public class WorldScreen extends GameScreen {
 	private Button upButton, downButton, leftButton, rightButton;
 	private Skin skin;
 	private Table table;
+
+	private PerspectiveCamera testCam;
 
 	public WorldScreen(GameWorld _world) {
 		super(_world);
@@ -128,6 +129,13 @@ public class WorldScreen extends GameScreen {
 		chaseCamera.near = 0.1f;
 		chaseCamera.far = 300.0f;
 
+		testCam = new PerspectiveCamera(75, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+		testCam.position.set(0f, 6f, -7f);
+		testCam.lookAt(0f, 4f, 0f);
+		testCam.near = 0.1f;
+		testCam.far = 100f;
+
 		modelBatch = new ModelBatch();
 
 		environment = new Environment();
@@ -155,15 +163,24 @@ public class WorldScreen extends GameScreen {
 		chaseCamera.transform = usersCharacterInstance.getTransform();
 
 		// chaseCamera.targetOffset.set(usersCharacterInstance.getPosition());
-		chaseCamera.update(delta, true);
-		chaseCamera.up.set(0, 1, 0);
+		// chaseCamera.update(delta, true);
+		// chaseCamera.up.set(0, 1, 0);
+		float xOffset = (float) (10 * Math.sin(Math.toRadians(usersCharacterInstance.getRotation())));
+		float zOffset = (float) (10 * Math.cos(Math.toRadians(usersCharacterInstance.getRotation())));
+
+		// testCam.rotateAround(usersCharacterInstance.getPosition(),new
+		// Vector3(0,1,0), usersCharacterInstance.getRotation());
+		testCam.position.set(usersCharacterInstance.getPosition()).add(-xOffset, 6, -zOffset);
+		testCam.lookAt(usersCharacterInstance.getPosition());
+		testCam.up.set(Vector3.Y);
+		testCam.update();
 
 		usersCharacterInstance.update(delta);
-		//testInstance.setRotation(usersCharacterInstance.getRotation());
-		modelBatch.begin(chaseCamera);
+		// testInstance.setRotation(usersCharacterInstance.getRotation());
+		modelBatch.begin(testCam);
 		modelBatch.render(groundInstance, environment);
 		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
-		//modelBatch.render(testInstance.getModelInstance(), environment);
+		// modelBatch.render(testInstance.getModelInstance(), environment);
 		renderOtherPlayers(modelBatch, environment);
 		modelBatch.end();
 		stage.act(Gdx.graphics.getDeltaTime());
