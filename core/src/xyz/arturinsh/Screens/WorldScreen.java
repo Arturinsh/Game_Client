@@ -22,13 +22,13 @@ import xyz.arturinsh.GameObjects.CharacterClass;
 import xyz.arturinsh.GameObjects.CharacterInstance;
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;
-import xyz.arturinsh.Helpers.ChaseCamera;
 import xyz.arturinsh.Helpers.InputHandler;
+import xyz.arturinsh.Helpers.PersonCamera;
 import xyz.arturinsh.Network.Packets.UserCharacter;
 
 public class WorldScreen extends GameScreen {
 
-	private ChaseCamera chaseCamera;
+	private PersonCamera camera;
 	private ModelBatch modelBatch;
 	private Environment environment;
 	private CharacterInstance usersCharacterInstance;
@@ -38,10 +38,11 @@ public class WorldScreen extends GameScreen {
 	private Skin skin;
 	private Table table;
 
-	private PerspectiveCamera testCam;
-
 	public WorldScreen(GameWorld _world) {
 		super(_world);
+		usersCharacterInstance = world.getUsersCharacterInstance();
+		InputMultiplexer multiplexer = new InputMultiplexer(new InputHandler(world), stage);
+		Gdx.input.setInputProcessor(multiplexer);
 		init3D();
 		initUI();
 	}
@@ -114,39 +115,17 @@ public class WorldScreen extends GameScreen {
 	}
 
 	private void init3D() {
-		UserCharacter defChar = new UserCharacter();
-		defChar.charClass = CharacterClass.RED;
-		usersCharacterInstance = new CharacterInstance(defChar);
-
 		groundInstance = new ModelInstance(AssetsLoader.getGround());
 		groundInstance.transform.translate(0, -0.5f, 0);
-		// camera = new PerspectiveCamera(75, Gdx.graphics.getWidth(),
-		// Gdx.graphics.getHeight());
-		chaseCamera = new ChaseCamera(75, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-		chaseCamera.position.set(0f, 6f, -7f);
-		chaseCamera.lookAt(0f, 4f, 0f);
-		chaseCamera.near = 0.1f;
-		chaseCamera.far = 300.0f;
 
-		testCam = new PerspectiveCamera(75, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
-		testCam.position.set(0f, 6f, -7f);
-		testCam.lookAt(0f, 4f, 0f);
-		testCam.near = 0.1f;
-		testCam.far = 100f;
-
+		camera = new PersonCamera(75,Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), usersCharacterInstance);
+		camera.far = 100;
 		modelBatch = new ModelBatch();
 
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.8f, 0.8f, 0.8f, 1.0f));
 		environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
-
-		// camController = new CameraInputController(camera);
-		// Gdx.input.setInputProcessor(camController);
-		chaseCamera.desiredOffset.set(0, 3, -7);
-		chaseCamera.desiredLocation.set(0, 6.1f, -7);
-		chaseCamera.targetOffset.set(0, 4, -2);
 	}
 
 	private void renderOtherPlayers(ModelBatch batch, Environment env) {
@@ -160,38 +139,18 @@ public class WorldScreen extends GameScreen {
 		Gdx.gl.glClearColor(1, 1, 1, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-		chaseCamera.transform = usersCharacterInstance.getTransform();
-
-		// chaseCamera.targetOffset.set(usersCharacterInstance.getPosition());
-		// chaseCamera.update(delta, true);
-		// chaseCamera.up.set(0, 1, 0);
-		float xOffset = (float) (10 * Math.sin(Math.toRadians(usersCharacterInstance.getRotation())));
-		float zOffset = (float) (10 * Math.cos(Math.toRadians(usersCharacterInstance.getRotation())));
-
-		// testCam.rotateAround(usersCharacterInstance.getPosition(),new
-		// Vector3(0,1,0), usersCharacterInstance.getRotation());
-		testCam.position.set(usersCharacterInstance.getPosition()).add(-xOffset, 6, -zOffset);
-		testCam.lookAt(usersCharacterInstance.getPosition());
-		testCam.up.set(Vector3.Y);
-		testCam.update();
-
+		
+		
 		usersCharacterInstance.update(delta);
-		// testInstance.setRotation(usersCharacterInstance.getRotation());
-		modelBatch.begin(testCam);
+		camera.update();
+		
+		modelBatch.begin(camera);
 		modelBatch.render(groundInstance, environment);
 		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
-		// modelBatch.render(testInstance.getModelInstance(), environment);
 		renderOtherPlayers(modelBatch, environment);
 		modelBatch.end();
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();
-	}
-
-	public void setUsersCharacter(CharacterInstance character) {
-		usersCharacterInstance = character;
-		world.setUsersCharacterInstance(usersCharacterInstance);
-		InputMultiplexer multiplexer = new InputMultiplexer(new InputHandler(world), stage);
-		Gdx.input.setInputProcessor(multiplexer);
 	}
 
 	@Override

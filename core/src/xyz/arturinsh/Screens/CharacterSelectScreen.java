@@ -57,8 +57,8 @@ public class CharacterSelectScreen extends GameScreen {
 
 	public CharacterSelectScreen(GameWorld _world) {
 		super(_world);
-		initUI();
 		init3D();
+		initUI();
 		selectedChar = null;
 	}
 
@@ -80,10 +80,10 @@ public class CharacterSelectScreen extends GameScreen {
 			public void clicked(InputEvent event, float x, float y) {
 				// TODO add dialog to show if not seleceted or disable button
 				if (selectedChar != null) {
-					WorldScreen worldScreen = new WorldScreen(world);
-					worldScreen.setUsersCharacter(characterInstance);
-					world.enterWorld(selectedChar);
 					characterInstance.setCharacter(selectedChar);
+					world.setUsersCharacterInstance(characterInstance);
+					world.enterWorld(selectedChar);
+					WorldScreen worldScreen = new WorldScreen(world);
 					game.setScreen(worldScreen);
 				}
 			}
