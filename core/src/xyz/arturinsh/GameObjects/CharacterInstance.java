@@ -82,10 +82,10 @@ public class CharacterInstance {
 		return position;
 	}
 
-	public Quaternion getRotation() {
+	public float getRotation() {
 		Quaternion rotation = new Quaternion();
 		this.modelInstance.transform.getRotation(rotation);
-		return rotation;
+		return rotation.getYaw();
 	}
 
 	public Matrix4 getTransform() {
@@ -117,8 +117,9 @@ public class CharacterInstance {
 		return test;
 	}
 
-	public void setRotation(float x, float y, float z, float w) {
-		Quaternion orientation = new Quaternion(x, y, z, w);
+	public void setRotation(float r) {
+		Quaternion orientation = new Quaternion();
+		orientation.setEulerAngles(r, 0, 0);
 		this.modelInstance.transform.set(orientation);
 	}
 
@@ -156,8 +157,9 @@ public class CharacterInstance {
 		return _character.charName.matches(character.charName) && _character.charClass == character.charClass;
 	}
 
-	public void updatePositionOrientation(float x, float y, float z, float qx, float qy, float qz, float qw) {
-		Quaternion orientation = new Quaternion(qx, qy, qz, qw);
+	public void updatePositionOrientation(float x, float y, float z, float r) {
+		Quaternion orientation = new Quaternion();
+		orientation.setEulerAngles(r, 0, 0);
 		Vector3 position = new Vector3(x,y,z);
 		this.modelInstance.transform.set(position, orientation);
 	}

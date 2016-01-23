@@ -59,7 +59,7 @@ public class Packets {
 
 	public static class PositionUpdate {
 		public UserCharacter character;
-		public float x, y, z, qx, qy, qz, qw;
+		public float x, y, z, r;
 	}
 
 	public static class PlayersSnapShot {

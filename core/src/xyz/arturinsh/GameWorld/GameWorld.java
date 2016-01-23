@@ -206,7 +206,7 @@ public class GameWorld {
 			} else {
 				CharacterInstance playerInstance = new CharacterInstance(update.character);
 				playerInstance.setPosition(update.x, update.y, update.z);
-				playerInstance.setRotation(update.qx, update.qy, update.qz, update.qw);
+				playerInstance.setRotation(update.r);
 				otherPlayers.add(playerInstance);
 //				System.out.println("Add Player " + update.character.charName);
 			}
@@ -216,7 +216,7 @@ public class GameWorld {
 	private boolean hasCharacter(PositionUpdate update, List<CharacterInstance> list) {
 		for (CharacterInstance player : list) {
 			if (player.matchesCharacter(update.character)) {
-				player.updatePositionOrientation(update.x, update.y, update.z, update.qx, update.qy, update.qz, update.qw);
+				player.updatePositionOrientation(update.x, update.y, update.z, update.r);
 				return true;
 			}
 		}
