@@ -1,5 +1,7 @@
 package xyz.arturinsh.Screens;
 
+import java.util.Date;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
@@ -9,8 +11,6 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -36,6 +36,9 @@ public class WorldScreen extends GameScreen {
 	private Skin skin;
 	private Table table;
 
+	private Date firstDate;
+	private Date lastDate;
+
 	public WorldScreen(GameWorld _world) {
 		super(_world);
 		init3D();
@@ -43,7 +46,7 @@ public class WorldScreen extends GameScreen {
 		InputMultiplexer multiplexer = new InputMultiplexer(new InputHandler(world, camera), stage);
 		Gdx.input.setInputProcessor(multiplexer);
 	}
-	
+
 	private void initUI() {
 		table = new Table();
 		skin = AssetsLoader.getSkin();
@@ -55,7 +58,7 @@ public class WorldScreen extends GameScreen {
 		upButton.addListener(new InputListener() {
 
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-				usersCharacterInstance.moveChar(new Vector3(0, 0, 20));
+				usersCharacterInstance.moveChar(20);
 				return true;
 			}
 
@@ -68,7 +71,7 @@ public class WorldScreen extends GameScreen {
 		downButton.addListener(new InputListener() {
 
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-				usersCharacterInstance.moveChar(new Vector3(0, 0, -20));
+				usersCharacterInstance.moveChar(-20);
 				return true;
 			}
 
@@ -125,8 +128,10 @@ public class WorldScreen extends GameScreen {
 		environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 	}
 
-	private void renderOtherPlayers(ModelBatch batch, Environment env) {
+	// bigDelta = delta *1000
+	private void renderOtherPlayers(ModelBatch batch, Environment env, float bigDelta) {
 		for (CharacterInstance player : world.getOtherPlayers()) {
+			player.updateOther(bigDelta);
 			batch.render(player.getModelInstance(), env);
 		}
 	}
@@ -142,9 +147,9 @@ public class WorldScreen extends GameScreen {
 		modelBatch.begin(camera);
 		modelBatch.render(groundInstance, environment);
 		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
-		renderOtherPlayers(modelBatch, environment);
+		renderOtherPlayers(modelBatch, environment, delta * 100);
 		modelBatch.end();
-		stage.act(Gdx.graphics.getDeltaTime());
+		stage.act(delta);
 		stage.draw();
 	}
 

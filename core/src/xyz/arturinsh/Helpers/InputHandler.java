@@ -22,13 +22,13 @@ public class InputHandler implements InputProcessor {
 	public boolean keyDown(int keycode) {
 		switch (keycode) {
 		case Keys.W:
-			userCharacter.moveChar(new Vector3(0, 0, 20));
+			userCharacter.moveChar(20);
 			break;
 		case Keys.A:
 			userCharacter.rotate(360);
 			break;
 		case Keys.S:
-			userCharacter.moveChar(new Vector3(0, 0, -20));
+			userCharacter.moveChar(-20);
 			break;
 		case Keys.D:
 			userCharacter.rotate(-360);
@@ -76,7 +76,7 @@ public class InputHandler implements InputProcessor {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		System.out.println(screenX+" "+ screenY+" "+ pointer+" "+button);
+		//System.out.println(screenX+" "+ screenY+" "+ pointer+" "+button);
 		return false;
 	}
 
@@ -88,7 +88,7 @@ public class InputHandler implements InputProcessor {
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		System.out.println("drag");
+		//System.out.println("drag");
 		return false;
 	}
 

@@ -12,7 +12,8 @@ public class PersonCamera extends PerspectiveCamera {
 	private float angleAroundPlayer = 0;
 	private boolean rotatePlayer = false;
 	private float rotateAngle = 0;
-
+	private float cameraHeight = 10;
+	
 	public PersonCamera(CharacterInstance _player) {
 		super();
 		this.player = _player;
@@ -30,7 +31,7 @@ public class PersonCamera extends PerspectiveCamera {
 			float xOffset = (float) (10 * Math.sin(playerRotationRad));
 			float zOffset = (float) (10 * Math.cos(playerRotationRad));
 
-			position.set(player.getPosition()).add(-xOffset, 6, -zOffset);
+			position.set(player.getPosition()).add(-xOffset, cameraHeight, -zOffset);
 			lookAt(player.getPosition());
 			up.set(Vector3.Y);
 		}
@@ -40,8 +41,6 @@ public class PersonCamera extends PerspectiveCamera {
 				angleAroundPlayer -= 360;
 			if (angleAroundPlayer < 360)
 				angleAroundPlayer += 360;
-			
-			System.out.println(angleAroundPlayer);
 		}
 		super.update();
 	}

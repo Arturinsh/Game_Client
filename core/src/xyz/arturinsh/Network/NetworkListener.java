@@ -1,5 +1,7 @@
 package xyz.arturinsh.Network;
 
+import java.util.Date;
+
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
@@ -18,6 +20,7 @@ import xyz.arturinsh.Network.Packets.TestUDP;
 
 public class NetworkListener extends Listener {
 	private GameWorld world;
+	private Date lastSnapshotTime = null;
 
 	public NetworkListener(GameWorld _world) {
 		world = _world;
@@ -79,7 +82,10 @@ public class NetworkListener extends Listener {
 
 		if (object instanceof PlayersSnapShot) {
 			PlayersSnapShot snapShot = (PlayersSnapShot) object;
-			world.updatePlayers(snapShot);
+			if (lastSnapshotTime == null || lastSnapshotTime.getTime() < snapShot.time.getTime()) {
+				lastSnapshotTime = snapShot.time;
+				world.updatePlayers(snapShot);
+			}
 		}
 	}
 }

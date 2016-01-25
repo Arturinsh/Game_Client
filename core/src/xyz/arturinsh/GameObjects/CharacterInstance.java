@@ -6,10 +6,10 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
+import jdk.net.NetworkPermission;
 import xyz.arturinsh.Helpers.AssetsLoader;
 import xyz.arturinsh.Network.Packets.UserCharacter;
 
@@ -18,10 +18,17 @@ public class CharacterInstance {
 	private AnimationController animController;
 	private ModelInstance modelInstance;
 	private Model model;
-	private boolean move, rotate;
-	private float rotateDegrees;
-	private Vector3 moveVector;
+	private float moveSpeed = 0;
+	private float rotateSpeed = 0;
 	private UserCharacter character;
+	private long startTime = 0;
+	private long endTime = 0;
+	private Vector3 step = new Vector3(0, 0, 0);
+	private Vector3 oldPosition = new Vector3(0, 0, 0);
+	private Vector3 newPosition = new Vector3(0, 0, 0);
+	private float rotationStep = 0;
+	private float oldRotation = 0;
+	private float newRotation = 0;
 
 	public CharacterInstance(UserCharacter _character) {
 		model = AssetsLoader.getMonkeyModel();
@@ -29,8 +36,6 @@ public class CharacterInstance {
 		character = _character;
 		changeModelMaterial(_character.charClass);
 		modelInstance = new ModelInstance(model);
-		move = false;
-		rotate = false;
 	}
 
 	public void changeClass(CharacterClass charClass) {
@@ -88,33 +93,12 @@ public class CharacterInstance {
 		return rotation.getYaw();
 	}
 
-	public Matrix4 getTransform() {
-		return this.modelInstance.transform;
+	public void moveChar(float speed) {
+		moveSpeed = speed;
 	}
 
-	public void moveChar(Vector3 moveV) {
-		moveVector = moveV;
-		move = true;
-		Quaternion test = new Quaternion();
-		this.modelInstance.transform.getRotation(test);
-		// System.out.println("w=" + test.w + " x=" + test.x + " y=" + test.y +
-		// " z=" + test.z);
-	}
-
-	public void rotate(float degrees) {
-		rotateDegrees = degrees;
-		rotate = true;
-		// Quaternion test = new Quaternion();
-		// this.modelInstance.transform.getRotation(test);
-		// System.out.println("w=" + test.w + " x=" + test.x + " y=" + test.y +
-		// " z=" + test.z + " l=");
-
-	}
-
-	public Quaternion rotation() {
-		Quaternion test = new Quaternion();
-		this.modelInstance.transform.getRotation(test);
-		return test;
+	public void rotate(float speed) {
+		rotateSpeed = speed;
 	}
 
 	public void setRotation(float r) {
@@ -124,20 +108,19 @@ public class CharacterInstance {
 	}
 
 	public void stopMove() {
-		move = false;
+		moveSpeed = 0;
 	}
 
 	public void stopRotate() {
-		rotate = false;
+		rotateSpeed = 0;
 	}
 
 	public void update(float delta) {
-		if (rotate)
-			this.modelInstance.transform.rotate(Vector3.Y, rotateDegrees * delta);
-		if (move)
-			this.modelInstance.transform.translate(moveVector.x * delta, moveVector.y * delta, moveVector.z * delta);
 
-		if (move || rotate)
+		this.modelInstance.transform.rotate(Vector3.Y, rotateSpeed * delta);
+		this.modelInstance.transform.translate(0, 0, moveSpeed * delta);
+
+		if (moveSpeed != 0 || rotateSpeed != 0)
 			animController.setAnimation("Armature|ArmatureAction", -1, 6, null);
 		else
 			animController.setAnimation(null);
@@ -157,10 +140,60 @@ public class CharacterInstance {
 		return _character.charName.matches(character.charName) && _character.charClass == character.charClass;
 	}
 
-	public void updatePositionOrientation(float x, float y, float z, float r) {
+	private void updatePositionOrientation(Vector3 position, float r) {
 		Quaternion orientation = new Quaternion();
 		orientation.setEulerAngles(r, 0, 0);
-		Vector3 position = new Vector3(x,y,z);
+		System.out.println(position.x+" "+position.y+" "+position.z+" "+r);
 		this.modelInstance.transform.set(position, orientation);
+	}
+
+	public void updatePlayer(float x, float y, float z, float rotation, long time) {
+		startTime = endTime;
+		endTime = time;
+
+		oldPosition = newPosition;
+		newPosition = new Vector3(x, y, z);
+
+		oldRotation = newRotation;
+		newRotation = rotation;
+
+		if (endTime != 0) {
+			long timeDifference = (endTime - startTime) / 10;
+			float tx, ty, tz, trot;
+			tx = newPosition.x - oldPosition.x;
+			ty = newPosition.y - oldPosition.y;
+			tz = newPosition.z - oldPosition.z;
+			trot = newRotation - oldRotation;
+
+			tx = tx / timeDifference;
+			ty = ty / timeDifference;
+			tz = tz / timeDifference;
+
+			rotationStep = trot / timeDifference;
+			step = new Vector3(tx, ty, tz);
+		}
+	}
+
+	// bigDelta = delta *1000
+	public void updateOther(float bigDelta) {
+		Vector3 realStep = step;
+		float rotation = 0;
+		
+		if (oldRotation != newRotation) {
+			rotation = rotationStep * bigDelta;
+//			System.out.println("diffRRRRR");
+		}
+		
+		if(!oldPosition.equals(newPosition)){
+			realStep.scl(bigDelta);
+//System.out.println(position.x+" "+position.y+" "+position.z+" "+r);
+//			System.out.println("diffPPPPP");
+		}
+			
+		
+		Vector3 newPos = getPosition().add(realStep);
+		float newRot = getRotation() + rotation;
+
+		updatePositionOrientation(newPos, newRot);
 	}
 }

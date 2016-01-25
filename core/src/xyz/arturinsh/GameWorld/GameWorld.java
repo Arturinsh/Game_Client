@@ -2,6 +2,7 @@ package xyz.arturinsh.GameWorld;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 
@@ -129,6 +130,7 @@ public class GameWorld {
 	private void registerKryo() {
 		Kryo kryo = client.getKryo();
 		kryo.register(java.util.ArrayList.class);
+		kryo.register(java.util.Date.class);
 		kryo.register(LogIn.class);
 		kryo.register(Register.class);
 		kryo.register(LogInSuccess.class);
@@ -201,7 +203,7 @@ public class GameWorld {
 		for (PositionUpdate update : snapShot.snapshot) {
 			if (usersCharacterInstance.matchesCharacter(update.character)) {
 //				System.out.println("Update ME");
-			} else if (hasCharacter(update, otherPlayers)) {
+			} else if (hasCharacter(update, otherPlayers, snapShot.time.getTime())) {
 //				System.out.println("Update " + update.character.charName);
 			} else {
 				CharacterInstance playerInstance = new CharacterInstance(update.character);
@@ -213,10 +215,11 @@ public class GameWorld {
 		}
 	}
 
-	private boolean hasCharacter(PositionUpdate update, List<CharacterInstance> list) {
+	private boolean hasCharacter(PositionUpdate update, List<CharacterInstance> list, long time) {
 		for (CharacterInstance player : list) {
 			if (player.matchesCharacter(update.character)) {
-				player.updatePositionOrientation(update.x, update.y, update.z, update.r);
+				player.updatePlayer(update.x, update.y, update.z, update.r, time);
+				//player.updatePositionOrientation(update.x, update.y, update.z, update.r);
 				return true;
 			}
 		}
