@@ -25,13 +25,13 @@ public class InputHandler implements InputProcessor {
 			userCharacter.moveChar(20);
 			break;
 		case Keys.A:
-			userCharacter.rotate(45);
+			userCharacter.rotate(360);
 			break;
 		case Keys.S:
 			userCharacter.moveChar(-20);
 			break;
 		case Keys.D:
-			userCharacter.rotate(-45);
+			userCharacter.rotate(-360);
 			break;
 		case Keys.Q:
 			camera.rotateAroundPlayer(-180);

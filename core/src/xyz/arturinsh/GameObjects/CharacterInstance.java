@@ -36,6 +36,7 @@ public class CharacterInstance {
 		character = _character;
 		changeModelMaterial(_character.charClass);
 		modelInstance = new ModelInstance(model);
+		animController = new AnimationController(modelInstance);
 	}
 
 	public void changeClass(CharacterClass charClass) {
@@ -120,7 +121,7 @@ public class CharacterInstance {
 		this.modelInstance.transform.rotate(Vector3.Y, rotateSpeed * delta);
 		this.modelInstance.transform.translate(0, 0, moveSpeed * delta);
 
-		if (moveSpeed != 0 || rotateSpeed != 0)
+		if (moveSpeed != 0)
 			animController.setAnimation("Armature|ArmatureAction", -1, 6, null);
 		else
 			animController.setAnimation(null);
@@ -143,8 +144,6 @@ public class CharacterInstance {
 	private void updatePositionOrientation(Vector3 position, float r) {
 		Quaternion orientation = new Quaternion();
 		orientation.setEulerAngles(r, 0, 0);
-		// System.out.println(position.x + " " + position.y + " " + position.z +
-		// " " + r);
 		this.modelInstance.transform.set(position, orientation);
 	}
 
@@ -170,6 +169,14 @@ public class CharacterInstance {
 			ty = ty / timeDifference;
 			tz = tz / timeDifference;
 
+			if (trot > 180) {
+				trot -= 360;
+			}
+
+			if (trot < -180) {
+				trot += 360;
+			}
+
 			rotationStep = trot / timeDifference;
 			step = new Vector3(tx, ty, tz);
 		}
@@ -184,7 +191,6 @@ public class CharacterInstance {
 
 		if (oldRotation != newRotation) {
 			newRot += rotationStep * bigDelta;
-			System.out.println(newRot);
 		} else {
 			newRot = newRotation;
 		}
@@ -194,9 +200,12 @@ public class CharacterInstance {
 			realStep.y *= bigDelta;
 			realStep.z *= bigDelta;
 			newPos.add(realStep);
-		}else{
+			animController.setAnimation("Armature|ArmatureAction", -1, 6, null);
+		} else {
 			newPos.set(newPosition);
+			animController.setAnimation(null);
 		}
+		animController.update(bigDelta / 1000);
 		updatePositionOrientation(newPos, newRot);
 	}
 }
