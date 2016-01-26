@@ -13,7 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class AssetsLoader {
 	private static Skin skin;
-	private static Model monkeyModel, ground;
+	private static Model monkeyModel, ground, dog;
 	private static AssetManager assets;
 	private static Texture up, down, right, left;
 
@@ -30,8 +30,10 @@ public class AssetsLoader {
 	     
 		assets = new AssetManager();
 		assets.load("bot_monkey.g3db", Model.class);
+		assets.load("tDog.g3db",Model.class);
 		assets.finishLoading();
 		monkeyModel = assets.get("bot_monkey.g3db", Model.class);
+		dog = assets.get("tDog.g3db",Model.class);
 		
 	}
 
@@ -61,5 +63,9 @@ public class AssetsLoader {
 
 	public static Texture getLeft() {
 		return left;
+	}
+
+	public static Model getDog() {
+		return dog;
 	}
 }

@@ -1,7 +1,5 @@
 package xyz.arturinsh.Screens;
 
-import java.util.Date;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
@@ -19,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import xyz.arturinsh.GameObjects.CharacterInstance;
+import xyz.arturinsh.GameObjects.DogInstance;
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;
 import xyz.arturinsh.Helpers.InputHandler;
@@ -36,9 +35,8 @@ public class WorldScreen extends GameScreen {
 	private Skin skin;
 	private Table table;
 
-	private Date firstDate;
-	private Date lastDate;
-
+	private DogInstance dogInstance;
+	
 	public WorldScreen(GameWorld _world) {
 		super(_world);
 		init3D();
@@ -116,6 +114,9 @@ public class WorldScreen extends GameScreen {
 
 	private void init3D() {
 		usersCharacterInstance = world.getUsersCharacterInstance();
+
+		dogInstance = new DogInstance();
+
 		groundInstance = new ModelInstance(AssetsLoader.getGround());
 		groundInstance.transform.translate(0, -0.5f, 0);
 
@@ -147,6 +148,8 @@ public class WorldScreen extends GameScreen {
 		modelBatch.begin(camera);
 		modelBatch.render(groundInstance, environment);
 		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
+		modelBatch.render(dogInstance.getModelInstance(),environment);
+		dogInstance.update(delta);
 		renderOtherPlayers(modelBatch, environment, delta * 1000);
 		modelBatch.end();
 		stage.act(delta);
