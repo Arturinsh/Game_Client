@@ -87,5 +87,11 @@ public class NetworkListener extends Listener {
 				world.updatePlayers(snapShot);
 			}
 		}
+
+		if (object instanceof RemovePlayer) {
+			RemovePlayer rmp = (RemovePlayer) object;
+			world.removePlayer(rmp);
+		}
+
 	}
 }

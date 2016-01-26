@@ -2,7 +2,6 @@ package xyz.arturinsh.GameWorld;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 
@@ -202,15 +201,16 @@ public class GameWorld {
 	public void updatePlayers(PlayersSnapShot snapShot) {
 		for (PositionUpdate update : snapShot.snapshot) {
 			if (usersCharacterInstance.matchesCharacter(update.character)) {
-//				System.out.println("Update ME");
+				// System.out.println("Update ME");
 			} else if (hasCharacter(update, otherPlayers, snapShot.time.getTime())) {
-//				System.out.println("Update " + update.character.charName);
+				// System.out.println("Update " + update.character.charName);
 			} else {
 				CharacterInstance playerInstance = new CharacterInstance(update.character);
 				playerInstance.setPosition(update.x, update.y, update.z);
 				playerInstance.setRotation(update.r);
 				otherPlayers.add(playerInstance);
-//				System.out.println("Add Player " + update.character.charName);
+				// System.out.println("Add Player " +
+				// update.character.charName);
 			}
 		}
 	}
@@ -219,10 +219,21 @@ public class GameWorld {
 		for (CharacterInstance player : list) {
 			if (player.matchesCharacter(update.character)) {
 				player.updatePlayer(update.x, update.y, update.z, update.r, time);
-				//player.updatePositionOrientation(update.x, update.y, update.z, update.r);
+				// player.updatePositionOrientation(update.x, update.y,
+				// update.z, update.r);
 				return true;
 			}
 		}
 		return false;
+	}
+
+	public void removePlayer(RemovePlayer player) {
+		for (CharacterInstance instance : otherPlayers) {
+			if (instance.matchesCharacter(player.character)) {
+				int index = otherPlayers.indexOf(instance);
+				otherPlayers.remove(index);
+				break;
+			}
+		}
 	}
 }
