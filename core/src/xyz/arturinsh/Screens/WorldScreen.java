@@ -147,7 +147,7 @@ public class WorldScreen extends GameScreen {
 		modelBatch.begin(camera);
 		modelBatch.render(groundInstance, environment);
 		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
-		renderOtherPlayers(modelBatch, environment, delta * 100);
+		renderOtherPlayers(modelBatch, environment, delta * 1000);
 		modelBatch.end();
 		stage.act(delta);
 		stage.draw();

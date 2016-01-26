@@ -143,7 +143,8 @@ public class CharacterInstance {
 	private void updatePositionOrientation(Vector3 position, float r) {
 		Quaternion orientation = new Quaternion();
 		orientation.setEulerAngles(r, 0, 0);
-		System.out.println(position.x+" "+position.y+" "+position.z+" "+r);
+		// System.out.println(position.x + " " + position.y + " " + position.z +
+		// " " + r);
 		this.modelInstance.transform.set(position, orientation);
 	}
 
@@ -158,7 +159,7 @@ public class CharacterInstance {
 		newRotation = rotation;
 
 		if (endTime != 0) {
-			long timeDifference = (endTime - startTime) / 10;
+			long timeDifference = (endTime - startTime);
 			float tx, ty, tz, trot;
 			tx = newPosition.x - oldPosition.x;
 			ty = newPosition.y - oldPosition.y;
@@ -176,24 +177,26 @@ public class CharacterInstance {
 
 	// bigDelta = delta *1000
 	public void updateOther(float bigDelta) {
-		Vector3 realStep = step;
-		float rotation = 0;
-		
-		if (oldRotation != newRotation) {
-			rotation = rotationStep * bigDelta;
-//			System.out.println("diffRRRRR");
-		}
-		
-		if(!oldPosition.equals(newPosition)){
-			realStep.scl(bigDelta);
-//System.out.println(position.x+" "+position.y+" "+position.z+" "+r);
-//			System.out.println("diffPPPPP");
-		}
-			
-		
-		Vector3 newPos = getPosition().add(realStep);
-		float newRot = getRotation() + rotation;
+		Vector3 realStep = new Vector3();
+		realStep.set(step);
+		Vector3 newPos = getPosition();
+		float newRot = getRotation();
 
+		if (oldRotation != newRotation) {
+			newRot += rotationStep * bigDelta;
+			System.out.println(newRot);
+		} else {
+			newRot = newRotation;
+		}
+
+		if (!oldPosition.equals(newPosition)) {
+			realStep.x *= bigDelta;
+			realStep.y *= bigDelta;
+			realStep.z *= bigDelta;
+			newPos.add(realStep);
+		}else{
+			newPos.set(newPosition);
+		}
 		updatePositionOrientation(newPos, newRot);
 	}
 }

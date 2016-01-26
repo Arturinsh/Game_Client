@@ -27,8 +27,7 @@ public class UDPSender extends TimerTask {
 		posUpdate.x = position.x;
 		posUpdate.y = position.y;
 		posUpdate.z = position.z;
-		posUpdate.r = world.getUsersCharacterInstance().getRotation();
-
+		posUpdate.r = (int)world.getUsersCharacterInstance().getRotation();
 		client.sendUDP(posUpdate);
 		// TestUDP test = new TestUDP();
 		// DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
