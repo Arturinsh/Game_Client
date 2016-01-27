@@ -39,6 +39,12 @@ public class InputHandler implements InputProcessor {
 		case Keys.E:
 			camera.rotateAroundPlayer(180);
 			break;
+		case Keys.UP:
+			camera.moveHeight(+5);
+			break;
+		case Keys.DOWN:
+			camera.moveHeight(-5);
+			break;
 		}
 		return false;
 	}
@@ -64,6 +70,12 @@ public class InputHandler implements InputProcessor {
 		case Keys.E:
 			camera.stopRotate();
 			break;
+		case Keys.UP:
+			camera.stopHeight();
+			break;
+		case Keys.DOWN:
+			camera.stopHeight();
+			break;
 		}
 		return false;
 	}
@@ -76,7 +88,7 @@ public class InputHandler implements InputProcessor {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		//System.out.println(screenX+" "+ screenY+" "+ pointer+" "+button);
+		// System.out.println(screenX+" "+ screenY+" "+ pointer+" "+button);
 		return false;
 	}
 
@@ -88,7 +100,7 @@ public class InputHandler implements InputProcessor {
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		//System.out.println("drag");
+		// System.out.println("drag");
 		return false;
 	}
 

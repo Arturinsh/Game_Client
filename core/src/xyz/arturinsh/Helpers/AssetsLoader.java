@@ -15,17 +15,18 @@ public class AssetsLoader {
 	private static Skin skin;
 	private static Model monkeyModel, ground, dog;
 	private static AssetManager assets;
-	private static Texture up, down, right, left;
+	private static Texture up, down, right, left, sky;
 
 	public static void initUI() {
 		up = new Texture(Gdx.files.internal("triangle_up.png"));
 		down = new Texture(Gdx.files.internal("triangle_down.png"));
 		right = new Texture(Gdx.files.internal("triangle_right.png"));
 		left = new Texture(Gdx.files.internal("triangle_left.png"));
+		sky = new Texture(Gdx.files.internal("sky1.jpg"));
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
 		 ModelBuilder modelBuilder = new ModelBuilder();
-		 ground = modelBuilder.createBox(60f, 1f, 60f, 
-	            new Material(ColorAttribute.createDiffuse(Color.DARK_GRAY)),
+		 ground = modelBuilder.createBox(200f, 1f, 200f, 
+	            new Material(ColorAttribute.createDiffuse(Color.TAN)),
 	            Usage.Position | Usage.Normal);
 	     
 		assets = new AssetManager();
@@ -67,5 +68,9 @@ public class AssetsLoader {
 
 	public static Model getDog() {
 		return dog;
+	}
+	
+	public static Texture getSky(){
+		return sky;
 	}
 }

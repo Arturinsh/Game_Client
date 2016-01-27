@@ -2,13 +2,25 @@ package xyz.arturinsh.Screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -27,20 +39,28 @@ public class WorldScreen extends GameScreen {
 
 	private PersonCamera camera;
 	private ModelBatch modelBatch;
+
+	// DirectionalShadowLight shadowLight;
+	// ModelBatch shadowBatch;
+
 	private Environment environment;
 	private CharacterInstance usersCharacterInstance;
-	private ModelInstance groundInstance;
+	private ModelInstance groundInstance, sphereInstance;
 
 	private Button upButton, downButton, leftButton, rightButton;
 	private Skin skin;
 	private Table table;
 
 	private DogInstance dogInstance;
-	
+
+	private PerspectiveCamera lightCamera;
+
 	public WorldScreen(GameWorld _world) {
 		super(_world);
+
 		init3D();
 		initUI();
+
 		InputMultiplexer multiplexer = new InputMultiplexer(new InputHandler(world, camera), stage);
 		Gdx.input.setInputProcessor(multiplexer);
 	}
@@ -113,6 +133,15 @@ public class WorldScreen extends GameScreen {
 	}
 
 	private void init3D() {
+		// SHADOW CAMERA TEST
+		lightCamera = new PerspectiveCamera(120, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		lightCamera.near = 1f;
+		lightCamera.far = 1000;
+		lightCamera.position.set(50, 100, 0);
+		lightCamera.lookAt(0, 0, 0);
+		lightCamera.update();
+
+		// SHADOW CAMERA TEST END
 		usersCharacterInstance = world.getUsersCharacterInstance();
 
 		dogInstance = new DogInstance();
@@ -120,12 +149,22 @@ public class WorldScreen extends GameScreen {
 		groundInstance = new ModelInstance(AssetsLoader.getGround());
 		groundInstance.transform.translate(0, -0.5f, 0);
 
+		sphereInstance = createSkySphere(400, AssetsLoader.getSky(), null);
+
 		camera = new PersonCamera(75, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), usersCharacterInstance);
-		camera.far = 100;
+		camera.far = 1000f;
+
 		modelBatch = new ModelBatch();
 
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.8f, 0.8f, 0.8f, 1.0f));
+		// environment.add((shadowLight = new DirectionalShadowLight(1024, 1024,
+		// 30f, 30f, 1f, 500f)).set(0.8f, 0.8f, 0.8f,
+		// -1f, -.8f, -.2f));
+		//
+		// environment.shadowMap = shadowLight;
+
+		// shadowBatch = new ModelBatch(new DepthShaderProvider());
 		environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 	}
 
@@ -145,10 +184,18 @@ public class WorldScreen extends GameScreen {
 		usersCharacterInstance.update(delta);
 		camera.update(delta);
 
-		modelBatch.begin(camera);
+		// shadowLight.begin(Vector3.Zero, camera.direction);
+		// shadowBatch.begin(shadowLight.getCamera());
+		// shadowBatch.render(usersCharacterInstance.getModelInstance());
+		// shadowBatch.render(dogInstance.getModelInstance());
+		// shadowBatch.end();
+		// shadowLight.end();
+
+		modelBatch.begin(lightCamera);
 		modelBatch.render(groundInstance, environment);
 		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
-		modelBatch.render(dogInstance.getModelInstance(),environment);
+		modelBatch.render(dogInstance.getModelInstance(), environment);
+		// modelBatch.render(sphereInstance);
 		dogInstance.update(delta);
 		renderOtherPlayers(modelBatch, environment, delta * 1000);
 		modelBatch.end();
@@ -160,6 +207,45 @@ public class WorldScreen extends GameScreen {
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
 		table.setWidth(stage.getWidth());
+	}
+
+	private ModelInstance createSkySphere(float r, Texture t, Color c) {
+		Material sphereMaterial = new Material();
+		if (t != null)
+			sphereMaterial.set(TextureAttribute.createDiffuse(t));
+		if (c != null)
+			sphereMaterial.set(ColorAttribute.createDiffuse(c));
+		int usageCode = Usage.Position + Usage.ColorPacked + Usage.Normal + Usage.TextureCoordinates;
+
+		ModelBuilder builder = new ModelBuilder();
+		Model sphereModel = builder.createSphere(r, r, r, 32, 32, sphereMaterial, usageCode);
+
+		for (Mesh m : sphereModel.meshes)
+			m.scale(1, 1, -1);
+
+		Vector3 position = new Vector3(0, 0, 0);
+
+		ModelInstance sphere = new ModelInstance(sphereModel, position);
+		return sphere;
+	}
+
+	public FrameBuffer frameBuffer;
+	public static final int DEPTHMAPIZE = 1024;
+
+	public void renderLight() {
+		if (frameBuffer == null) {
+			frameBuffer = new FrameBuffer(Format.RGBA8888, DEPTHMAPIZE, DEPTHMAPIZE, true);
+		}
+		frameBuffer.begin();
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+		modelBatch.begin(lightCamera);
+		modelBatch.render(groundInstance, environment);
+		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
+		modelBatch.render(dogInstance.getModelInstance(), environment);
+		renderOtherPlayers(modelBatch, environment, 1);
+		modelBatch.end();
+		frameBuffer.end();
 	}
 
 }
