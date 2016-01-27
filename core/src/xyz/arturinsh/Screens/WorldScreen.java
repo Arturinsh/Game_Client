@@ -53,7 +53,6 @@ public class WorldScreen extends GameScreen {
 
 	private DogInstance dogInstance;
 
-	private PerspectiveCamera lightCamera;
 
 	public WorldScreen(GameWorld _world) {
 		super(_world);
@@ -133,15 +132,6 @@ public class WorldScreen extends GameScreen {
 	}
 
 	private void init3D() {
-		// SHADOW CAMERA TEST
-		lightCamera = new PerspectiveCamera(120, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		lightCamera.near = 1f;
-		lightCamera.far = 1000;
-		lightCamera.position.set(50, 100, 0);
-		lightCamera.lookAt(0, 0, 0);
-		lightCamera.update();
-
-		// SHADOW CAMERA TEST END
 		usersCharacterInstance = world.getUsersCharacterInstance();
 
 		dogInstance = new DogInstance();
@@ -191,7 +181,7 @@ public class WorldScreen extends GameScreen {
 		// shadowBatch.end();
 		// shadowLight.end();
 
-		modelBatch.begin(lightCamera);
+		modelBatch.begin(camera);
 		modelBatch.render(groundInstance, environment);
 		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
 		modelBatch.render(dogInstance.getModelInstance(), environment);
@@ -229,23 +219,6 @@ public class WorldScreen extends GameScreen {
 		return sphere;
 	}
 
-	public FrameBuffer frameBuffer;
-	public static final int DEPTHMAPIZE = 1024;
 
-	public void renderLight() {
-		if (frameBuffer == null) {
-			frameBuffer = new FrameBuffer(Format.RGBA8888, DEPTHMAPIZE, DEPTHMAPIZE, true);
-		}
-		frameBuffer.begin();
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-		modelBatch.begin(lightCamera);
-		modelBatch.render(groundInstance, environment);
-		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
-		modelBatch.render(dogInstance.getModelInstance(), environment);
-		renderOtherPlayers(modelBatch, environment, 1);
-		modelBatch.end();
-		frameBuffer.end();
-	}
 
 }
