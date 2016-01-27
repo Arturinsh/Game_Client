@@ -12,20 +12,22 @@ import com.esotericsoftware.kryonet.Client;
 
 import xyz.arturinsh.GameObjects.CharacterClass;
 import xyz.arturinsh.GameObjects.CharacterInstance;
+import xyz.arturinsh.GameObjects.DogInstance;
 import xyz.arturinsh.Network.NetworkListener;
 import xyz.arturinsh.Network.Packets.AddPlayer;
 import xyz.arturinsh.Network.Packets.CharacterCreateFailed;
 import xyz.arturinsh.Network.Packets.CharacterCreateSuccess;
+import xyz.arturinsh.Network.Packets.DogPositionUpdate;
 import xyz.arturinsh.Network.Packets.EnterWorld;
 import xyz.arturinsh.Network.Packets.LogIn;
 import xyz.arturinsh.Network.Packets.LogInFailed;
 import xyz.arturinsh.Network.Packets.LogInSuccess;
-import xyz.arturinsh.Network.Packets.PlayersSnapShot;
-import xyz.arturinsh.Network.Packets.PositionUpdate;
+import xyz.arturinsh.Network.Packets.PlayerPositionUpdate;
 import xyz.arturinsh.Network.Packets.Register;
 import xyz.arturinsh.Network.Packets.RegisterFailed;
 import xyz.arturinsh.Network.Packets.RegisterSuccess;
 import xyz.arturinsh.Network.Packets.RemovePlayer;
+import xyz.arturinsh.Network.Packets.SnapShot;
 import xyz.arturinsh.Network.Packets.TestUDP;
 import xyz.arturinsh.Network.Packets.UserCharacter;
 import xyz.arturinsh.Network.UDPSender;
@@ -41,6 +43,7 @@ public class GameWorld {
 	private List<UserCharacter> characters;
 	private CharacterInstance usersCharacterInstance;
 	private List<CharacterInstance> otherPlayers;
+	private List<DogInstance> otherDogs;
 	private Timer timer;
 
 	public GameWorld(MainGame _game) {
@@ -49,6 +52,7 @@ public class GameWorld {
 		registerKryo();
 		startNetworkClient();
 		otherPlayers = new ArrayList<CharacterInstance>();
+		otherDogs = new ArrayList<DogInstance>();
 		game.setScreen(new LoginScreen(this));
 		timer = new Timer();
 	}
@@ -144,8 +148,9 @@ public class GameWorld {
 		kryo.register(CharacterCreateFailed.class);
 		kryo.register(TestUDP.class);
 		kryo.register(EnterWorld.class);
-		kryo.register(PositionUpdate.class);
-		kryo.register(PlayersSnapShot.class);
+		kryo.register(PlayerPositionUpdate.class);
+		kryo.register(DogPositionUpdate.class);
+		kryo.register(SnapShot.class);
 	}
 
 	private void startNetworkClient() {
@@ -198,29 +203,52 @@ public class GameWorld {
 		this.otherPlayers = otherPlayers;
 	}
 
-	public void updatePlayers(PlayersSnapShot snapShot) {
-		for (PositionUpdate update : snapShot.snapshot) {
+	public List<DogInstance> getDogs() {
+		return otherDogs;
+	}
+
+	public void updateWorld(SnapShot snapShot) {
+		updatePlayers(snapShot);
+		updateDogs(snapShot);
+	}
+
+	private void updatePlayers(SnapShot snapShot) {
+		for (PlayerPositionUpdate update : snapShot.snapshot) {
 			if (usersCharacterInstance.matchesCharacter(update.character)) {
-				// System.out.println("Update ME");
 			} else if (hasCharacter(update, otherPlayers, snapShot.time.getTime())) {
-				// System.out.println("Update " + update.character.charName);
 			} else {
 				CharacterInstance playerInstance = new CharacterInstance(update.character);
 				playerInstance.setPosition(update.x, update.y, update.z);
 				playerInstance.setRotation(update.r);
 				otherPlayers.add(playerInstance);
-				// System.out.println("Add Player " +
-				// update.character.charName);
 			}
 		}
 	}
 
-	private boolean hasCharacter(PositionUpdate update, List<CharacterInstance> list, long time) {
+	private boolean hasCharacter(PlayerPositionUpdate update, List<CharacterInstance> list, long time) {
 		for (CharacterInstance player : list) {
 			if (player.matchesCharacter(update.character)) {
 				player.updatePlayer(update.x, update.y, update.z, update.r, time);
-				// player.updatePositionOrientation(update.x, update.y,
-				// update.z, update.r);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void updateDogs(SnapShot snapShot) {
+		for (DogPositionUpdate update : snapShot.dogSnapshot) {
+			if (hasDog(update, otherDogs, snapShot.time.getTime())) {
+			} else {
+				DogInstance dogInstance = new DogInstance();
+				otherDogs.add(dogInstance);
+			}
+		}
+	}
+	
+	private boolean hasDog(DogPositionUpdate update, List<DogInstance> list, long time) {
+		for (DogInstance dog : list) {
+			if (dog.getID() == update.ID) {
+				dog.updateDog(update.x, update.y, update.z, update.r, time);
 				return true;
 			}
 		}

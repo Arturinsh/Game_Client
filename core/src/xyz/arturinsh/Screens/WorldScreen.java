@@ -5,8 +5,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -19,7 +17,6 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -40,9 +37,6 @@ public class WorldScreen extends GameScreen {
 	private PersonCamera camera;
 	private ModelBatch modelBatch;
 
-	// DirectionalShadowLight shadowLight;
-	// ModelBatch shadowBatch;
-
 	private Environment environment;
 	private CharacterInstance usersCharacterInstance;
 	private ModelInstance groundInstance, sphereInstance;
@@ -50,9 +44,6 @@ public class WorldScreen extends GameScreen {
 	private Button upButton, downButton, leftButton, rightButton;
 	private Skin skin;
 	private Table table;
-
-	private DogInstance dogInstance;
-
 
 	public WorldScreen(GameWorld _world) {
 		super(_world);
@@ -134,8 +125,6 @@ public class WorldScreen extends GameScreen {
 	private void init3D() {
 		usersCharacterInstance = world.getUsersCharacterInstance();
 
-		dogInstance = new DogInstance();
-
 		groundInstance = new ModelInstance(AssetsLoader.getGround());
 		groundInstance.transform.translate(0, -0.5f, 0);
 
@@ -166,6 +155,13 @@ public class WorldScreen extends GameScreen {
 		}
 	}
 
+	private void renderOtherDogs(ModelBatch batch, Environment env, float bigDelta) {
+		for (DogInstance dog : world.getDogs()) {
+			dog.update(bigDelta);
+			batch.render(dog.getModelInstance(), env);
+		}
+	}
+
 	@Override
 	public void render(float delta) {
 		Gdx.gl.glClearColor(1, 1, 1, 0);
@@ -174,20 +170,11 @@ public class WorldScreen extends GameScreen {
 		usersCharacterInstance.update(delta);
 		camera.update(delta);
 
-		// shadowLight.begin(Vector3.Zero, camera.direction);
-		// shadowBatch.begin(shadowLight.getCamera());
-		// shadowBatch.render(usersCharacterInstance.getModelInstance());
-		// shadowBatch.render(dogInstance.getModelInstance());
-		// shadowBatch.end();
-		// shadowLight.end();
-
 		modelBatch.begin(camera);
 		modelBatch.render(groundInstance, environment);
 		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
-		modelBatch.render(dogInstance.getModelInstance(), environment);
-		// modelBatch.render(sphereInstance);
-		dogInstance.update(delta);
 		renderOtherPlayers(modelBatch, environment, delta * 1000);
+		renderOtherDogs(modelBatch, environment, delta * 1000);
 		modelBatch.end();
 		stage.act(delta);
 		stage.draw();
@@ -218,7 +205,5 @@ public class WorldScreen extends GameScreen {
 		ModelInstance sphere = new ModelInstance(sphereModel, position);
 		return sphere;
 	}
-
-
 
 }

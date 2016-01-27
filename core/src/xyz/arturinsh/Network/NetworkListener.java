@@ -12,10 +12,10 @@ import xyz.arturinsh.Network.Packets.CharacterCreateFailed;
 import xyz.arturinsh.Network.Packets.CharacterCreateSuccess;
 import xyz.arturinsh.Network.Packets.LogInFailed;
 import xyz.arturinsh.Network.Packets.LogInSuccess;
-import xyz.arturinsh.Network.Packets.PlayersSnapShot;
 import xyz.arturinsh.Network.Packets.RegisterFailed;
 import xyz.arturinsh.Network.Packets.RegisterSuccess;
 import xyz.arturinsh.Network.Packets.RemovePlayer;
+import xyz.arturinsh.Network.Packets.SnapShot;
 import xyz.arturinsh.Network.Packets.TestUDP;
 
 public class NetworkListener extends Listener {
@@ -80,11 +80,11 @@ public class NetworkListener extends Listener {
 			// Gdx.app.debug("Test", test);
 		}
 
-		if (object instanceof PlayersSnapShot) {
-			PlayersSnapShot snapShot = (PlayersSnapShot) object;
+		if (object instanceof SnapShot) {
+			SnapShot snapShot = (SnapShot) object;
 			if (lastSnapshotTime == null || lastSnapshotTime.getTime() < snapShot.time.getTime()) {
 				lastSnapshotTime = snapShot.time;
-				world.updatePlayers(snapShot);
+				world.updateWorld(snapShot);
 			}
 		}
 

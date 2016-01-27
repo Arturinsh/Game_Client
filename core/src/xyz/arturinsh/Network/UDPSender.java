@@ -2,12 +2,11 @@ package xyz.arturinsh.Network;
 
 import java.util.TimerTask;
 
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryonet.Client;
 
 import xyz.arturinsh.GameWorld.GameWorld;
-import xyz.arturinsh.Network.Packets.PositionUpdate;
+import xyz.arturinsh.Network.Packets.PlayerPositionUpdate;
 
 public class UDPSender extends TimerTask {
 
@@ -21,7 +20,7 @@ public class UDPSender extends TimerTask {
 
 	@Override
 	public void run() {
-		PositionUpdate posUpdate = new PositionUpdate();
+		PlayerPositionUpdate posUpdate = new PlayerPositionUpdate();
 		posUpdate.character = world.getUsersCharacterInstance().getCharacter();
 		Vector3 position = world.getUsersCharacterInstance().getPosition();
 		posUpdate.x = position.x;
