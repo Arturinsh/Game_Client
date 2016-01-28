@@ -56,9 +56,7 @@ public class NetworkListener extends Listener {
 		if (object instanceof AddPlayer) {
 			AddPlayer player = (AddPlayer) object;
 
-			CharacterInstance playerInstance = new CharacterInstance(player.character);
-			playerInstance.setPosition(player.x, player.y, player.z);
-
+			CharacterInstance playerInstance = new CharacterInstance(player.x, player.y, player.z, 0, player.character);
 			world.addPlayer(playerInstance);
 			System.out.println("AddPlayer");
 		}

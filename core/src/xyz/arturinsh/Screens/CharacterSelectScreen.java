@@ -143,12 +143,12 @@ public class CharacterSelectScreen extends GameScreen {
 		camera.far = 300.0f;
 
 		modelBatch = new ModelBatch();
-		
+
 		UserCharacter defChar = new UserCharacter();
 		defChar.charClass = CharacterClass.GREEN;
 		defChar.charName = "default";
-				
-		characterInstance = new CharacterInstance(defChar);
+
+		characterInstance = new CharacterInstance(0, 0, 0, 0, defChar);
 
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.8f, 0.8f, 0.8f, 1.0f));

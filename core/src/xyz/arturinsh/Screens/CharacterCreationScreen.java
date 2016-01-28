@@ -54,8 +54,8 @@ public class CharacterCreationScreen extends GameScreen {
 		class2 = new TextButton("Red", skin);
 		class3 = new TextButton("Blue", skin);
 		submit = new TextButton("Submit", skin);
-		backButton = new TextButton("Back",skin);
-		
+		backButton = new TextButton("Back", skin);
+
 		class1.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -87,21 +87,21 @@ public class CharacterCreationScreen extends GameScreen {
 				world.createCharacter(charName, charClass);
 			}
 		});
-		
+
 		backButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				game.setScreen(new CharacterSelectScreen(world));
 			}
 		});
-		
+
 		mainTable = new Table();
 		nameTable = new Table();
 
 		classTable = new Table();
 
 		rightTable = new Table();
-//		mainTable.debug();
+		// mainTable.debug();
 		mainTable.setWidth(stage.getWidth());
 		mainTable.setFillParent(true);
 
@@ -141,10 +141,9 @@ public class CharacterCreationScreen extends GameScreen {
 
 		modelBatch = new ModelBatch();
 
-		
 		UserCharacter defChar = new UserCharacter();
 		defChar.charClass = CharacterClass.RED;
-		characterInstance = new CharacterInstance(defChar);
+		characterInstance = new CharacterInstance(0, 0, 0, 0, defChar);
 
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.8f, 0.8f, 0.8f, 1.0f));

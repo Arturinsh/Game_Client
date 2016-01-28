@@ -30,13 +30,15 @@ public class CharacterInstance {
 	private float oldRotation = 0;
 	private float newRotation = 0;
 
-	public CharacterInstance(UserCharacter _character) {
+	public CharacterInstance(float x, float y, float z, float rotation, UserCharacter _character) {
 		model = AssetsLoader.getMonkeyModel();
-
 		character = _character;
 		changeModelMaterial(_character.charClass);
 		modelInstance = new ModelInstance(model);
 		animController = new AnimationController(modelInstance);
+		updatePositionOrientation(new Vector3(x, y, z), rotation);
+		newPosition = getPosition();
+		newRotation = getRotation();
 	}
 
 	public void changeClass(CharacterClass charClass) {
@@ -78,10 +80,6 @@ public class CharacterInstance {
 		}
 	}
 
-	public void setPosition(float x, float y, float z) {
-		this.modelInstance.transform.setTranslation(new Vector3(x, y, z));
-	}
-
 	public Vector3 getPosition() {
 		Vector3 position = new Vector3();
 		this.modelInstance.transform.getTranslation(position);
@@ -100,12 +98,6 @@ public class CharacterInstance {
 
 	public void rotate(float speed) {
 		rotateSpeed = speed;
-	}
-
-	public void setRotation(float r) {
-		Quaternion orientation = new Quaternion();
-		orientation.setEulerAngles(r, 0, 0);
-		this.modelInstance.transform.set(orientation);
 	}
 
 	public void stopMove() {

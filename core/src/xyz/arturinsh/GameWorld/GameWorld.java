@@ -217,9 +217,8 @@ public class GameWorld {
 			if (usersCharacterInstance.matchesCharacter(update.character)) {
 			} else if (hasCharacter(update, otherPlayers, snapShot.time.getTime())) {
 			} else {
-				CharacterInstance playerInstance = new CharacterInstance(update.character);
-				playerInstance.setPosition(update.x, update.y, update.z);
-				playerInstance.setRotation(update.r);
+				CharacterInstance playerInstance = new CharacterInstance(update.x, update.y, update.z, update.r,
+						update.character);
 				otherPlayers.add(playerInstance);
 			}
 		}
@@ -239,12 +238,12 @@ public class GameWorld {
 		for (DogPositionUpdate update : snapShot.dogSnapshot) {
 			if (hasDog(update, otherDogs, snapShot.time.getTime())) {
 			} else {
-				DogInstance dogInstance = new DogInstance();
+				DogInstance dogInstance = new DogInstance(update.x, update.y, update.z, update.r);
 				otherDogs.add(dogInstance);
 			}
 		}
 	}
-	
+
 	private boolean hasDog(DogPositionUpdate update, List<DogInstance> list, long time) {
 		for (DogInstance dog : list) {
 			if (dog.getID() == update.ID) {

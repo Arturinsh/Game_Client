@@ -12,8 +12,6 @@ public class DogInstance {
 	private AnimationController animController;
 	private ModelInstance modelInstance;
 	private Model model;
-	private float moveSpeed = 0;
-	private float rotateSpeed = 0;
 
 	private long startTime = 0;
 	private long endTime = 0;
@@ -26,10 +24,13 @@ public class DogInstance {
 
 	private int ID;
 
-	public DogInstance() {
+	public DogInstance(float x, float y, float z, float rotation) {
 		model = AssetsLoader.getDog();
 		modelInstance = new ModelInstance(model);
 		animController = new AnimationController(modelInstance);
+		updatePositionOrientation(new Vector3(x, y, z), rotation);
+		newPosition = getPosition();
+		newRotation = getRotation();
 	}
 
 	public ModelInstance getModelInstance() {
