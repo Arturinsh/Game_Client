@@ -28,12 +28,12 @@ import xyz.arturinsh.Network.Packets.RegisterFailed;
 import xyz.arturinsh.Network.Packets.RegisterSuccess;
 import xyz.arturinsh.Network.Packets.RemovePlayer;
 import xyz.arturinsh.Network.Packets.SnapShot;
-import xyz.arturinsh.Network.Packets.TestUDP;
 import xyz.arturinsh.Network.Packets.UserCharacter;
 import xyz.arturinsh.Network.UDPSender;
 import xyz.arturinsh.Screens.CharacterSelectScreen;
 import xyz.arturinsh.Screens.GameScreen;
 import xyz.arturinsh.Screens.LoginScreen;
+import xyz.arturinsh.Screens.WorldScreen;
 import xyz.arturinsh.gameclient.MainGame;
 
 public class GameWorld {
@@ -127,6 +127,18 @@ public class GameWorld {
 		EnterWorld enterWorld = new EnterWorld();
 		enterWorld.character = character;
 		client.sendTCP(enterWorld);
+
+	}
+
+	public void succesEnterWorld(EnterWorld enter) {
+		usersCharacterInstance = new CharacterInstance(enter.character);
+
+		Gdx.app.postRunnable(new Runnable() {
+			@Override
+			public void run() {
+				changeScreen(new WorldScreen(GameWorld.this));
+			}
+		});
 		timer.schedule(new UDPSender(client, this), 0, 50);
 	}
 
@@ -146,7 +158,6 @@ public class GameWorld {
 		kryo.register(UserCharacter.class);
 		kryo.register(CharacterCreateSuccess.class);
 		kryo.register(CharacterCreateFailed.class);
-		kryo.register(TestUDP.class);
 		kryo.register(EnterWorld.class);
 		kryo.register(PlayerPositionUpdate.class);
 		kryo.register(DogPositionUpdate.class);
@@ -214,11 +225,10 @@ public class GameWorld {
 
 	private void updatePlayers(SnapShot snapShot) {
 		for (PlayerPositionUpdate update : snapShot.snapshot) {
-			if (usersCharacterInstance.matchesCharacter(update.character)) {
+			if (usersCharacterInstance != null && usersCharacterInstance.matchesCharacter(update.character)) {
 			} else if (hasCharacter(update, otherPlayers, snapShot.time.getTime())) {
 			} else {
-				CharacterInstance playerInstance = new CharacterInstance(update.character.x, update.character.y, update.character.z, update.character.r,
-						update.character);
+				CharacterInstance playerInstance = new CharacterInstance(update.character);
 				otherPlayers.add(playerInstance);
 			}
 		}
@@ -227,7 +237,8 @@ public class GameWorld {
 	private boolean hasCharacter(PlayerPositionUpdate update, List<CharacterInstance> list, long time) {
 		for (CharacterInstance player : list) {
 			if (player.matchesCharacter(update.character)) {
-				player.updatePlayer(update.character.x, update.character.y, update.character.z, update.character.r, time);
+				player.updatePlayer(update.character.x, update.character.y, update.character.z, update.character.r,
+						time);
 				return true;
 			}
 		}

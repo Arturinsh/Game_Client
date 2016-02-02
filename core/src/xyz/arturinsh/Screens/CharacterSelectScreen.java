@@ -80,11 +80,11 @@ public class CharacterSelectScreen extends GameScreen {
 			public void clicked(InputEvent event, float x, float y) {
 				// TODO add dialog to show if not seleceted or disable button
 				if (selectedChar != null) {
-					characterInstance.setCharacter(selectedChar);
-					world.setUsersCharacterInstance(characterInstance);
+//					characterInstance.setCharacter(selectedChar);
+//					world.setUsersCharacterInstance(characterInstance);
 					world.enterWorld(selectedChar);
-					WorldScreen worldScreen = new WorldScreen(world);
-					game.setScreen(worldScreen);
+//					WorldScreen worldScreen = new WorldScreen(world);
+//					game.setScreen(worldScreen);
 				}
 			}
 		});
@@ -147,8 +147,12 @@ public class CharacterSelectScreen extends GameScreen {
 		UserCharacter defChar = new UserCharacter();
 		defChar.charClass = CharacterClass.GREEN;
 		defChar.charName = "default";
+		defChar.x = 0;
+		defChar.y = 0;
+		defChar.z = 0;
+		defChar.r = 0;
 
-		characterInstance = new CharacterInstance(0, 0, 0, 0, defChar);
+		characterInstance = new CharacterInstance(defChar);
 
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.8f, 0.8f, 0.8f, 1.0f));

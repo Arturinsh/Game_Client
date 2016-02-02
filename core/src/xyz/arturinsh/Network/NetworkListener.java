@@ -10,13 +10,13 @@ import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Network.Packets.AddPlayer;
 import xyz.arturinsh.Network.Packets.CharacterCreateFailed;
 import xyz.arturinsh.Network.Packets.CharacterCreateSuccess;
+import xyz.arturinsh.Network.Packets.EnterWorld;
 import xyz.arturinsh.Network.Packets.LogInFailed;
 import xyz.arturinsh.Network.Packets.LogInSuccess;
 import xyz.arturinsh.Network.Packets.RegisterFailed;
 import xyz.arturinsh.Network.Packets.RegisterSuccess;
 import xyz.arturinsh.Network.Packets.RemovePlayer;
 import xyz.arturinsh.Network.Packets.SnapShot;
-import xyz.arturinsh.Network.Packets.TestUDP;
 
 public class NetworkListener extends Listener {
 	private GameWorld world;
@@ -56,8 +56,7 @@ public class NetworkListener extends Listener {
 		if (object instanceof AddPlayer) {
 			AddPlayer player = (AddPlayer) object;
 
-			CharacterInstance playerInstance = new CharacterInstance(player.character.x, player.character.y,
-					player.character.z, player.character.r, player.character);
+			CharacterInstance playerInstance = new CharacterInstance(player.character);
 			world.addPlayer(playerInstance);
 			System.out.println("AddPlayer");
 		}
@@ -74,12 +73,8 @@ public class NetworkListener extends Listener {
 			world.showDialog("Character name already exists");
 		}
 
-		if (object instanceof TestUDP) {
-			String test = ((TestUDP) object).text;
-			// Gdx.app.debug("Test", test);
-		}
-
 		if (object instanceof SnapShot) {
+			//TODO do only when is logged in world
 			SnapShot snapShot = (SnapShot) object;
 			if (lastSnapshotTime == null || lastSnapshotTime.getTime() < snapShot.time.getTime()) {
 				lastSnapshotTime = snapShot.time;
@@ -92,5 +87,9 @@ public class NetworkListener extends Listener {
 			world.removePlayer(rmp);
 		}
 
+		if (object instanceof EnterWorld) {
+			EnterWorld enter = (EnterWorld) object;
+			world.succesEnterWorld(enter);
+		}
 	}
 }

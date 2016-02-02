@@ -30,13 +30,13 @@ public class CharacterInstance {
 	private float oldRotation = 0;
 	private float newRotation = 0;
 
-	public CharacterInstance(float x, float y, float z, float rotation, UserCharacter _character) {
+	public CharacterInstance(UserCharacter _character) {
 		model = AssetsLoader.getMonkeyModel();
 		character = _character;
 		changeModelMaterial(_character.charClass);
 		modelInstance = new ModelInstance(model);
 		animController = new AnimationController(modelInstance);
-		updatePositionOrientation(new Vector3(x, y, z), rotation);
+		updatePositionOrientation(new Vector3(_character.x, _character.y, _character.z), _character.r);
 		newPosition = getPosition();
 		newRotation = getRotation();
 	}

@@ -143,7 +143,13 @@ public class CharacterCreationScreen extends GameScreen {
 
 		UserCharacter defChar = new UserCharacter();
 		defChar.charClass = CharacterClass.RED;
-		characterInstance = new CharacterInstance(0, 0, 0, 0, defChar);
+		defChar.charName = "";
+		defChar.x = 0;
+		defChar.y = 0;
+		defChar.z = 0;
+		defChar.r = 0;
+		
+		characterInstance = new CharacterInstance(defChar);
 
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.8f, 0.8f, 0.8f, 1.0f));
