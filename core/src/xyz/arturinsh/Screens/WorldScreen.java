@@ -39,7 +39,7 @@ public class WorldScreen extends GameScreen {
 
 	private Environment environment;
 	private CharacterInstance usersCharacterInstance;
-	private ModelInstance groundInstance, sphereInstance;
+	private ModelInstance groundInstance;
 
 	private Button upButton, downButton, leftButton, rightButton;
 	private Skin skin;
@@ -127,8 +127,6 @@ public class WorldScreen extends GameScreen {
 
 		groundInstance = new ModelInstance(AssetsLoader.getGround());
 		groundInstance.transform.translate(0, -0.5f, 0);
-
-		sphereInstance = createSkySphere(400, AssetsLoader.getSky(), null);
 
 		camera = new PersonCamera(75, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), usersCharacterInstance);
 		camera.far = 1000f;
