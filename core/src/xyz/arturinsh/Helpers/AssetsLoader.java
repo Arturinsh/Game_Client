@@ -25,7 +25,7 @@ public class AssetsLoader {
 		sky = new Texture(Gdx.files.internal("sky1.jpg"));
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
 		 ModelBuilder modelBuilder = new ModelBuilder();
-		 ground = modelBuilder.createBox(200f, 1f, 200f, 
+		 ground = modelBuilder.createBox(100f, 1f, 100f, 
 	            new Material(ColorAttribute.createDiffuse(Color.TAN)),
 	            Usage.Position | Usage.Normal);
 	     

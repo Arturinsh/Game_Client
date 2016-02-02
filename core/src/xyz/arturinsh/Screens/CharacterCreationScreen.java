@@ -40,7 +40,7 @@ public class CharacterCreationScreen extends GameScreen {
 		super(_world);
 		initUI();
 		init3D();
-		charClass = CharacterClass.GREEN;
+		charClass = CharacterClass.RED;
 	}
 
 	private void initUI() {

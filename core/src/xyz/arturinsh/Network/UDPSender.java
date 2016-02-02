@@ -23,10 +23,10 @@ public class UDPSender extends TimerTask {
 		PlayerPositionUpdate posUpdate = new PlayerPositionUpdate();
 		posUpdate.character = world.getUsersCharacterInstance().getCharacter();
 		Vector3 position = world.getUsersCharacterInstance().getPosition();
-		posUpdate.x = position.x;
-		posUpdate.y = position.y;
-		posUpdate.z = position.z;
-		posUpdate.r = (int)world.getUsersCharacterInstance().getRotation();
+		posUpdate.character.x = position.x;
+		posUpdate.character.y = position.y;
+		posUpdate.character.z = position.z;
+		posUpdate.character.r = (int)world.getUsersCharacterInstance().getRotation();
 		client.sendUDP(posUpdate);
 		// TestUDP test = new TestUDP();
 		// DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");

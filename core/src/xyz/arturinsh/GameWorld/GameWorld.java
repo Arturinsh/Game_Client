@@ -217,7 +217,7 @@ public class GameWorld {
 			if (usersCharacterInstance.matchesCharacter(update.character)) {
 			} else if (hasCharacter(update, otherPlayers, snapShot.time.getTime())) {
 			} else {
-				CharacterInstance playerInstance = new CharacterInstance(update.x, update.y, update.z, update.r,
+				CharacterInstance playerInstance = new CharacterInstance(update.character.x, update.character.y, update.character.z, update.character.r,
 						update.character);
 				otherPlayers.add(playerInstance);
 			}
@@ -227,7 +227,7 @@ public class GameWorld {
 	private boolean hasCharacter(PlayerPositionUpdate update, List<CharacterInstance> list, long time) {
 		for (CharacterInstance player : list) {
 			if (player.matchesCharacter(update.character)) {
-				player.updatePlayer(update.x, update.y, update.z, update.r, time);
+				player.updatePlayer(update.character.x, update.character.y, update.character.z, update.character.r, time);
 				return true;
 			}
 		}
