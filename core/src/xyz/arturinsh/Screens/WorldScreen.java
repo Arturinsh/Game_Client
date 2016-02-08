@@ -26,7 +26,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import xyz.arturinsh.GameObjects.CharacterInstance;
-import xyz.arturinsh.GameObjects.DogInstance;
 import xyz.arturinsh.GameObjects.MobInstance;
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;

@@ -12,7 +12,6 @@ import com.esotericsoftware.kryonet.Client;
 
 import xyz.arturinsh.GameObjects.CharacterClass;
 import xyz.arturinsh.GameObjects.CharacterInstance;
-import xyz.arturinsh.GameObjects.DogInstance;
 import xyz.arturinsh.GameObjects.MobInstance;
 import xyz.arturinsh.GameObjects.MobType;
 import xyz.arturinsh.Network.NetworkListener;
@@ -273,28 +272,6 @@ public class GameWorld {
 		}
 		return false;
 	}
-
-	// private void updateDogs(SnapShot snapShot) {
-	// for (DogPositionUpdate update : snapShot.dogSnapshot) {
-	// if (hasDog(update, otherDogs, snapShot.time.getTime())) {
-	// } else {
-	// DogInstance dogInstance = new DogInstance(update.x, update.y, update.z,
-	// update.r);
-	// otherDogs.add(dogInstance);
-	// }
-	// }
-	// }
-	//
-	// private boolean hasDog(DogPositionUpdate update, List<DogInstance> list,
-	// long time) {
-	// for (DogInstance dog : list) {
-	// if (dog.getID() == update.ID) {
-	// dog.updateDog(update.x, update.y, update.z, update.r, time);
-	// return true;
-	// }
-	// }
-	// return false;
-	// }
 
 	public void removePlayer(RemovePlayer player) {
 		for (CharacterInstance instance : otherPlayers) {
