@@ -13,15 +13,17 @@ import com.esotericsoftware.kryonet.Client;
 import xyz.arturinsh.GameObjects.CharacterClass;
 import xyz.arturinsh.GameObjects.CharacterInstance;
 import xyz.arturinsh.GameObjects.DogInstance;
+import xyz.arturinsh.GameObjects.MobInstance;
+import xyz.arturinsh.GameObjects.MobType;
 import xyz.arturinsh.Network.NetworkListener;
 import xyz.arturinsh.Network.Packets.AddPlayer;
 import xyz.arturinsh.Network.Packets.CharacterCreateFailed;
 import xyz.arturinsh.Network.Packets.CharacterCreateSuccess;
-import xyz.arturinsh.Network.Packets.DogPositionUpdate;
 import xyz.arturinsh.Network.Packets.EnterWorld;
 import xyz.arturinsh.Network.Packets.LogIn;
 import xyz.arturinsh.Network.Packets.LogInFailed;
 import xyz.arturinsh.Network.Packets.LogInSuccess;
+import xyz.arturinsh.Network.Packets.MobUpdate;
 import xyz.arturinsh.Network.Packets.PlayerPositionUpdate;
 import xyz.arturinsh.Network.Packets.Register;
 import xyz.arturinsh.Network.Packets.RegisterFailed;
@@ -43,7 +45,8 @@ public class GameWorld {
 	private List<UserCharacter> characters;
 	private CharacterInstance usersCharacterInstance;
 	private List<CharacterInstance> otherPlayers;
-	private List<DogInstance> otherDogs;
+	private List<MobInstance> mobs;
+
 	private Timer timer;
 
 	public GameWorld(MainGame _game) {
@@ -52,13 +55,36 @@ public class GameWorld {
 		registerKryo();
 		startNetworkClient();
 		otherPlayers = new ArrayList<CharacterInstance>();
-		otherDogs = new ArrayList<DogInstance>();
+		mobs = new ArrayList<MobInstance>();
 		game.setScreen(new LoginScreen(this));
 		timer = new Timer();
 	}
 
 	public MainGame getGame() {
 		return game;
+	}
+
+	private void registerKryo() {
+		Kryo kryo = client.getKryo();
+		kryo.register(java.util.ArrayList.class);
+		kryo.register(java.util.Date.class);
+		kryo.register(LogIn.class);
+		kryo.register(Register.class);
+		kryo.register(LogInSuccess.class);
+		kryo.register(RegisterSuccess.class);
+		kryo.register(LogInFailed.class);
+		kryo.register(RegisterFailed.class);
+		kryo.register(AddPlayer.class);
+		kryo.register(RemovePlayer.class);
+		kryo.register(CharacterClass.class);
+		kryo.register(UserCharacter.class);
+		kryo.register(CharacterCreateSuccess.class);
+		kryo.register(CharacterCreateFailed.class);
+		kryo.register(EnterWorld.class);
+		kryo.register(PlayerPositionUpdate.class);
+		kryo.register(MobType.class);
+		kryo.register(MobUpdate.class);
+		kryo.register(SnapShot.class);
 	}
 
 	public void showDialog(String message) {
@@ -142,28 +168,6 @@ public class GameWorld {
 		timer.schedule(new UDPSender(client, this), 0, 50);
 	}
 
-	private void registerKryo() {
-		Kryo kryo = client.getKryo();
-		kryo.register(java.util.ArrayList.class);
-		kryo.register(java.util.Date.class);
-		kryo.register(LogIn.class);
-		kryo.register(Register.class);
-		kryo.register(LogInSuccess.class);
-		kryo.register(RegisterSuccess.class);
-		kryo.register(LogInFailed.class);
-		kryo.register(RegisterFailed.class);
-		kryo.register(AddPlayer.class);
-		kryo.register(RemovePlayer.class);
-		kryo.register(CharacterClass.class);
-		kryo.register(UserCharacter.class);
-		kryo.register(CharacterCreateSuccess.class);
-		kryo.register(CharacterCreateFailed.class);
-		kryo.register(EnterWorld.class);
-		kryo.register(PlayerPositionUpdate.class);
-		kryo.register(DogPositionUpdate.class);
-		kryo.register(SnapShot.class);
-	}
-
 	private void startNetworkClient() {
 		client.start();
 		client.addListener(new NetworkListener(this));
@@ -214,13 +218,18 @@ public class GameWorld {
 		this.otherPlayers = otherPlayers;
 	}
 
-	public List<DogInstance> getDogs() {
-		return otherDogs;
+	public List<MobInstance> getMobs() {
+		return mobs;
 	}
+
+	// public List<DogInstance> getDogs() {
+	// return otherDogs;
+	// }
 
 	public void updateWorld(SnapShot snapShot) {
 		updatePlayers(snapShot);
-		updateDogs(snapShot);
+		updateMobs(snapShot);
+		// updateDogs(snapShot);
 	}
 
 	private void updatePlayers(SnapShot snapShot) {
@@ -245,25 +254,47 @@ public class GameWorld {
 		return false;
 	}
 
-	private void updateDogs(SnapShot snapShot) {
-		for (DogPositionUpdate update : snapShot.dogSnapshot) {
-			if (hasDog(update, otherDogs, snapShot.time.getTime())) {
+	private void updateMobs(SnapShot snapShot) {
+		for (MobUpdate update : snapShot.mobSnapshot) {
+			if (hasMob(update, mobs, snapShot.time.getTime())) {
 			} else {
-				DogInstance dogInstance = new DogInstance(update.x, update.y, update.z, update.r);
-				otherDogs.add(dogInstance);
+				MobInstance mobInstance = new MobInstance(update.ID, update.x, update.y, update.z, update.r);
+				mobs.add(mobInstance);
 			}
 		}
 	}
 
-	private boolean hasDog(DogPositionUpdate update, List<DogInstance> list, long time) {
-		for (DogInstance dog : list) {
-			if (dog.getID() == update.ID) {
-				dog.updateDog(update.x, update.y, update.z, update.r, time);
+	private boolean hasMob(MobUpdate update, List<MobInstance> list, long time) {
+		for (MobInstance mob : list) {
+			if (mob.getID() == update.ID) {
+				mob.updateMob(update.x, update.y, update.z, update.r, time);
 				return true;
 			}
 		}
 		return false;
 	}
+
+	// private void updateDogs(SnapShot snapShot) {
+	// for (DogPositionUpdate update : snapShot.dogSnapshot) {
+	// if (hasDog(update, otherDogs, snapShot.time.getTime())) {
+	// } else {
+	// DogInstance dogInstance = new DogInstance(update.x, update.y, update.z,
+	// update.r);
+	// otherDogs.add(dogInstance);
+	// }
+	// }
+	// }
+	//
+	// private boolean hasDog(DogPositionUpdate update, List<DogInstance> list,
+	// long time) {
+	// for (DogInstance dog : list) {
+	// if (dog.getID() == update.ID) {
+	// dog.updateDog(update.x, update.y, update.z, update.r, time);
+	// return true;
+	// }
+	// }
+	// return false;
+	// }
 
 	public void removePlayer(RemovePlayer player) {
 		for (CharacterInstance instance : otherPlayers) {

@@ -27,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import xyz.arturinsh.GameObjects.CharacterInstance;
 import xyz.arturinsh.GameObjects.DogInstance;
+import xyz.arturinsh.GameObjects.MobInstance;
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;
 import xyz.arturinsh.Helpers.InputHandler;
@@ -153,10 +154,10 @@ public class WorldScreen extends GameScreen {
 		}
 	}
 
-	private void renderOtherDogs(ModelBatch batch, Environment env, float bigDelta) {
-		for (DogInstance dog : world.getDogs()) {
-			dog.update(bigDelta);
-			batch.render(dog.getModelInstance(), env);
+	private void renderMobs(ModelBatch batch, Environment env, float bigDelta) {
+		for (MobInstance mob : world.getMobs()) {
+			mob.update(bigDelta);
+			batch.render(mob.getModelInstance(), env);
 		}
 	}
 
@@ -172,7 +173,7 @@ public class WorldScreen extends GameScreen {
 		modelBatch.render(groundInstance, environment);
 		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
 		renderOtherPlayers(modelBatch, environment, delta * 1000);
-		renderOtherDogs(modelBatch, environment, delta * 1000);
+		renderMobs(modelBatch, environment, delta * 1000);
 		modelBatch.end();
 		stage.act(delta);
 		stage.draw();
