@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -13,9 +14,11 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder.VertexInfo;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -29,6 +32,7 @@ import xyz.arturinsh.GameObjects.CharacterInstance;
 import xyz.arturinsh.GameObjects.MobInstance;
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;
+import xyz.arturinsh.Helpers.HeightField;
 import xyz.arturinsh.Helpers.InputHandler;
 import xyz.arturinsh.Helpers.PersonCamera;
 
@@ -44,6 +48,11 @@ public class WorldScreen extends GameScreen {
 	private Button upButton, downButton, leftButton, rightButton;
 	private Skin skin;
 	private Table table;
+
+	HeightField field;
+	Renderable ground;
+	boolean morph = true;
+	Texture texture;
 
 	public WorldScreen(GameWorld _world) {
 		super(_world);
@@ -143,6 +152,34 @@ public class WorldScreen extends GameScreen {
 
 		// shadowBatch = new ModelBatch(new DepthShaderProvider());
 		environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+
+		texture = new Texture(Gdx.files.internal("heightmap3.png"));
+
+		Pixmap data = new Pixmap(Gdx.files.internal("heightmap6.png"));
+		field = new HeightField(true, data, true,
+				Usage.Position | Usage.Normal | Usage.ColorUnpacked | Usage.TextureCoordinates);
+		data.dispose();
+		field.corner00.set(0f, 0, 0f);
+		field.corner10.set(150f, 0, 0f);
+		field.corner01.set(0f, 0, 150f);
+		field.corner11.set(150f, 0, 150f);
+		// field.color00.set(0, 1, 0, 1);
+		// field.color01.set(0, 1, 0, 1);
+		// field.color10.set(0, 1, 0, 1);
+		// field.color11.set(0, 1, 0, 1);
+		field.magnitude.set(0f, 20f, 0f);
+		field.update();
+
+		ground = new Renderable();
+		ground.environment = environment;
+		ground.meshPart.mesh = field.mesh;
+		ground.meshPart.primitiveType = GL20.GL_TRIANGLES;
+		ground.meshPart.offset = 0;
+		long test = field.mesh.getNumIndices();
+		System.out.println(test);
+		ground.meshPart.size = field.mesh.getNumIndices();
+		ground.meshPart.update();
+		ground.material = new Material(TextureAttribute.createDiffuse(texture));
 	}
 
 	// bigDelta = delta *1000
@@ -165,17 +202,31 @@ public class WorldScreen extends GameScreen {
 		Gdx.gl.glClearColor(1, 1, 1, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-		usersCharacterInstance.update(delta);
+		
+		Vector3 out = new Vector3();
+
+		int x = 0, y = 0;
+
+		Vector3 charPos = usersCharacterInstance.getPosition();
+		x = (int) charPos.x;
+		y = (int) charPos.z;
+		field.getPositionAt(out, x, y);
+		//System.out.println("x:"+x+" y:"+y+" out.x:"+out.x+" out.y:"+out.y+" out.z:"+out.z);
+		
+		usersCharacterInstance.update(delta, out.y);
 		camera.update(delta);
 
 		modelBatch.begin(camera);
-		modelBatch.render(groundInstance, environment);
+		// modelBatch.render(groundInstance, environment);
 		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
 		renderOtherPlayers(modelBatch, environment, delta * 1000);
 		renderMobs(modelBatch, environment, delta * 1000);
+		modelBatch.render(ground);
 		modelBatch.end();
 		stage.act(delta);
 		stage.draw();
+
+		
 	}
 
 	@Override

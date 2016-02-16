@@ -36,7 +36,7 @@ public class CharacterInstance {
 		changeModelMaterial(_character.charClass);
 		modelInstance = new ModelInstance(model);
 		animController = new AnimationController(modelInstance);
-		updatePositionOrientation(new Vector3(_character.x, _character.y, _character.z), _character.r);
+		updatePositionOrientation(new Vector3(_character.x, _character.y, _character.z), _character.r, 0);
 		newPosition = getPosition();
 		newRotation = getRotation();
 	}
@@ -108,13 +108,15 @@ public class CharacterInstance {
 		rotateSpeed = 0;
 	}
 
-	public void update(float delta) {
+	public void update(float delta, float height) {
 
 		this.modelInstance.transform.rotate(Vector3.Y, rotateSpeed * delta);
 		this.modelInstance.transform.translate(0, 0, moveSpeed * delta);
 
+		updatePositionOrientation(getPosition(), getRotation(), height);
+
 		if (moveSpeed != 0)
-			animController.setAnimation("Armature|ArmatureAction", -1, 6, null);
+			animController.setAnimation("Armature|Walk", -1, 6, null);
 		else
 			animController.setAnimation(null);
 
@@ -133,9 +135,11 @@ public class CharacterInstance {
 		return _character.charName.matches(character.charName) && _character.charClass == character.charClass;
 	}
 
-	private void updatePositionOrientation(Vector3 position, float r) {
+	private void updatePositionOrientation(Vector3 position, float r, float height) {
 		Quaternion orientation = new Quaternion();
 		orientation.setEulerAngles(r, 0, 0);
+		if(height!=0)
+			position.y = height;
 		this.modelInstance.transform.set(position, orientation);
 	}
 
@@ -192,12 +196,12 @@ public class CharacterInstance {
 			realStep.y *= bigDelta;
 			realStep.z *= bigDelta;
 			newPos.add(realStep);
-			animController.setAnimation("Armature|ArmatureAction", -1, 6, null);
+			animController.setAnimation("Armature|Walk", -1, 6, null);
 		} else {
 			newPos.set(newPosition);
 			animController.setAnimation(null);
 		}
 		animController.update(bigDelta / 1000);
-		updatePositionOrientation(newPos, newRot);
+		updatePositionOrientation(newPos, newRot, 0);
 	}
 }

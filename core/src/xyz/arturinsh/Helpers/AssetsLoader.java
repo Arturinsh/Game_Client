@@ -30,11 +30,11 @@ public class AssetsLoader {
 	            Usage.Position | Usage.Normal);
 	     
 		assets = new AssetManager();
-		assets.load("bot_monkey.g3db", Model.class);
-		assets.load("tDog.g3db",Model.class);
+		assets.load("tDog.g3db", Model.class);
+		assets.load("tDog2.g3db",Model.class);
 		assets.finishLoading();
-		monkeyModel = assets.get("bot_monkey.g3db", Model.class);
-		dog = assets.get("tDog.g3db",Model.class);
+		monkeyModel = assets.get("tDog.g3db", Model.class);
+		dog = assets.get("tDog2.g3db",Model.class);
 		
 	}
 
