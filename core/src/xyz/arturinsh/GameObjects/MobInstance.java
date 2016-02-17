@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
 import xyz.arturinsh.Helpers.AssetsLoader;
+import xyz.arturinsh.Helpers.HeightField;
 
 public class MobInstance {
 	private AnimationController animController;
@@ -29,7 +30,7 @@ public class MobInstance {
 		model = AssetsLoader.getDog();
 		modelInstance = new ModelInstance(model);
 		animController = new AnimationController(modelInstance);
-		updatePositionOrientation(new Vector3(x, y, z), rotation);
+		updatePositionOrientation(new Vector3(x, y, z), rotation, 0);
 		newPosition = getPosition();
 		newRotation = getRotation();
 	}
@@ -54,7 +55,7 @@ public class MobInstance {
 		return rotation.getYaw();
 	}
 
-	public void update(float bigDelta) {
+	public void update(float bigDelta, HeightField field) {
 		Vector3 realStep = new Vector3();
 		realStep.set(step);
 		Vector3 newPos = getPosition();
@@ -77,7 +78,13 @@ public class MobInstance {
 			animController.setAnimation(null);
 		}
 		animController.update(bigDelta / 1000);
-		updatePositionOrientation(newPos, newRot);
+		
+		Vector3 out = new Vector3();
+		int x = (int) getPosition().x;
+		int y = (int) getPosition().z;
+		field.getPositionAt(out, x, y);
+		
+		updatePositionOrientation(newPos, newRot, out.y);
 	}
 
 	public void updateMob(float x, float y, float z, float rotation, long time) {
@@ -115,9 +122,10 @@ public class MobInstance {
 		}
 	}
 
-	private void updatePositionOrientation(Vector3 position, float r) {
+	private void updatePositionOrientation(Vector3 position, float r, float height) {
 		Quaternion orientation = new Quaternion();
 		orientation.setEulerAngles(r, 0, 0);
+		position.y = height;
 		this.modelInstance.transform.set(position, orientation);
 	}
 

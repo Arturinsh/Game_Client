@@ -181,16 +181,16 @@ public class WorldScreen extends GameScreen {
 	}
 
 	// bigDelta = delta *1000
-	private void renderOtherPlayers(ModelBatch batch, Environment env, float bigDelta) {
+	private void renderOtherPlayers(ModelBatch batch, Environment env, float bigDelta, HeightField field) {
 		for (CharacterInstance player : world.getOtherPlayers()) {
-			player.updateOther(bigDelta);
+			player.updateOther(bigDelta, field);
 			batch.render(player.getModelInstance(), env);
 		}
 	}
 
-	private void renderMobs(ModelBatch batch, Environment env, float bigDelta) {
+	private void renderMobs(ModelBatch batch, Environment env, float bigDelta, HeightField field) {
 		for (MobInstance mob : world.getMobs()) {
-			mob.update(bigDelta);
+			mob.update(bigDelta, field);
 			batch.render(mob.getModelInstance(), env);
 		}
 	}
@@ -200,25 +200,14 @@ public class WorldScreen extends GameScreen {
 		Gdx.gl.glClearColor(1, 1, 1, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-		
-		Vector3 out = new Vector3();
-
-		int x = 0, y = 0;
-
-		Vector3 charPos = usersCharacterInstance.getPosition();
-		x = (int) charPos.x;
-		y = (int) charPos.z;
-		field.getPositionAt(out, x, y);
-		//System.out.println("x:"+x+" y:"+y+" out.x:"+out.x+" out.y:"+out.y+" out.z:"+out.z);
-		
-		usersCharacterInstance.update(delta, out.y);
+		usersCharacterInstance.update(delta, field);
 		camera.update(delta);
 
 		modelBatch.begin(camera);
 		// modelBatch.render(groundInstance, environment);
 		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
-		renderOtherPlayers(modelBatch, environment, delta * 1000);
-		renderMobs(modelBatch, environment, delta * 1000);
+		renderOtherPlayers(modelBatch, environment, delta * 1000, field);
+		renderMobs(modelBatch, environment, delta * 1000, field);
 		modelBatch.render(ground);
 		modelBatch.end();
 		stage.act(delta);

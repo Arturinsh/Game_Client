@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
 import xyz.arturinsh.Helpers.AssetsLoader;
+import xyz.arturinsh.Helpers.HeightField;
 import xyz.arturinsh.Helpers.ObjectRotation;
 import xyz.arturinsh.Network.Packets.UserCharacter;
 
@@ -111,11 +112,16 @@ public class CharacterInstance {
 		rotateSpeed = 0;
 	}
 
-	public void update(float delta, float height) {
+	public void update(float delta, HeightField field) {
 		 this.modelInstance.transform.translate(0, 0, moveSpeed * delta);
 		realRotation.addToRot(rotateSpeed*delta);
-
-		updatePositionOrientation(getPosition(), realRotation.getRotation(), height);
+		
+		Vector3 out = new Vector3();
+		int x = (int) getPosition().x;
+		int y = (int) getPosition().z;
+		field.getPositionAt(out, x, y);
+		
+		updatePositionOrientation(getPosition(), realRotation.getRotation(), out.y);
 
 		if (moveSpeed != 0)
 			animController.setAnimation("Armature|Walk", -1, 6, null);
@@ -181,7 +187,7 @@ public class CharacterInstance {
 	}
 
 	// bigDelta = delta *1000
-	public void updateOther(float bigDelta) {
+	public void updateOther(float bigDelta, HeightField field) {
 		Vector3 realStep = new Vector3();
 		realStep.set(step);
 		Vector3 newPos = getPosition();
@@ -204,6 +210,12 @@ public class CharacterInstance {
 			animController.setAnimation(null);
 		}
 		animController.update(bigDelta / 1000);
-		updatePositionOrientation(newPos, newRot, 0);
+		
+		Vector3 out = new Vector3();
+		int x = (int) getPosition().x;
+		int y = (int) getPosition().z;
+		field.getPositionAt(out, x, y);
+		
+		updatePositionOrientation(newPos, newRot, out.y);
 	}
 }
