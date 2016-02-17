@@ -49,10 +49,10 @@ public class WorldScreen extends GameScreen {
 	private Skin skin;
 	private Table table;
 
-	HeightField field;
-	Renderable ground;
+	HeightField field, field2;
+	Renderable ground, ground2;
 	boolean morph = true;
-	Texture texture;
+	Texture texture, texture2;
 
 	public WorldScreen(GameWorld _world) {
 		super(_world);
@@ -163,13 +163,13 @@ public class WorldScreen extends GameScreen {
 		field.corner10.set(180f, 0, 0f);
 		field.corner01.set(0f, 0, 180f);
 		field.corner11.set(180f, 0, 180f);
-		// field.color00.set(0, 1, 0, 1);
-		// field.color01.set(0, 1, 0, 1);
-		// field.color10.set(0, 1, 0, 1);
-		// field.color11.set(0, 1, 0, 1);
+		field.color00.set(1, 0, 0, 1);
+		field.color01.set(0, 1, 0, 1);
+		field.color10.set(0, 0, 1, 1);
+		field.color11.set(1, 0, 1, 1);
 		field.magnitude.set(0f, 20f, 0f);
 		field.update();
-
+		
 		ground = new Renderable();
 		ground.environment = environment;
 		ground.meshPart.mesh = field.mesh;
@@ -178,6 +178,32 @@ public class WorldScreen extends GameScreen {
 		ground.meshPart.size = field.mesh.getNumIndices();
 		ground.meshPart.update();
 		ground.material = new Material(TextureAttribute.createDiffuse(texture));
+		
+		texture2 = new Texture(Gdx.files.internal("heightmap3.png"));
+
+		Pixmap data2 = new Pixmap(Gdx.files.internal("heightmap7.png"));
+		field2 = new HeightField(true, data2, true,
+				Usage.Position | Usage.Normal | Usage.ColorUnpacked | Usage.TextureCoordinates);
+		data2.dispose();
+		field2.corner00.set(180f, 0, 0f);
+		field2.corner10.set(360f, 0, 0f);
+		field2.corner01.set(180f, 0, 180f);
+		field2.corner11.set(360f, 0, 180f);
+		field2.color00.set(0, 0, 1, 1);
+		field2.color01.set(1, 0, 1, 1);
+		field2.color10.set(1, 0, 0, 1);
+		field2.color11.set(0, 1, 0, 1);
+		field2.magnitude.set(0f, 20f, 0f);
+		field2.update();
+		
+		ground2 = new Renderable();
+		ground2.environment = environment;
+		ground2.meshPart.mesh = field2.mesh;
+		ground2.meshPart.primitiveType = GL20.GL_TRIANGLES;
+		ground2.meshPart.offset = 0;
+		ground2.meshPart.size = field2.mesh.getNumIndices();
+		ground2.meshPart.update();
+		ground2.material = new Material(TextureAttribute.createDiffuse(texture2));
 	}
 
 	// bigDelta = delta *1000
@@ -209,6 +235,7 @@ public class WorldScreen extends GameScreen {
 		renderOtherPlayers(modelBatch, environment, delta * 1000, field);
 		renderMobs(modelBatch, environment, delta * 1000, field);
 		modelBatch.render(ground);
+		modelBatch.render(ground2);
 		modelBatch.end();
 		stage.act(delta);
 		stage.draw();
