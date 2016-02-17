@@ -155,14 +155,14 @@ public class WorldScreen extends GameScreen {
 
 		texture = new Texture(Gdx.files.internal("heightmap3.png"));
 
-		Pixmap data = new Pixmap(Gdx.files.internal("heightmap6.png"));
+		Pixmap data = new Pixmap(Gdx.files.internal("heightmap7.png"));
 		field = new HeightField(true, data, true,
 				Usage.Position | Usage.Normal | Usage.ColorUnpacked | Usage.TextureCoordinates);
 		data.dispose();
 		field.corner00.set(0f, 0, 0f);
-		field.corner10.set(150f, 0, 0f);
-		field.corner01.set(0f, 0, 150f);
-		field.corner11.set(150f, 0, 150f);
+		field.corner10.set(180f, 0, 0f);
+		field.corner01.set(0f, 0, 180f);
+		field.corner11.set(180f, 0, 180f);
 		// field.color00.set(0, 1, 0, 1);
 		// field.color01.set(0, 1, 0, 1);
 		// field.color10.set(0, 1, 0, 1);
@@ -175,8 +175,6 @@ public class WorldScreen extends GameScreen {
 		ground.meshPart.mesh = field.mesh;
 		ground.meshPart.primitiveType = GL20.GL_TRIANGLES;
 		ground.meshPart.offset = 0;
-		long test = field.mesh.getNumIndices();
-		System.out.println(test);
 		ground.meshPart.size = field.mesh.getNumIndices();
 		ground.meshPart.update();
 		ground.material = new Material(TextureAttribute.createDiffuse(texture));

@@ -9,8 +9,8 @@ import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
-import jdk.net.NetworkPermission;
 import xyz.arturinsh.Helpers.AssetsLoader;
+import xyz.arturinsh.Helpers.ObjectRotation;
 import xyz.arturinsh.Network.Packets.UserCharacter;
 
 public class CharacterInstance {
@@ -30,6 +30,8 @@ public class CharacterInstance {
 	private float oldRotation = 0;
 	private float newRotation = 0;
 
+	private ObjectRotation realRotation = new ObjectRotation();
+
 	public CharacterInstance(UserCharacter _character) {
 		model = AssetsLoader.getMonkeyModel();
 		character = _character;
@@ -39,6 +41,7 @@ public class CharacterInstance {
 		updatePositionOrientation(new Vector3(_character.x, _character.y, _character.z), _character.r, 0);
 		newPosition = getPosition();
 		newRotation = getRotation();
+		realRotation = new ObjectRotation(_character.r);
 	}
 
 	public void changeClass(CharacterClass charClass) {
@@ -109,11 +112,10 @@ public class CharacterInstance {
 	}
 
 	public void update(float delta, float height) {
+		 this.modelInstance.transform.translate(0, 0, moveSpeed * delta);
+		realRotation.addToRot(rotateSpeed*delta);
 
-		this.modelInstance.transform.rotate(Vector3.Y, rotateSpeed * delta);
-		this.modelInstance.transform.translate(0, 0, moveSpeed * delta);
-
-		updatePositionOrientation(getPosition(), getRotation(), height);
+		updatePositionOrientation(getPosition(), realRotation.getRotation(), height);
 
 		if (moveSpeed != 0)
 			animController.setAnimation("Armature|Walk", -1, 6, null);
@@ -138,7 +140,7 @@ public class CharacterInstance {
 	private void updatePositionOrientation(Vector3 position, float r, float height) {
 		Quaternion orientation = new Quaternion();
 		orientation.setEulerAngles(r, 0, 0);
-		if(height!=0)
+		if (height != 0)
 			position.y = height;
 		this.modelInstance.transform.set(position, orientation);
 	}

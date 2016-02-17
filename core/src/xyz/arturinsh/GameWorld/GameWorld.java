@@ -245,7 +245,6 @@ public class GameWorld {
 	private boolean hasCharacter(PlayerPositionUpdate update, List<CharacterInstance> list, long time) {
 		for (CharacterInstance player : list) {
 			if (player.matchesCharacter(update.character)) {
-				System.out.println(update.character.y);
 				player.updatePlayer(update.character.x, update.character.y, update.character.z, update.character.r,
 						time);
 				return true;
