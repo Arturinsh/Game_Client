@@ -3,6 +3,7 @@ package xyz.arturinsh.Helpers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g3d.Material;
@@ -15,13 +16,16 @@ public class AssetsLoader {
 	private static Skin skin;
 	private static Model monkeyModel, ground, dog;
 	private static AssetManager assets;
-	private static Texture up, down, right, left, sky;
-
+	private static Texture up, down, right, left, sky, heightMapTexture;
+	private static Pixmap heightMapData;
+	
 	public static void initUI() {
 		up = new Texture(Gdx.files.internal("triangle_up.png"));
 		down = new Texture(Gdx.files.internal("triangle_down.png"));
 		right = new Texture(Gdx.files.internal("triangle_right.png"));
 		left = new Texture(Gdx.files.internal("triangle_left.png"));
+		heightMapTexture = new Texture(Gdx.files.internal("heightmap3.png"));
+		heightMapData = new Pixmap(Gdx.files.internal("heightmap7.png"));
 		sky = new Texture(Gdx.files.internal("sky1.jpg"));
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
 		 ModelBuilder modelBuilder = new ModelBuilder();
@@ -72,5 +76,13 @@ public class AssetsLoader {
 	
 	public static Texture getSky(){
 		return sky;
+	}
+
+	public static Texture getHeightMapTexture() {
+		return heightMapTexture;
+	}
+
+	public static Pixmap getHeightMapData() {
+		return heightMapData;
 	}
 }

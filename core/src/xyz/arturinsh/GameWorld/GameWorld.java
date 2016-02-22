@@ -221,14 +221,9 @@ public class GameWorld {
 		return mobs;
 	}
 
-	// public List<DogInstance> getDogs() {
-	// return otherDogs;
-	// }
-
 	public void updateWorld(SnapShot snapShot) {
 		updatePlayers(snapShot);
 		updateMobs(snapShot);
-		// updateDogs(snapShot);
 	}
 
 	private void updatePlayers(SnapShot snapShot) {

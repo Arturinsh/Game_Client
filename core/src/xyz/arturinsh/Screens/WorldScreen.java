@@ -5,7 +5,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -18,7 +17,6 @@ import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder.VertexInfo;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -33,6 +31,7 @@ import xyz.arturinsh.GameObjects.MobInstance;
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;
 import xyz.arturinsh.Helpers.HeightField;
+import xyz.arturinsh.Helpers.HeightMap;
 import xyz.arturinsh.Helpers.InputHandler;
 import xyz.arturinsh.Helpers.PersonCamera;
 
@@ -49,10 +48,11 @@ public class WorldScreen extends GameScreen {
 	private Skin skin;
 	private Table table;
 
-	HeightField field, field2;
-	Renderable ground, ground2;
+	HeightField field, field2, field3;
+	Renderable ground, ground2, ground3;
 	boolean morph = true;
-	Texture texture, texture2;
+	Texture texture, texture2, texture3;
+	HeightMap heightMap;
 
 	public WorldScreen(GameWorld _world) {
 		super(_world);
@@ -144,80 +144,114 @@ public class WorldScreen extends GameScreen {
 
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.8f, 0.8f, 0.8f, 1.0f));
-		// environment.add((shadowLight = new DirectionalShadowLight(1024, 1024,
-		// 30f, 30f, 1f, 500f)).set(0.8f, 0.8f, 0.8f,
-		// -1f, -.8f, -.2f));
-		//
-		// environment.shadowMap = shadowLight;
-
-		// shadowBatch = new ModelBatch(new DepthShaderProvider());
 		environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
-		texture = new Texture(Gdx.files.internal("heightmap3.png"));
+		heightMap = new HeightMap(AssetsLoader.getHeightMapTexture(), AssetsLoader.getHeightMapData(), environment);
 
-		Pixmap data = new Pixmap(Gdx.files.internal("heightmap7.png"));
-		field = new HeightField(true, data, true,
-				Usage.Position | Usage.Normal | Usage.ColorUnpacked | Usage.TextureCoordinates);
-		data.dispose();
-		field.corner00.set(0f, 0, 0f);
-		field.corner10.set(180f, 0, 0f);
-		field.corner01.set(0f, 0, 180f);
-		field.corner11.set(180f, 0, 180f);
-		field.color00.set(1, 0, 0, 1);
-		field.color01.set(0, 1, 0, 1);
-		field.color10.set(0, 0, 1, 1);
-		field.color11.set(1, 0, 1, 1);
-		field.magnitude.set(0f, 20f, 0f);
-		field.update();
-		
-		ground = new Renderable();
-		ground.environment = environment;
-		ground.meshPart.mesh = field.mesh;
-		ground.meshPart.primitiveType = GL20.GL_TRIANGLES;
-		ground.meshPart.offset = 0;
-		ground.meshPart.size = field.mesh.getNumIndices();
-		ground.meshPart.update();
-		ground.material = new Material(TextureAttribute.createDiffuse(texture));
-		
-		texture2 = new Texture(Gdx.files.internal("heightmap3.png"));
+		// texture = new Texture(Gdx.files.internal("heightmap3.png"));
+		//
+		// Pixmap data = new Pixmap(Gdx.files.internal("heightmap7.png"));
+		// field = new HeightField(true, data, true,
+		// Usage.Position | Usage.Normal | Usage.ColorUnpacked |
+		// Usage.TextureCoordinates);
+		// data.dispose();
+		// field.corner00.set(0f, 0, 0f);
+		// field.corner10.set(180f, 0, 0f);
+		// field.corner01.set(0f, 0, 180f);
+		// field.corner11.set(180f, 0, 180f);
+		// field.color00.set(1, 0, 0, 1);
+		// field.color01.set(0, 1, 0, 1);
+		// field.color10.set(0, 0, 1, 1);
+		// field.color11.set(1, 0, 1, 1);
+		// field.magnitude.set(0f, 20f, 0f);
+		// field.update();
+		//
+		// ground = new Renderable();
+		// ground.environment = environment;
+		// ground.meshPart.mesh = field.mesh;
+		// ground.meshPart.primitiveType = GL20.GL_TRIANGLES;
+		// ground.meshPart.offset = 0;
+		// ground.meshPart.size = field.mesh.getNumIndices();
+		// ground.meshPart.update();
+		// ground.material = new
+		// Material(TextureAttribute.createDiffuse(texture));
+		//
+		// texture2 = new Texture(Gdx.files.internal("heightmap3.png"));
+		//
+		// Pixmap data2 = new Pixmap(Gdx.files.internal("heightmap7.png"));
+		// field2 = new HeightField(true, data2, true,
+		// Usage.Position | Usage.Normal | Usage.ColorUnpacked |
+		// Usage.TextureCoordinates);
+		// data2.dispose();
+		// field2.corner00.set(180f, 0, 0f);
+		// field2.corner10.set(360f, 0, 0f);
+		// field2.corner01.set(180f, 0, 180f);
+		// field2.corner11.set(360f, 0, 180f);
+		// field2.color00.set(0, 0, 1, 1);
+		// field2.color01.set(1, 0, 1, 1);
+		// field2.color10.set(1, 0, 0, 1);
+		// field2.color11.set(0, 1, 0, 1);
+		// field2.magnitude.set(0f, 20f, 0f);
+		// field2.update();
+		//
+		// ground2 = new Renderable();
+		// ground2.environment = environment;
+		// ground2.meshPart.mesh = field2.mesh;
+		// ground2.meshPart.primitiveType = GL20.GL_TRIANGLES;
+		// ground2.meshPart.offset = 0;
+		// ground2.meshPart.size = field2.mesh.getNumIndices();
+		// ground2.meshPart.update();
+		// ground2.material = new
+		// Material(TextureAttribute.createDiffuse(texture2));
+		//
+		// texture3 = new Texture(Gdx.files.internal("heightmap3.png"));
+		//
+		// Pixmap data3 = new Pixmap(Gdx.files.internal("heightmap7.png"));
+		// field3 = new HeightField(true, data3, true,
+		// Usage.Position | Usage.Normal | Usage.ColorUnpacked |
+		// Usage.TextureCoordinates);
+		// data3.dispose();
+		// field3.corner00.set(0f, 0, 180f);
+		// field3.corner10.set(180f, 0, 180f);
+		// field3.corner01.set(0f, 0, 360f);
+		// field3.corner11.set(180f, 0, 360f);
+		// field3.color00.set(0, 0, 1, 1);
+		// field3.color01.set(1, 0, 1, 1);
+		// field3.color10.set(1, 0, 0, 1);
+		// field3.color11.set(0, 1, 0, 1);
+		// field3.magnitude.set(0f, 20f, 0f);
+		// field3.update();
+		//
+		// ground3 = new Renderable();
+		// ground3.environment = environment;
+		// ground3.meshPart.mesh = field3.mesh;
+		// ground3.meshPart.primitiveType = GL20.GL_TRIANGLES;
+		// ground3.meshPart.offset = 0;
+		// ground3.meshPart.size = field2.mesh.getNumIndices();
+		// ground3.meshPart.update();
+		// ground3.material = new
+		// Material(TextureAttribute.createDiffuse(texture2));
 
-		Pixmap data2 = new Pixmap(Gdx.files.internal("heightmap7.png"));
-		field2 = new HeightField(true, data2, true,
-				Usage.Position | Usage.Normal | Usage.ColorUnpacked | Usage.TextureCoordinates);
-		data2.dispose();
-		field2.corner00.set(180f, 0, 0f);
-		field2.corner10.set(360f, 0, 0f);
-		field2.corner01.set(180f, 0, 180f);
-		field2.corner11.set(360f, 0, 180f);
-		field2.color00.set(0, 0, 1, 1);
-		field2.color01.set(1, 0, 1, 1);
-		field2.color10.set(1, 0, 0, 1);
-		field2.color11.set(0, 1, 0, 1);
-		field2.magnitude.set(0f, 20f, 0f);
-		field2.update();
-		
-		ground2 = new Renderable();
-		ground2.environment = environment;
-		ground2.meshPart.mesh = field2.mesh;
-		ground2.meshPart.primitiveType = GL20.GL_TRIANGLES;
-		ground2.meshPart.offset = 0;
-		ground2.meshPart.size = field2.mesh.getNumIndices();
-		ground2.meshPart.update();
-		ground2.material = new Material(TextureAttribute.createDiffuse(texture2));
 	}
 
 	// bigDelta = delta *1000
-	private void renderOtherPlayers(ModelBatch batch, Environment env, float bigDelta, HeightField field) {
+	private void renderOtherPlayers(ModelBatch batch, Environment env, float bigDelta, HeightMap map) {
 		for (CharacterInstance player : world.getOtherPlayers()) {
-			player.updateOther(bigDelta, field);
+			player.updateOther(bigDelta, map);
 			batch.render(player.getModelInstance(), env);
 		}
 	}
 
-	private void renderMobs(ModelBatch batch, Environment env, float bigDelta, HeightField field) {
+	private void renderMobs(ModelBatch batch, Environment env, float bigDelta, HeightMap map) {
 		for (MobInstance mob : world.getMobs()) {
-			mob.update(bigDelta, field);
+			mob.update(bigDelta, map);
 			batch.render(mob.getModelInstance(), env);
+		}
+	}
+
+	private void renderGround(ModelBatch batch) {
+		for (Renderable render : heightMap.groundRenderableArray()) {
+			batch.render(render);
 		}
 	}
 
@@ -226,21 +260,18 @@ public class WorldScreen extends GameScreen {
 		Gdx.gl.glClearColor(1, 1, 1, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-		usersCharacterInstance.update(delta, field);
+		usersCharacterInstance.update(delta, heightMap);
 		camera.update(delta);
 
 		modelBatch.begin(camera);
-		// modelBatch.render(groundInstance, environment);
 		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
-		renderOtherPlayers(modelBatch, environment, delta * 1000, field);
-		renderMobs(modelBatch, environment, delta * 1000, field);
-		modelBatch.render(ground);
-		modelBatch.render(ground2);
+		renderOtherPlayers(modelBatch, environment, delta * 1000, heightMap);
+		renderMobs(modelBatch, environment, delta * 1000, heightMap);
+		renderGround(modelBatch);
 		modelBatch.end();
 		stage.act(delta);
 		stage.draw();
 
-		
 	}
 
 	@Override

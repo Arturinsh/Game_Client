@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
 import xyz.arturinsh.Helpers.AssetsLoader;
-import xyz.arturinsh.Helpers.HeightField;
+import xyz.arturinsh.Helpers.HeightMap;
 
 public class MobInstance {
 	private AnimationController animController;
@@ -24,8 +24,8 @@ public class MobInstance {
 	private float newRotation = 0;
 
 	private long ID;
-	
-	public MobInstance(long id, float x, float y, float z, float rotation){
+
+	public MobInstance(long id, float x, float y, float z, float rotation) {
 		ID = id;
 		model = AssetsLoader.getDog();
 		modelInstance = new ModelInstance(model);
@@ -55,7 +55,7 @@ public class MobInstance {
 		return rotation.getYaw();
 	}
 
-	public void update(float bigDelta, HeightField field) {
+	public void update(float bigDelta, HeightMap map) {
 		Vector3 realStep = new Vector3();
 		realStep.set(step);
 		Vector3 newPos = getPosition();
@@ -78,13 +78,12 @@ public class MobInstance {
 			animController.setAnimation(null);
 		}
 		animController.update(bigDelta / 1000);
-		
-		Vector3 out = new Vector3();
+
 		int x = (int) getPosition().x;
 		int y = (int) getPosition().z;
-		field.getPositionAt(out, x, y);
-		
-		updatePositionOrientation(newPos, newRot, out.y);
+		float height = map.getHeight(x, y);
+
+		updatePositionOrientation(newPos, newRot, height);
 	}
 
 	public void updateMob(float x, float y, float z, float rotation, long time) {
@@ -136,5 +135,5 @@ public class MobInstance {
 	public void setID(int iD) {
 		ID = iD;
 	}
-	
+
 }
