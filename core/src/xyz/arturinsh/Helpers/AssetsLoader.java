@@ -24,8 +24,8 @@ public class AssetsLoader {
 		down = new Texture(Gdx.files.internal("triangle_down.png"));
 		right = new Texture(Gdx.files.internal("triangle_right.png"));
 		left = new Texture(Gdx.files.internal("triangle_left.png"));
-		heightMapTexture = new Texture(Gdx.files.internal("heightmap3.png"));
-		heightMapData = new Pixmap(Gdx.files.internal("heightmap7.png"));
+		heightMapTexture = new Texture(Gdx.files.internal("pixmap.png"));
+		heightMapData = new Pixmap(Gdx.files.internal("pixmap.png"));
 		sky = new Texture(Gdx.files.internal("sky1.jpg"));
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
 		 ModelBuilder modelBuilder = new ModelBuilder();
@@ -39,7 +39,7 @@ public class AssetsLoader {
 		assets.finishLoading();
 		monkeyModel = assets.get("tDog.g3db", Model.class);
 		dog = assets.get("tDog2.g3db",Model.class);
-		
+		//TODO add dispose 
 	}
 
 	public static Skin getSkin() {
