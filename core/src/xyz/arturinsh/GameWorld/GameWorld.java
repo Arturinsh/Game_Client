@@ -229,6 +229,9 @@ public class GameWorld {
 	private void updatePlayers(SnapShot snapShot) {
 		for (PlayerPositionUpdate update : snapShot.snapshot) {
 			if (usersCharacterInstance != null && usersCharacterInstance.matchesCharacter(update.character)) {
+//				usersCharacterInstance.testPosition(update.character.x, update.character.y, update.character.z,
+//						update.character.r);
+				usersCharacterInstance.checkMovement(update);
 			} else if (hasCharacter(update, otherPlayers, snapShot.time.getTime())) {
 			} else {
 				CharacterInstance playerInstance = new CharacterInstance(update.character);

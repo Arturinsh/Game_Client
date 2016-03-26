@@ -1,6 +1,7 @@
 package xyz.arturinsh.Network;
 
 import java.util.TimerTask;
+import java.util.Date;
 
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryonet.Client;
@@ -24,10 +25,15 @@ public class UDPSender extends TimerTask {
 		posUpdate.character = world.getUsersCharacterInstance().getCharacter();
 		Vector3 position = world.getUsersCharacterInstance().getPosition();
 		posUpdate.character.x = position.x;
-		posUpdate.character.y = position.y;
+		posUpdate.character.y = 0;
 		posUpdate.character.z = position.z;
 		posUpdate.character.r = (int)world.getUsersCharacterInstance().getRotation();
+		posUpdate.timestamp = new Date();
 		client.sendUDP(posUpdate);
+		world.getUsersCharacterInstance().addMovementToBuffer(posUpdate);
+		
+//		System.out.println(posUpdate.character.x + " " + posUpdate.character.z + " "
+//				+ posUpdate.character.r);
 		// TestUDP test = new TestUDP();
 		// DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		// Date date = new Date();

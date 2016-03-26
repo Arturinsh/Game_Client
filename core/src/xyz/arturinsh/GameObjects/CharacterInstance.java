@@ -1,5 +1,8 @@
 package xyz.arturinsh.GameObjects;
 
+import java.util.ArrayList;
+import java.util.Date;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -10,9 +13,9 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
 import xyz.arturinsh.Helpers.AssetsLoader;
-import xyz.arturinsh.Helpers.HeightField;
 import xyz.arturinsh.Helpers.HeightMap;
 import xyz.arturinsh.Helpers.ObjectRotation;
+import xyz.arturinsh.Network.Packets.PlayerPositionUpdate;
 import xyz.arturinsh.Network.Packets.UserCharacter;
 
 public class CharacterInstance {
@@ -33,6 +36,7 @@ public class CharacterInstance {
 	private float newRotation = 0;
 
 	private ObjectRotation realRotation = new ObjectRotation();
+	private ArrayList<PlayerPositionUpdate> movementBuffer = new ArrayList<PlayerPositionUpdate>();
 
 	public CharacterInstance(UserCharacter _character) {
 		model = AssetsLoader.getMonkeyModel();
@@ -216,5 +220,60 @@ public class CharacterInstance {
 		float height = map.getHeight(x, y);
 
 		updatePositionOrientation(newPos, newRot, height);
+	}
+
+	// public void testPosition(float x, float y, float z, float r) {
+	//
+	// if (getPosition().x == x && getPosition().y == y && getPosition().z == z
+	// && (int)getRotation() == (int)r)
+	// System.out.println("True pos");
+	// else
+	// System.out.println("Different pos");
+	// }
+	//
+	// public float roundedFloat(float d, int decimalPlace) {
+	// return BigDecimal.valueOf(d).setScale(decimalPlace,
+	// BigDecimal.ROUND_HALF_UP).floatValue();
+	// }
+
+	public void addMovementToBuffer(PlayerPositionUpdate update) {
+		movementBuffer.add(update);
+		System.out.println("Add to buffer");
+	}
+
+	public void checkMovement(PlayerPositionUpdate update) {
+		System.out.println(" Buffer size = " + movementBuffer.size());
+		int index = movementBuffer.indexOf(update);
+		if (index > -1) {
+			PlayerPositionUpdate toTest = movementBuffer.get(index);
+			if (!positionUpdateCheck(toTest, update)) {
+				Vector3 positionCorrection = new Vector3(update.character.x, update.character.y, update.character.z);
+				updatePositionOrientation(positionCorrection, update.character.r, getPosition().y);
+//				System.out.println("Incorrect. Buffer size = " + movementBuffer.size());
+			} else {
+//				System.out.println("Correct. Buffer size = " + movementBuffer.size());
+			}
+			clearMovementBuffer(update.timestamp);
+//			System.out.println("After clear = " + movementBuffer.size());
+		} else {
+			// System.out.println("Not found");
+		}
+	}
+
+	private boolean positionUpdateCheck(PlayerPositionUpdate pos1, PlayerPositionUpdate pos2) {
+		return pos1.character.x == pos2.character.x && pos1.character.y == pos2.character.y
+				&& pos1.character.z == pos2.character.z && pos1.character.r == pos2.character.r;
+	}
+
+	private void clearMovementBuffer(Date timestamp) {
+		ArrayList<PlayerPositionUpdate> toDelete = new ArrayList<PlayerPositionUpdate>();
+		for (PlayerPositionUpdate update : movementBuffer) {
+			if (update.timestamp.getTime() <= timestamp.getTime()) {
+				toDelete.add(update);
+			}
+		}
+		for (PlayerPositionUpdate deleteUpdate : toDelete) {
+			movementBuffer.remove(deleteUpdate);
+		}
 	}
 }
