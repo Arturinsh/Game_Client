@@ -16,52 +16,73 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
-/** This is a test class, showing how one could implement a height field. See also {@link HeightMapTest}. Do not expect this to be
- * a fully supported and implemented height field class.
+/**
+ * This is a test class, showing how one could implement a height field. See
+ * also {@link HeightMapTest}. Do not expect this to be a fully supported and
+ * implemented height field class.
  * <p />
- * Represents a HeightField, which is an evenly spaced grid of values, where each value defines the height on that position of the
- * grid, so forming a 3D shape. Typically used for (relatively simple) terrains and such. See <a
- * href="http://en.wikipedia.org/wiki/Heightmap">wikipedia</a> for more information.
+ * Represents a HeightField, which is an evenly spaced grid of values, where
+ * each value defines the height on that position of the grid, so forming a 3D
+ * shape. Typically used for (relatively simple) terrains and such. See
+ * <a href="http://en.wikipedia.org/wiki/Heightmap">wikipedia</a> for more
+ * information.
  * <p />
- * A height field has a width and height, specifying the width and height of the grid. Points on this grid are specified using
- * integer values, named "x" and "y". Do not confuse these with the x, y and z floating point values representing coordinates in
- * world space.
+ * A height field has a width and height, specifying the width and height of the
+ * grid. Points on this grid are specified using integer values, named "x" and
+ * "y". Do not confuse these with the x, y and z floating point values
+ * representing coordinates in world space.
  * <p />
- * The values of the heightfield are normalized. Meaning that they typically range from 0 to 1 (but they can be negative or more
- * than one). The plane of the heightfield can be specified using the {@link #corner00}, {@link #corner01}, {@link #corner10} and
- * {@link #corner11} members. Where `corner00` is the location on the grid at x:0, y;0, `corner01` at x:0, y:height-1, `corner10`
- * at x:width-1, y:0 and `corner11` the location on the grid at x:width-1, y:height-1.
+ * The values of the heightfield are normalized. Meaning that they typically
+ * range from 0 to 1 (but they can be negative or more than one). The plane of
+ * the heightfield can be specified using the {@link #corner00},
+ * {@link #corner01}, {@link #corner10} and {@link #corner11} members. Where
+ * `corner00` is the location on the grid at x:0, y;0, `corner01` at x:0,
+ * y:height-1, `corner10` at x:width-1, y:0 and `corner11` the location on the
+ * grid at x:width-1, y:height-1.
  * <p />
- * The height and direction of the field can be set using the {@link #magnitude} vector. Typically this should be the vector
- * perpendicular to the heightfield. E.g. if the field is on the XZ plane, then the magnitude is typically pointing on the Y axis.
- * The length of the `magnitude` specifies the height of the height field. In other words, the word coordinate of a point on the
- * grid is specified as:
+ * The height and direction of the field can be set using the {@link #magnitude}
+ * vector. Typically this should be the vector perpendicular to the heightfield.
+ * E.g. if the field is on the XZ plane, then the magnitude is typically
+ * pointing on the Y axis. The length of the `magnitude` specifies the height of
+ * the height field. In other words, the word coordinate of a point on the grid
+ * is specified as:
  * <p />
  * base[y * width + x] + magnitude * value[y * width + x]
  * <p />
- * Use the {@link #getPositionAt(Vector3, int, int)} method to get the coordinate of a specific point on the grid.
+ * Use the {@link #getPositionAt(Vector3, int, int)} method to get the
+ * coordinate of a specific point on the grid.
  * <p />
- * You can set this heightfield using the constructor or one of the `set` methods. E.g. by specifying an array of values or a
- * {@link Pixmap}. The latter can be used to load a HeightMap, which is an image loaded from disc of which each texel is used to
- * specify the value for each point on the field. Be aware that the total number of vertices cannot exceed 32k. Using a large
+ * You can set this heightfield using the constructor or one of the `set`
+ * methods. E.g. by specifying an array of values or a {@link Pixmap}. The
+ * latter can be used to load a HeightMap, which is an image loaded from disc of
+ * which each texel is used to specify the value for each point on the field. Be
+ * aware that the total number of vertices cannot exceed 32k. Using a large
  * height map will result in unpredicted results.
  * <p />
- * You can also manually modify the heightfield by directly accessing the {@link #data} member. The index within this array can be
- * calculates as: `y * width + x`. E.g. `field.data[y * field.width + x] = value;`. When you modify the data then you can update
- * the {@link #mesh} using the {@link #update()} method.
+ * You can also manually modify the heightfield by directly accessing the
+ * {@link #data} member. The index within this array can be calculates as: `y *
+ * width + x`. E.g. `field.data[y * field.width + x] = value;`. When you modify
+ * the data then you can update the {@link #mesh} using the {@link #update()}
+ * method.
  * <p />
- * The {@link #mesh} member can be used to render the height field. The vertex attributes this mesh contains are specified in the
- * constructor. There are two ways for generating the mesh: smooth and sharp.
+ * The {@link #mesh} member can be used to render the height field. The vertex
+ * attributes this mesh contains are specified in the constructor. There are two
+ * ways for generating the mesh: smooth and sharp.
  * <p />
- * Smooth can be forced by specifying `true` for the `smooth` argument of the constructor. Otherwise it will be based on whether
- * the specified vertex attributes contains a normal attribute. If there is no normal attribute then the mesh will always be
- * smooth (even when you specify `false` in the constructor). In this case the number of vertices is the same as the amount of
- * grid points. Causing vertices to be shared amongst multiple faces.
+ * Smooth can be forced by specifying `true` for the `smooth` argument of the
+ * constructor. Otherwise it will be based on whether the specified vertex
+ * attributes contains a normal attribute. If there is no normal attribute then
+ * the mesh will always be smooth (even when you specify `false` in the
+ * constructor). In this case the number of vertices is the same as the amount
+ * of grid points. Causing vertices to be shared amongst multiple faces.
  * <p />
- * Sharp will be used if the vertex attributes contains a normal attribute and you didnt specify `true` for the `smooth` argument
- * of the constructor. This will cause the number of vertices to be around four times the amount grid points and each normal is
- * estimated for each face instead of each point.
- * @author Xoppa */
+ * Sharp will be used if the vertex attributes contains a normal attribute and
+ * you didnt specify `true` for the `smooth` argument of the constructor. This
+ * will cause the number of vertices to be around four times the amount grid
+ * points and each normal is estimated for each face instead of each point.
+ * 
+ * @author Xoppa
+ */
 public class HeightField implements Disposable {
 	public final Vector2 uvOffset = new Vector2(0, 0);
 	public final Vector2 uvScale = new Vector2(1, 1);
@@ -79,6 +100,7 @@ public class HeightField implements Disposable {
 	public final int width;
 	public final int height;
 	public final boolean smooth;
+	public final boolean forRender;
 	public final Mesh mesh;
 
 	private final float vertices[];
@@ -105,50 +127,60 @@ public class HeightField implements Disposable {
 	private final Vector3 tmpV9 = new Vector3();
 	private final Color tmpC = new Color();
 
-	public HeightField (boolean isStatic, final Pixmap map, boolean smooth, int attributes) {
-		this(isStatic, map.getWidth(), map.getHeight(), smooth, attributes);
+	public HeightField(boolean forRender, boolean isStatic, final Pixmap map, boolean smooth, int attributes) {
+		this(forRender, isStatic, map.getWidth(), map.getHeight(), smooth, attributes);
 		set(map);
 	}
 
-	public HeightField (boolean isStatic, final ByteBuffer colorData, final Pixmap.Format format, int width, int height,
-		boolean smooth, int attributes) {
-		this(isStatic, width, height, smooth, attributes);
+	public HeightField(boolean forRender, boolean isStatic, final ByteBuffer colorData, final Pixmap.Format format,
+			int width, int height, boolean smooth, int attributes) {
+		this(forRender, isStatic, width, height, smooth, attributes);
 		set(colorData, format);
 	}
 
-	public HeightField (boolean isStatic, final float[] data, int width, int height, boolean smooth, int attributes) {
-		this(isStatic, width, height, smooth, attributes);
+	public HeightField(boolean forRender, boolean isStatic, final float[] data, int width, int height, boolean smooth,
+			int attributes) {
+		this(forRender, isStatic, width, height, smooth, attributes);
 		set(data);
 	}
 
-	public HeightField (boolean isStatic, int width, int height, boolean smooth, int attributes) {
-		this(isStatic, width, height, smooth, MeshBuilder.createAttributes(attributes));
+	public HeightField(boolean forRender, boolean isStatic, int width, int height, boolean smooth, int attributes) {
+		this(forRender, isStatic, width, height, smooth, MeshBuilder.createAttributes(attributes));
 	}
 
-	public HeightField (boolean isStatic, int width, int height, boolean smooth, VertexAttributes attributes) {
+	public HeightField(boolean forRender, boolean isStatic, int width, int height, boolean smooth,
+			VertexAttributes attributes) {
 		this.posPos = attributes.getOffset(Usage.Position, -1);
 		this.norPos = attributes.getOffset(Usage.Normal, -1);
 		this.uvPos = attributes.getOffset(Usage.TextureCoordinates, -1);
 		this.colPos = attributes.getOffset(Usage.ColorUnpacked, -1);
-		smooth = smooth || (norPos < 0); // cant have sharp edges without normals
+		smooth = smooth || (norPos < 0); // cant have sharp edges without
+											// normals
 
 		this.width = width;
 		this.height = height;
 		this.smooth = smooth;
+		this.forRender = forRender;
 		this.data = new float[width * height];
 
-		this.stride = attributes.vertexSize / 4;
+		if (forRender) {
+			this.stride = attributes.vertexSize / 4;
 
-		final int numVertices = smooth ? width * height : (width - 1) * (height - 1) * 4;
-		final int numIndices = (width - 1) * (height - 1) * 6;
+			final int numVertices = smooth ? width * height : (width - 1) * (height - 1) * 4;
+			final int numIndices = (width - 1) * (height - 1) * 6;
 
-		this.mesh = new Mesh(isStatic, numVertices, numIndices, attributes);
-		this.vertices = new float[numVertices * stride];
+			this.mesh = new Mesh(isStatic, numVertices, numIndices, attributes);
+			this.vertices = new float[numVertices * stride];
 
-		setIndices();
+			setIndices();
+		} else {
+			this.stride = 0;
+			this.mesh = null;
+			this.vertices = null;
+		}
 	}
 
-	private void setIndices () {
+	private void setIndices() {
 		final int w = width - 1;
 		final int h = height - 1;
 		short indices[] = new short[w * h * 6];
@@ -159,28 +191,30 @@ public class HeightField implements Disposable {
 				final int c10 = c00 + 1;
 				final int c01 = c00 + (smooth ? width : w * 2);
 				final int c11 = c10 + (smooth ? width : w * 2);
-				indices[++i] = (short)c11;
-				indices[++i] = (short)c10;
-				indices[++i] = (short)c00;
-				indices[++i] = (short)c00;
-				indices[++i] = (short)c01;
-				indices[++i] = (short)c11;
+				indices[++i] = (short) c11;
+				indices[++i] = (short) c10;
+				indices[++i] = (short) c00;
+				indices[++i] = (short) c00;
+				indices[++i] = (short) c01;
+				indices[++i] = (short) c11;
 			}
 		}
 		mesh.setIndices(indices);
 	}
 
-	public void update () {
-		if (smooth) {
-			if (norPos < 0)
-				updateSimple();
-			else
-				updateSmooth();
-		} else
-			updateSharp();
+	public void update() {
+		if (forRender) {
+			if (smooth) {
+				if (norPos < 0)
+					updateSimple();
+				else
+					updateSmooth();
+			} else
+				updateSharp();
+		}
 	}
 
-	private void updateSmooth () {
+	private void updateSmooth() {
 		for (int x = 0; x < width; ++x) {
 			for (int y = 0; y < height; ++y) {
 				VertexInfo v = getVertexAt(vertex00, x, y);
@@ -191,7 +225,7 @@ public class HeightField implements Disposable {
 		mesh.setVertices(vertices);
 	}
 
-	private void updateSimple () {
+	private void updateSimple() {
 		for (int x = 0; x < width; ++x) {
 			for (int y = 0; y < height; ++y) {
 				setVertex(y * width + x, getVertexAt(vertex00, x, y));
@@ -200,7 +234,7 @@ public class HeightField implements Disposable {
 		mesh.setVertices(vertices);
 	}
 
-	private void updateSharp () {
+	private void updateSharp() {
 		final int w = width - 1;
 		final int h = height - 1;
 		for (int y = 0; y < h; ++y) {
@@ -213,8 +247,10 @@ public class HeightField implements Disposable {
 				VertexInfo v10 = getVertexAt(vertex10, x + 1, y);
 				VertexInfo v01 = getVertexAt(vertex01, x, y + 1);
 				VertexInfo v11 = getVertexAt(vertex11, x + 1, y + 1);
-				v01.normal.set(v01.position).sub(v00.position).nor().crs(tmpV1.set(v11.position).sub(v01.position).nor());
-				v10.normal.set(v10.position).sub(v11.position).nor().crs(tmpV1.set(v00.position).sub(v10.position).nor());
+				v01.normal.set(v01.position).sub(v00.position).nor()
+						.crs(tmpV1.set(v11.position).sub(v01.position).nor());
+				v10.normal.set(v10.position).sub(v11.position).nor()
+						.crs(tmpV1.set(v00.position).sub(v10.position).nor());
 				v00.normal.set(v01.normal).lerp(v10.normal, .5f);
 				v11.normal.set(v00.normal);
 
@@ -228,9 +264,9 @@ public class HeightField implements Disposable {
 	}
 
 	/** Does not set the normal member! */
-	protected VertexInfo getVertexAt (final VertexInfo out, int x, int y) {
-		final float dx = (float)x / (float)(width - 1);
-		final float dy = (float)y / (float)(height - 1);
+	protected VertexInfo getVertexAt(final VertexInfo out, int x, int y) {
+		final float dx = (float) x / (float) (width - 1);
+		final float dy = (float) y / (float) (height - 1);
 		final float a = data[y * width + x];
 		out.position.set(corner00).lerp(corner10, dx).lerp(tmpV1.set(corner01).lerp(corner11, dx), dy);
 		out.position.add(tmpV1.set(magnitude).scl(a));
@@ -239,32 +275,43 @@ public class HeightField implements Disposable {
 		return out;
 	}
 
-	public Vector3 getPositionAt (Vector3 out, int x, int y) {
-		final float dx = (float)x / (float)(width - 1);
-		final float dy = (float)y / (float)(height - 1);
-		final float a = data[y * width + x];
+	public Vector3 getPositionAt(Vector3 out, int x, int y) {
+		final float dx = (float) x / (float) (width - 1);
+		final float dy = (float) y / (float) (height - 1);
+		int index = y * width + x;
+		if(index > data.length || index<0){
+			out.set(0, 0, 0);
+			return out;
+		}
+		final float a = data[index];
 		out.set(corner00).lerp(corner10, dx).lerp(tmpV1.set(corner01).lerp(corner11, dx), dy);
 		out.add(tmpV1.set(magnitude).scl(a));
 		return out;
 	}
 
-	public Vector3 getWeightedNormalAt (Vector3 out, int x, int y) {
-// This commented code is based on http://www.flipcode.com/archives/Calculating_Vertex_Normals_for_Height_Maps.shtml
-// Note that this approach only works for a heightfield on the XZ plane with a magnitude on the y axis
-// float sx = data[(x < width - 1 ? x + 1 : x) + y * width] + data[(x > 0 ? x-1 : x) + y * width];
-// if (x == 0 || x == (width - 1))
-// sx *= 2f;
-// float sy = data[(y < height - 1 ? y + 1 : y) * width + x] + data[(y > 0 ? y-1 : y) * width + x];
-// if (y == 0 || y == (height - 1))
-// sy *= 2f;
-// float xScale = (corner11.x - corner00.x) / (width - 1f);
-// float zScale = (corner11.z - corner00.z) / (height - 1f);
-// float yScale = magnitude.len();
-// out.set(-sx * yScale, 2f * xScale, sy*yScale*xScale / zScale).nor();
-// return out;
+	public Vector3 getWeightedNormalAt(Vector3 out, int x, int y) {
+		// This commented code is based on
+		// http://www.flipcode.com/archives/Calculating_Vertex_Normals_for_Height_Maps.shtml
+		// Note that this approach only works for a heightfield on the XZ plane
+		// with a magnitude on the y axis
+		// float sx = data[(x < width - 1 ? x + 1 : x) + y * width] + data[(x >
+		// 0 ? x-1 : x) + y * width];
+		// if (x == 0 || x == (width - 1))
+		// sx *= 2f;
+		// float sy = data[(y < height - 1 ? y + 1 : y) * width + x] + data[(y >
+		// 0 ? y-1 : y) * width + x];
+		// if (y == 0 || y == (height - 1))
+		// sy *= 2f;
+		// float xScale = (corner11.x - corner00.x) / (width - 1f);
+		// float zScale = (corner11.z - corner00.z) / (height - 1f);
+		// float yScale = magnitude.len();
+		// out.set(-sx * yScale, 2f * xScale, sy*yScale*xScale / zScale).nor();
+		// return out;
 
-// The following approach weights the normal of the four triangles (half quad) surrounding the position.
-// A more accurate approach would be to weight the normal of the actual triangles.
+		// The following approach weights the normal of the four triangles (half
+		// quad) surrounding the position.
+		// A more accurate approach would be to weight the normal of the actual
+		// triangles.
 		int faces = 0;
 		out.set(0, 0, 0);
 
@@ -290,13 +337,13 @@ public class HeightField implements Disposable {
 			faces++;
 		}
 		if (faces != 0)
-			out.scl(1f / (float)faces);
+			out.scl(1f / (float) faces);
 		else
 			out.set(magnitude).nor();
 		return out;
 	}
 
-	protected void setVertex (int index, VertexInfo info) {
+	protected void setVertex(int index, VertexInfo info) {
 		index *= stride;
 		if (posPos >= 0) {
 			vertices[index + posPos + 0] = info.position.x;
@@ -320,35 +367,42 @@ public class HeightField implements Disposable {
 		}
 	}
 
-	public void set (final Pixmap map) {
-		if (map.getWidth() != width || map.getHeight() != height) throw new GdxRuntimeException("Incorrect map size");
+	public void set(final Pixmap map) {
+		if (map.getWidth() != width || map.getHeight() != height)
+			throw new GdxRuntimeException("Incorrect map size");
 		set(map.getPixels(), map.getFormat());
 	}
 
-	public void set (final ByteBuffer colorData, final Pixmap.Format format) {
+	public void set(final ByteBuffer colorData, final Pixmap.Format format) {
 		set(heightColorsToMap(colorData, format, width, height));
 	}
 
-	public void set (float[] data) {
+	public void set(float[] data) {
 		set(data, 0);
 	}
 
-	public void set (float[] data, int offset) {
-		if (this.data.length > (data.length - offset)) throw new GdxRuntimeException("Incorrect data size");
+	public void set(float[] data, int offset) {
+		if (this.data.length > (data.length - offset))
+			throw new GdxRuntimeException("Incorrect data size");
 		System.arraycopy(data, offset, this.data, 0, this.data.length);
 		update();
 	}
-	
+
 	@Override
-	public void dispose () {
+	public void dispose() {
 		mesh.dispose();
 	}
 
-	/** Simply creates an array containing only all the red components of the data. */
-	public static float[] heightColorsToMap (final ByteBuffer data, final Pixmap.Format format, int width, int height) {
+	/**
+	 * Simply creates an array containing only all the red components of the
+	 * data.
+	 */
+	public static float[] heightColorsToMap(final ByteBuffer data, final Pixmap.Format format, int width, int height) {
 		final int bytesPerColor = (format == Format.RGB888 ? 3 : (format == Format.RGBA8888 ? 4 : 0));
-		if (bytesPerColor == 0) throw new GdxRuntimeException("Unsupported format, should be either RGB8 or RGBA8");
-		if (data.remaining() < (width * height * bytesPerColor)) throw new GdxRuntimeException("Incorrect map size");
+		if (bytesPerColor == 0)
+			throw new GdxRuntimeException("Unsupported format, should be either RGB8 or RGBA8");
+		if (data.remaining() < (width * height * bytesPerColor))
+			throw new GdxRuntimeException("Incorrect map size");
 
 		final int startPos = data.position();
 		byte[] source = null;
@@ -366,11 +420,9 @@ public class HeightField implements Disposable {
 		for (int i = 0; i < dest.length; ++i) {
 			int v = source[sourceOffset + i * bytesPerColor];
 			v = v < 0 ? 256 + v : v;
-			dest[i] = (float)v / 255f;
+			dest[i] = (float) v / 255f;
 		}
 
 		return dest;
 	}
 }
-
-

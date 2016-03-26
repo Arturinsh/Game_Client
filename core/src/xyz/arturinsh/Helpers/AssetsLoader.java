@@ -17,15 +17,16 @@ public class AssetsLoader {
 	private static Model monkeyModel, ground, dog;
 	private static AssetManager assets;
 	private static Texture up, down, right, left, sky, heightMapTexture;
-	private static Pixmap heightMapData;
+	private static Pixmap heightMapData, heightMapSmall;
 	
 	public static void initUI() {
 		up = new Texture(Gdx.files.internal("triangle_up.png"));
 		down = new Texture(Gdx.files.internal("triangle_down.png"));
 		right = new Texture(Gdx.files.internal("triangle_right.png"));
 		left = new Texture(Gdx.files.internal("triangle_left.png"));
-		heightMapTexture = new Texture(Gdx.files.internal("pixmap.png"));
-		heightMapData = new Pixmap(Gdx.files.internal("pixmap.png"));
+		heightMapTexture = new Texture(Gdx.files.internal("big512.png"));
+		heightMapData = new Pixmap(Gdx.files.internal("big512.png"));
+		heightMapSmall = new Pixmap(Gdx.files.internal("small128.png"));
 		sky = new Texture(Gdx.files.internal("sky1.jpg"));
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
 		 ModelBuilder modelBuilder = new ModelBuilder();
@@ -84,5 +85,9 @@ public class AssetsLoader {
 
 	public static Pixmap getHeightMapData() {
 		return heightMapData;
+	}
+
+	public static Pixmap getHeightMapSmall() {
+		return heightMapSmall;
 	}
 }
