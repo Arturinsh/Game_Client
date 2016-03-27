@@ -279,7 +279,7 @@ public class HeightField implements Disposable {
 		final float dx = (float) x / (float) (width - 1);
 		final float dy = (float) y / (float) (height - 1);
 		int index = y * width + x;
-		if(index > data.length || index<0){
+		if(index >= data.length || index<0){
 			out.set(0, 0, 0);
 			return out;
 		}

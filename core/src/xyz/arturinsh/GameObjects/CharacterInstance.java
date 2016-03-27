@@ -238,11 +238,11 @@ public class CharacterInstance {
 
 	public void addMovementToBuffer(PlayerPositionUpdate update) {
 		movementBuffer.add(update);
-		System.out.println("Add to buffer");
+//		System.out.println("Add to buffer");
 	}
 
 	public void checkMovement(PlayerPositionUpdate update) {
-		System.out.println(" Buffer size = " + movementBuffer.size());
+//		System.out.println(" Buffer size = " + movementBuffer.size());
 		int index = movementBuffer.indexOf(update);
 		if (index > -1) {
 			PlayerPositionUpdate toTest = movementBuffer.get(index);
