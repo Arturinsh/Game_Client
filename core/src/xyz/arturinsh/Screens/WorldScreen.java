@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -19,12 +18,14 @@ import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 import xyz.arturinsh.GameObjects.CharacterInstance;
 import xyz.arturinsh.GameObjects.MobInstance;
@@ -46,6 +47,13 @@ public class WorldScreen extends GameScreen {
 
 	private Button upButton, downButton, leftButton, rightButton;
 	private Skin skin;
+
+	private Touchpad touchpad;
+	private TouchpadStyle touchpadStyle;
+	private Skin touchpadSkin;
+	private Drawable touchBackground;
+	private Drawable touchKnob;
+
 	private Table table;
 
 	HeightField field, field2, field3;
@@ -65,69 +73,119 @@ public class WorldScreen extends GameScreen {
 	}
 
 	private void initUI() {
+
+		touchpadSkin = new Skin();
+		touchpadSkin.add("touchBackground", AssetsLoader.getTouchBackground());
+		touchpadSkin.add("touchKnob", AssetsLoader.getTouchKnob());
+		touchpadStyle = new TouchpadStyle();
+		touchBackground = touchpadSkin.getDrawable("touchBackground");
+		touchKnob = touchpadSkin.getDrawable("touchKnob");
+		touchpadStyle.background = touchBackground;
+		touchpadStyle.knob = touchKnob;
+		touchpad = new Touchpad(10, touchpadStyle);
+		touchpad.setBounds(15, 15, 200, 200);
+		touchpad.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				Touchpad pad = (Touchpad) actor;
+				System.out.println(pad.getKnobPercentX() + " " + pad.getKnobPercentY());
+				float xMove = pad.getKnobPercentX();
+				float yMove = pad.getKnobPercentY();
+
+				if (yMove < 0.2f && yMove > -0.2f) {
+					usersCharacterInstance.stopMove();
+				}else if(yMove>0.1f){
+					usersCharacterInstance.moveChar(20);
+				}else if(yMove < -0.1f){
+					usersCharacterInstance.moveChar(-20);
+				}
+				
+				if (xMove < 0.4f && xMove > -0.4f) {
+					usersCharacterInstance.stopRotate();
+				}else if(xMove>0.2f){
+					usersCharacterInstance.rotate(-360);
+				}else if(xMove < -0.2f){
+					usersCharacterInstance.rotate(360);
+				}
+			}
+		});
+
 		table = new Table();
-		skin = AssetsLoader.getSkin();
-		TextureRegion upImage = new TextureRegion(AssetsLoader.getUp());
-		TextureRegion downImage = new TextureRegion(AssetsLoader.getDown());
-		TextureRegion leftImage = new TextureRegion(AssetsLoader.getLeft());
-		TextureRegion rightImage = new TextureRegion(AssetsLoader.getRight());
-		upButton = new Button(new Image(upImage), skin);
-		upButton.addListener(new InputListener() {
+		// skin = AssetsLoader.getSkin();
+		// TextureRegion upImage = new TextureRegion(AssetsLoader.getUp());
+		// TextureRegion downImage = new TextureRegion(AssetsLoader.getDown());
+		// TextureRegion leftImage = new TextureRegion(AssetsLoader.getLeft());
+		// TextureRegion rightImage = new
+		// TextureRegion(AssetsLoader.getRight());
+		// upButton = new Button(new Image(upImage), skin);
+		// upButton.addListener(new InputListener() {
+		//
+		// public boolean touchDown(InputEvent event, float x, float y, int
+		// pointer, int button) {
+		// usersCharacterInstance.moveChar(20);
+		// return true;
+		// }
+		//
+		// public void touchUp(InputEvent event, float x, float y, int pointer,
+		// int button) {
+		// usersCharacterInstance.stopMove();
+		// }
+		//
+		// });
+		// downButton = new Button(new Image(downImage), skin);
+		// downButton.addListener(new InputListener() {
+		//
+		// public boolean touchDown(InputEvent event, float x, float y, int
+		// pointer, int button) {
+		// usersCharacterInstance.moveChar(-20);
+		// return true;
+		// }
+		//
+		// public void touchUp(InputEvent event, float x, float y, int pointer,
+		// int button) {
+		// usersCharacterInstance.stopMove();
+		// }
+		//
+		// });
+		// leftButton = new Button(new Image(leftImage), skin);
+		// leftButton.addListener(new InputListener() {
+		//
+		// public boolean touchDown(InputEvent event, float x, float y, int
+		// pointer, int button) {
+		// usersCharacterInstance.rotate(360);
+		// return true;
+		// }
+		//
+		// public void touchUp(InputEvent event, float x, float y, int pointer,
+		// int button) {
+		// usersCharacterInstance.stopRotate();
+		// }
+		//
+		// });
+		// rightButton = new Button(new Image(rightImage), skin);
+		// rightButton.addListener(new InputListener() {
+		//
+		// public boolean touchDown(InputEvent event, float x, float y, int
+		// pointer, int button) {
+		// usersCharacterInstance.rotate(-360);
+		// return true;
+		// }
+		//
+		// public void touchUp(InputEvent event, float x, float y, int pointer,
+		// int button) {
+		// usersCharacterInstance.stopRotate();
+		// }
+		//
+		// });
+		//
+		// table.add(upButton);
+		// table.add(downButton);
+		// table.add(leftButton);
+		// table.add(rightButton);
+		// table.padBottom(80);
 
-			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-				usersCharacterInstance.moveChar(20);
-				return true;
-			}
-
-			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				usersCharacterInstance.stopMove();
-			}
-
-		});
-		downButton = new Button(new Image(downImage), skin);
-		downButton.addListener(new InputListener() {
-
-			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-				usersCharacterInstance.moveChar(-20);
-				return true;
-			}
-
-			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				usersCharacterInstance.stopMove();
-			}
-
-		});
-		leftButton = new Button(new Image(leftImage), skin);
-		leftButton.addListener(new InputListener() {
-
-			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-				usersCharacterInstance.rotate(360);
-				return true;
-			}
-
-			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				usersCharacterInstance.stopRotate();
-			}
-
-		});
-		rightButton = new Button(new Image(rightImage), skin);
-		rightButton.addListener(new InputListener() {
-
-			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-				usersCharacterInstance.rotate(-360);
-				return true;
-			}
-
-			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				usersCharacterInstance.stopRotate();
-			}
-
-		});
-		table.add(upButton);
-		table.add(downButton);
-		table.add(leftButton);
-		table.add(rightButton);
-		table.padBottom(80);
+		table.add(touchpad).padBottom(300).padLeft(30);
+		table.left();
 		stage.addActor(table);
 	}
 
@@ -146,7 +204,8 @@ public class WorldScreen extends GameScreen {
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.8f, 0.8f, 0.8f, 1.0f));
 		environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
-		heightMap = new HeightMap(AssetsLoader.getHeightMapTexture(), AssetsLoader.getHeightMapData(), AssetsLoader.getHeightMapSmall(), environment);
+		heightMap = new HeightMap(AssetsLoader.getHeightMapTexture(), AssetsLoader.getHeightMapData(),
+				AssetsLoader.getHeightMapSmall(), environment);
 	}
 
 	// bigDelta = delta *1000
@@ -180,6 +239,7 @@ public class WorldScreen extends GameScreen {
 
 		modelBatch.begin(camera);
 		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
+		modelBatch.render(usersCharacterInstance.getTestBoxInstance(), environment);
 		renderOtherPlayers(modelBatch, environment, delta * 1000, heightMap);
 		renderMobs(modelBatch, environment, delta * 1000, heightMap);
 		renderGround(modelBatch);

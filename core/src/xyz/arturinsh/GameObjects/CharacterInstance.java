@@ -21,8 +21,8 @@ import xyz.arturinsh.Network.Packets.UserCharacter;
 public class CharacterInstance {
 
 	private AnimationController animController;
-	private ModelInstance modelInstance;
-	private Model model;
+	private ModelInstance modelInstance, testBoxInstance;
+	private Model model, testModel;
 	private float moveSpeed = 0;
 	private float rotateSpeed = 0;
 	private UserCharacter character;
@@ -40,9 +40,11 @@ public class CharacterInstance {
 
 	public CharacterInstance(UserCharacter _character) {
 		model = AssetsLoader.getMonkeyModel();
+		testModel = AssetsLoader.getTestBoc();
 		character = _character;
 		changeModelMaterial(_character.charClass);
 		modelInstance = new ModelInstance(model);
+		testBoxInstance = new ModelInstance(testModel);
 		animController = new AnimationController(modelInstance);
 		updatePositionOrientation(new Vector3(_character.x, _character.y, _character.z), _character.r, 0);
 		newPosition = getPosition();
@@ -59,6 +61,10 @@ public class CharacterInstance {
 
 	public ModelInstance getModelInstance() {
 		return modelInstance;
+	}
+
+	public ModelInstance getTestBoxInstance() {
+		return testBoxInstance;
 	}
 
 	public void setModelInstance(ModelInstance modelInstance) {
@@ -152,6 +158,9 @@ public class CharacterInstance {
 		orientation.setEulerAngles(r, 0, 0);
 		if (height != 0)
 			position.y = height;
+
+		Vector3 testPosition = new Vector3(position.x, position.y + 0.5f, position.z);
+		this.testBoxInstance.transform.set(testPosition, orientation);
 		this.modelInstance.transform.set(position, orientation);
 	}
 
@@ -222,39 +231,29 @@ public class CharacterInstance {
 		updatePositionOrientation(newPos, newRot, height);
 	}
 
-	// public void testPosition(float x, float y, float z, float r) {
-	//
-	// if (getPosition().x == x && getPosition().y == y && getPosition().z == z
-	// && (int)getRotation() == (int)r)
-	// System.out.println("True pos");
-	// else
-	// System.out.println("Different pos");
-	// }
-	//
-	// public float roundedFloat(float d, int decimalPlace) {
-	// return BigDecimal.valueOf(d).setScale(decimalPlace,
-	// BigDecimal.ROUND_HALF_UP).floatValue();
-	// }
-
 	public void addMovementToBuffer(PlayerPositionUpdate update) {
 		movementBuffer.add(update);
-//		System.out.println("Add to buffer");
+		// System.out.println("Add to buffer");
 	}
 
 	public void checkMovement(PlayerPositionUpdate update) {
-//		System.out.println(" Buffer size = " + movementBuffer.size());
-		int index = movementBuffer.indexOf(update);
+		// System.out.println(" Buffer size = " + movementBuffer.size());
+		int index = -1;
+		if (movementBuffer.size() > 0)
+			index = movementBuffer.indexOf(update);
 		if (index > -1) {
 			PlayerPositionUpdate toTest = movementBuffer.get(index);
 			if (!positionUpdateCheck(toTest, update)) {
 				Vector3 positionCorrection = new Vector3(update.character.x, update.character.y, update.character.z);
 				updatePositionOrientation(positionCorrection, update.character.r, getPosition().y);
-//				System.out.println("Incorrect. Buffer size = " + movementBuffer.size());
+				// System.out.println("Incorrect. Buffer size = " +
+				// movementBuffer.size());
 			} else {
-//				System.out.println("Correct. Buffer size = " + movementBuffer.size());
+				// System.out.println("Correct. Buffer size = " +
+				// movementBuffer.size());
 			}
 			clearMovementBuffer(update.timestamp);
-//			System.out.println("After clear = " + movementBuffer.size());
+			// System.out.println("After clear = " + movementBuffer.size());
 		} else {
 			// System.out.println("Not found");
 		}
