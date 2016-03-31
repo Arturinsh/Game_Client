@@ -111,78 +111,6 @@ public class WorldScreen extends GameScreen {
 		});
 
 		table = new Table();
-		// skin = AssetsLoader.getSkin();
-		// TextureRegion upImage = new TextureRegion(AssetsLoader.getUp());
-		// TextureRegion downImage = new TextureRegion(AssetsLoader.getDown());
-		// TextureRegion leftImage = new TextureRegion(AssetsLoader.getLeft());
-		// TextureRegion rightImage = new
-		// TextureRegion(AssetsLoader.getRight());
-		// upButton = new Button(new Image(upImage), skin);
-		// upButton.addListener(new InputListener() {
-		//
-		// public boolean touchDown(InputEvent event, float x, float y, int
-		// pointer, int button) {
-		// usersCharacterInstance.moveChar(20);
-		// return true;
-		// }
-		//
-		// public void touchUp(InputEvent event, float x, float y, int pointer,
-		// int button) {
-		// usersCharacterInstance.stopMove();
-		// }
-		//
-		// });
-		// downButton = new Button(new Image(downImage), skin);
-		// downButton.addListener(new InputListener() {
-		//
-		// public boolean touchDown(InputEvent event, float x, float y, int
-		// pointer, int button) {
-		// usersCharacterInstance.moveChar(-20);
-		// return true;
-		// }
-		//
-		// public void touchUp(InputEvent event, float x, float y, int pointer,
-		// int button) {
-		// usersCharacterInstance.stopMove();
-		// }
-		//
-		// });
-		// leftButton = new Button(new Image(leftImage), skin);
-		// leftButton.addListener(new InputListener() {
-		//
-		// public boolean touchDown(InputEvent event, float x, float y, int
-		// pointer, int button) {
-		// usersCharacterInstance.rotate(360);
-		// return true;
-		// }
-		//
-		// public void touchUp(InputEvent event, float x, float y, int pointer,
-		// int button) {
-		// usersCharacterInstance.stopRotate();
-		// }
-		//
-		// });
-		// rightButton = new Button(new Image(rightImage), skin);
-		// rightButton.addListener(new InputListener() {
-		//
-		// public boolean touchDown(InputEvent event, float x, float y, int
-		// pointer, int button) {
-		// usersCharacterInstance.rotate(-360);
-		// return true;
-		// }
-		//
-		// public void touchUp(InputEvent event, float x, float y, int pointer,
-		// int button) {
-		// usersCharacterInstance.stopRotate();
-		// }
-		//
-		// });
-		//
-		// table.add(upButton);
-		// table.add(downButton);
-		// table.add(leftButton);
-		// table.add(rightButton);
-		// table.padBottom(80);
 
 		table.add(touchpad).padBottom(300).padLeft(30);
 		table.left();
@@ -239,7 +167,7 @@ public class WorldScreen extends GameScreen {
 
 		modelBatch.begin(camera);
 		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
-		modelBatch.render(usersCharacterInstance.getTestBoxInstance(), environment);
+//		modelBatch.render(usersCharacterInstance.getTestBoxInstance(), environment);
 		renderOtherPlayers(modelBatch, environment, delta * 1000, heightMap);
 		renderMobs(modelBatch, environment, delta * 1000, heightMap);
 		renderGround(modelBatch);

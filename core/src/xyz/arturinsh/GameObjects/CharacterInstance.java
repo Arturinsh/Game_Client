@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
@@ -39,7 +40,7 @@ public class CharacterInstance {
 	private ArrayList<PlayerPositionUpdate> movementBuffer = new ArrayList<PlayerPositionUpdate>();
 
 	public CharacterInstance(UserCharacter _character) {
-		model = AssetsLoader.getMonkeyModel();
+		model = AssetsLoader.getHumanModel();
 		testModel = AssetsLoader.getTestBoc();
 		character = _character;
 		changeModelMaterial(_character.charClass);
@@ -82,13 +83,13 @@ public class CharacterInstance {
 	private void changeModelMaterial(CharacterClass charClass) {
 		switch (charClass) {
 		case RED:
-			model.materials.first().set(new Material(ColorAttribute.createDiffuse(Color.RED)));
+			model.materials.first().set(new Material(TextureAttribute.createDiffuse(AssetsLoader.getHuman1())));
 			break;
 		case GREEN:
-			model.materials.first().set(new Material(ColorAttribute.createDiffuse(Color.GREEN)));
+			model.materials.first().set(new Material(TextureAttribute.createDiffuse(AssetsLoader.getHuman2())));
 			break;
 		case BLUE:
-			model.materials.first().set(new Material(ColorAttribute.createDiffuse(Color.BLUE)));
+			model.materials.first().set(new Material(TextureAttribute.createDiffuse(AssetsLoader.getHuman3())));
 			break;
 		default:
 			break;

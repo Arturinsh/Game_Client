@@ -14,9 +14,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class AssetsLoader {
 	private static Skin skin;
-	private static Model monkeyModel, ground, dog, testBox;
+	private static Model humanModel, ground, dog, testBox;
 	private static AssetManager assets;
-	private static Texture up, down, right, left, sky, heightMapTexture, touchBackground, touchKnob;
+	private static Texture up, down, right, left, sky, heightMapTexture, touchBackground, touchKnob,
+	human1, human2, human3;
 	private static Pixmap heightMapData, heightMapSmall;
 
 	public static void initUI() {
@@ -29,19 +30,24 @@ public class AssetsLoader {
 		heightMapTexture = new Texture(Gdx.files.internal("big512.png"));
 		heightMapData = new Pixmap(Gdx.files.internal("big512.png"));
 		heightMapSmall = new Pixmap(Gdx.files.internal("small128.png"));
+		human1 = new Texture(Gdx.files.internal("TextureHuman.png"));
+		human2 = new Texture(Gdx.files.internal("TextureHuman2.png"));
+		human3 = new Texture(Gdx.files.internal("TextureHuman3.png"));
 		sky = new Texture(Gdx.files.internal("sky1.jpg"));
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
 		ModelBuilder modelBuilder = new ModelBuilder();
 		ground = modelBuilder.createBox(100f, 1f, 100f, new Material(ColorAttribute.createDiffuse(Color.TAN)),
 				Usage.Position | Usage.Normal);
+		testBox = modelBuilder.createBox(4f, 1f, 4f, new Material(ColorAttribute.createDiffuse(Color.TAN)),
+				Usage.Position | Usage.Normal);
 		assets = new AssetManager();
+		assets.load("human.g3db", Model.class);
 		assets.load("tDog.g3db", Model.class);
-		assets.load("tDog2.g3db", Model.class);
-		assets.load("testBox.g3db", Model.class);
+		//assets.load("testBox.g3db", Model.class);
 		assets.finishLoading();
-		monkeyModel = assets.get("tDog.g3db", Model.class);
-		dog = assets.get("tDog2.g3db", Model.class);
-		testBox = assets.get("testBox.g3db", Model.class);
+		humanModel = assets.get("human.g3db", Model.class);
+		dog = assets.get("tDog.g3db", Model.class);
+		//testBox = assets.get("testBox.g3db", Model.class);
 		// TODO add dispose
 	}
 
@@ -53,8 +59,8 @@ public class AssetsLoader {
 		return skin;
 	}
 
-	public static Model getMonkeyModel() {
-		return monkeyModel;
+	public static Model getHumanModel() {
+		return humanModel;
 	}
 
 	public static Model getGround() {
@@ -103,5 +109,17 @@ public class AssetsLoader {
 
 	public static Texture getTouchKnob() {
 		return touchKnob;
+	}
+
+	public static Texture getHuman1() {
+		return human1;
+	}
+
+	public static Texture getHuman2() {
+		return human2;
+	}
+
+	public static Texture getHuman3() {
+		return human3;
 	}
 }
