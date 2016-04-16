@@ -88,7 +88,7 @@ public class WorldScreen extends GameScreen {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				Touchpad pad = (Touchpad) actor;
-				System.out.println(pad.getKnobPercentX() + " " + pad.getKnobPercentY());
+//				System.out.println(pad.getKnobPercentX() + " " + pad.getKnobPercentY());
 				float xMove = pad.getKnobPercentX();
 				float yMove = pad.getKnobPercentY();
 

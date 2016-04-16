@@ -3,13 +3,13 @@ package xyz.arturinsh.GameObjects;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationDesc;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationListener;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
@@ -35,6 +35,7 @@ public class CharacterInstance {
 	private float rotationStep = 0;
 	private float oldRotation = 0;
 	private float newRotation = 0;
+	private boolean attacking = false;
 
 	private ObjectRotation realRotation = new ObjectRotation();
 	private ArrayList<PlayerPositionUpdate> movementBuffer = new ArrayList<PlayerPositionUpdate>();
@@ -109,6 +110,7 @@ public class CharacterInstance {
 	}
 
 	public void moveChar(float speed) {
+		if(!attacking)
 		moveSpeed = speed;
 	}
 
@@ -136,7 +138,7 @@ public class CharacterInstance {
 
 		if (moveSpeed != 0)
 			animController.setAnimation("Armature|Walk", -1, 6, null);
-		else
+		else if(!attacking)
 			animController.setAnimation(null);
 
 		animController.update(delta);
@@ -275,5 +277,18 @@ public class CharacterInstance {
 		for (PlayerPositionUpdate deleteUpdate : toDelete) {
 			movementBuffer.remove(deleteUpdate);
 		}
+	}
+	
+	public void attack(){
+		attacking = true;
+		animController.setAnimation("Armature|Hit", 1, 5, new AnimationListener(){
+            @Override
+            public void onEnd(AnimationDesc animation) {
+               attacking = false;
+            }
+			@Override
+			public void onLoop(AnimationDesc animation) {
+			}
+        });
 	}
 }

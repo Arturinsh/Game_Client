@@ -45,6 +45,10 @@ public class InputHandler implements InputProcessor {
 		case Keys.DOWN:
 			camera.moveHeight(-5);
 			break;
+		case Keys.SPACE:
+			userCharacter.stopMove();
+			userCharacter.attack();
+			break;
 		}
 		return false;
 	}

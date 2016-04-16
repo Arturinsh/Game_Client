@@ -58,19 +58,24 @@ public class Packets {
 	public static class PlayerPositionUpdate {
 		public UserCharacter character;
 		public Date timestamp;
-		
-		public boolean equals(Object ob){
-	        if(!(ob instanceof PlayerPositionUpdate)) return false;
-	        return(timestamp.getTime() ==((PlayerPositionUpdate)ob).timestamp.getTime());  
-	    }
-	    public int hashCode(Object ob){
-	        return(timestamp.hashCode()); 
-	    }
+
+		public boolean equals(Object ob) {
+			if (!(ob instanceof PlayerPositionUpdate))
+				return false;
+			if (timestamp != null)
+				return (timestamp.getTime() == ((PlayerPositionUpdate) ob).timestamp.getTime());
+			else
+				return false;
+		}
+
+		public int hashCode(Object ob) {
+			return (timestamp.hashCode());
+		}
 	}
 
-	public static class MobUpdate{
+	public static class MobUpdate {
 		public long ID;
-		public float x,y,z,r;
+		public float x, y, z, r;
 		public MobType type;
 	}
 
