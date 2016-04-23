@@ -1,10 +1,14 @@
 package xyz.arturinsh.GameObjects;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
@@ -21,9 +25,9 @@ import xyz.arturinsh.Network.Packets.UserCharacter;
 
 public class CharacterInstance {
 
-	private AnimationController animController;
-	private ModelInstance modelInstance, testBoxInstance;
-	private Model model, testModel;
+	private AnimationController modelAnimController, attackAnimController;
+	private ModelInstance modelInstance, attackInstance, testBoxInstance;
+	private Model model, attackCage, testBox;
 	private float moveSpeed = 0;
 	private float rotateSpeed = 0;
 	private UserCharacter character;
@@ -35,19 +39,22 @@ public class CharacterInstance {
 	private float rotationStep = 0;
 	private float oldRotation = 0;
 	private float newRotation = 0;
-	private boolean attacking = false;
+	private boolean casting, damaging = false;
 
 	private ObjectRotation realRotation = new ObjectRotation();
 	private ArrayList<PlayerPositionUpdate> movementBuffer = new ArrayList<PlayerPositionUpdate>();
 
 	public CharacterInstance(UserCharacter _character) {
 		model = AssetsLoader.getHumanModel();
-		testModel = AssetsLoader.getTestBoc();
+		attackCage = AssetsLoader.getAttackCage();
+		testBox = AssetsLoader.getTestBox();
 		character = _character;
 		changeModelMaterial(_character.charClass);
 		modelInstance = new ModelInstance(model);
-		testBoxInstance = new ModelInstance(testModel);
-		animController = new AnimationController(modelInstance);
+		attackInstance = new ModelInstance(attackCage);
+		testBoxInstance = new ModelInstance(testBox);
+		modelAnimController = new AnimationController(modelInstance);
+		attackAnimController = new AnimationController(attackInstance);
 		updatePositionOrientation(new Vector3(_character.x, _character.y, _character.z), _character.r, 0);
 		newPosition = getPosition();
 		newRotation = getRotation();
@@ -57,16 +64,15 @@ public class CharacterInstance {
 	public void changeClass(CharacterClass charClass) {
 		changeModelMaterial(charClass);
 		modelInstance = new ModelInstance(model);
-		animController = new AnimationController(modelInstance);
-
+		modelAnimController = new AnimationController(modelInstance);
 	}
 
 	public ModelInstance getModelInstance() {
 		return modelInstance;
 	}
 
-	public ModelInstance getTestBoxInstance() {
-		return testBoxInstance;
+	public ModelInstance getAttackInstance() {
+		return attackInstance;
 	}
 
 	public void setModelInstance(ModelInstance modelInstance) {
@@ -110,8 +116,8 @@ public class CharacterInstance {
 	}
 
 	public void moveChar(float speed) {
-		if(!attacking)
-		moveSpeed = speed;
+		if (!casting && !damaging)
+			moveSpeed = speed;
 	}
 
 	public void rotate(float speed) {
@@ -137,11 +143,14 @@ public class CharacterInstance {
 		updatePositionOrientation(getPosition(), realRotation.getRotation(), height);
 
 		if (moveSpeed != 0)
-			animController.setAnimation("Armature|Walk", -1, 6, null);
-		else if(!attacking)
-			animController.setAnimation(null);
+			modelAnimController.setAnimation("Armature|Walk", -1, 6, null);
+		else if (!casting && !damaging) {
+			modelAnimController.setAnimation(null);
+			attackAnimController.setAnimation(null);
+		}
 
-		animController.update(delta);
+		modelAnimController.update(delta);
+		attackAnimController.update(delta);
 	}
 
 	public UserCharacter getCharacter() {
@@ -162,7 +171,8 @@ public class CharacterInstance {
 		if (height != 0)
 			position.y = height;
 
-		Vector3 testPosition = new Vector3(position.x, position.y + 0.5f, position.z);
+		Vector3 testPosition = new Vector3(position.x, position.y, position.z);
+		this.attackInstance.transform.set(testPosition, orientation);
 		this.testBoxInstance.transform.set(testPosition, orientation);
 		this.modelInstance.transform.set(position, orientation);
 	}
@@ -220,12 +230,12 @@ public class CharacterInstance {
 			realStep.y *= bigDelta;
 			realStep.z *= bigDelta;
 			newPos.add(realStep);
-			animController.setAnimation("Armature|Walk", -1, 6, null);
+			modelAnimController.setAnimation("Armature|Walk", -1, 6, null);
 		} else {
 			newPos.set(newPosition);
-			animController.setAnimation(null);
+			modelAnimController.setAnimation(null);
 		}
-		animController.update(bigDelta / 1000);
+		modelAnimController.update(bigDelta / 1000);
 
 		int x = (int) getPosition().x;
 		int y = (int) getPosition().z;
@@ -278,17 +288,54 @@ public class CharacterInstance {
 			movementBuffer.remove(deleteUpdate);
 		}
 	}
-	
-	public void attack(){
-		attacking = true;
-		animController.setAnimation("Armature|Hit", 1, 5, new AnimationListener(){
-            @Override
-            public void onEnd(AnimationDesc animation) {
-               attacking = false;
-            }
+
+	public void attack() {
+		showCastingAnimation();
+	}
+
+	public void render(ModelBatch batch, Environment env) {
+		batch.render(this.modelInstance, env);
+		// batch.render(this.testBoxInstance, env);
+
+		if (damaging) {
+			batch.render(this.attackInstance, env);
+		}
+	}
+
+	private void showCastingAnimation() {
+		casting = true;
+//		printTime();
+		modelAnimController.setAnimation("Armature|Hit", 1, 5, new AnimationListener() {
+			@Override
+			public void onEnd(AnimationDesc animation) {
+				damaging = true;
+				casting = false;
+				showDamageAnimation();
+			}
+
 			@Override
 			public void onLoop(AnimationDesc animation) {
 			}
-        });
+		});
+	}
+
+	private void showDamageAnimation() {
+		attackAnimController.setAnimation("Cube|Raise", 1, 4, new AnimationListener() {
+			@Override
+			public void onEnd(AnimationDesc animation) {
+				damaging = false;
+//				printTime();
+			}
+
+			@Override
+			public void onLoop(AnimationDesc animation) {
+			}
+		});
+	}
+
+	private void printTime() {
+		DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSSS");
+		 Date date = new Date();
+		 System.out.println(dateFormat.format(date));
 	}
 }

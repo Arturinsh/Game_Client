@@ -14,10 +14,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class AssetsLoader {
 	private static Skin skin;
-	private static Model humanModel, ground, dog, testBox;
+	private static Model humanModel, ground, dog, attackCage, testBox;
 	private static AssetManager assets;
-	private static Texture up, down, right, left, sky, heightMapTexture, touchBackground, touchKnob,
-	human1, human2, human3;
+	private static Texture up, down, right, left, sky, heightMapTexture, touchBackground, touchKnob, human1, human2,
+			human3;
 	private static Pixmap heightMapData, heightMapSmall;
 
 	public static void initUI() {
@@ -38,21 +38,27 @@ public class AssetsLoader {
 		ModelBuilder modelBuilder = new ModelBuilder();
 		ground = modelBuilder.createBox(100f, 1f, 100f, new Material(ColorAttribute.createDiffuse(Color.TAN)),
 				Usage.Position | Usage.Normal);
-		testBox = modelBuilder.createBox(4f, 1f, 4f, new Material(ColorAttribute.createDiffuse(Color.TAN)),
+		testBox = modelBuilder.createBox(4f, 2f, 1f, new Material(ColorAttribute.createDiffuse(Color.TAN)),
 				Usage.Position | Usage.Normal);
 		assets = new AssetManager();
 		assets.load("human.g3db", Model.class);
 		assets.load("tDog.g3db", Model.class);
-		//assets.load("testBox.g3db", Model.class);
+		assets.load("cage.g3db", Model.class);
+		// assets.load("testBox.g3db", Model.class);
 		assets.finishLoading();
 		humanModel = assets.get("human.g3db", Model.class);
 		dog = assets.get("tDog.g3db", Model.class);
-		//testBox = assets.get("testBox.g3db", Model.class);
+		attackCage = assets.get("cage.g3db", Model.class);
+		// testBox = assets.get("testBox.g3db", Model.class);
 		// TODO add dispose
 	}
 
-	public static Model getTestBoc() {
+	public static Model getTestBox() {
 		return testBox;
+	}
+
+	public static Model getAttackCage() {
+		return attackCage;
 	}
 
 	public static Skin getSkin() {

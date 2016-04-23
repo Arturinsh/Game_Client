@@ -2,11 +2,13 @@ package xyz.arturinsh.GameWorld;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 
@@ -16,6 +18,7 @@ import xyz.arturinsh.GameObjects.MobInstance;
 import xyz.arturinsh.GameObjects.MobType;
 import xyz.arturinsh.Network.NetworkListener;
 import xyz.arturinsh.Network.Packets.AddPlayer;
+import xyz.arturinsh.Network.Packets.Attack;
 import xyz.arturinsh.Network.Packets.CharacterCreateFailed;
 import xyz.arturinsh.Network.Packets.CharacterCreateSuccess;
 import xyz.arturinsh.Network.Packets.EnterWorld;
@@ -84,6 +87,7 @@ public class GameWorld {
 		kryo.register(MobType.class);
 		kryo.register(MobUpdate.class);
 		kryo.register(SnapShot.class);
+		kryo.register(Attack.class);
 	}
 
 	public void showDialog(String message) {
@@ -229,8 +233,9 @@ public class GameWorld {
 	private void updatePlayers(SnapShot snapShot) {
 		for (PlayerPositionUpdate update : snapShot.snapshot) {
 			if (usersCharacterInstance != null && usersCharacterInstance.matchesCharacter(update.character)) {
-//				usersCharacterInstance.testPosition(update.character.x, update.character.y, update.character.z,
-//						update.character.r);
+				// usersCharacterInstance.testPosition(update.character.x,
+				// update.character.y, update.character.z,
+				// update.character.r);
 				usersCharacterInstance.checkMovement(update);
 			} else if (hasCharacter(update, otherPlayers, snapShot.time.getTime())) {
 			} else {
@@ -279,5 +284,20 @@ public class GameWorld {
 				break;
 			}
 		}
+	}
+
+	public void attack() {
+		Attack attack = new Attack();
+		attack.time = new Date();
+		UserCharacter tempChar = usersCharacterInstance.getCharacter();
+		
+		Vector3 position = usersCharacterInstance.getPosition();
+		tempChar.x = position.x;
+		tempChar.y = position.y;
+		tempChar.z = position.z;
+		tempChar.r = usersCharacterInstance.getRotation();
+		
+		attack.character = tempChar;
+		client.sendUDP(attack);
 	}
 }

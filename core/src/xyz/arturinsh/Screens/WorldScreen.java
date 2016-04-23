@@ -140,7 +140,7 @@ public class WorldScreen extends GameScreen {
 	private void renderOtherPlayers(ModelBatch batch, Environment env, float bigDelta, HeightMap map) {
 		for (CharacterInstance player : world.getOtherPlayers()) {
 			player.updateOther(bigDelta, map);
-			batch.render(player.getModelInstance(), env);
+			player.render(modelBatch, env);
 		}
 	}
 
@@ -166,7 +166,8 @@ public class WorldScreen extends GameScreen {
 		camera.update(delta);
 
 		modelBatch.begin(camera);
-		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
+		usersCharacterInstance.render(modelBatch, environment);
+//		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
 //		modelBatch.render(usersCharacterInstance.getTestBoxInstance(), environment);
 		renderOtherPlayers(modelBatch, environment, delta * 1000, heightMap);
 		renderMobs(modelBatch, environment, delta * 1000, heightMap);
@@ -181,26 +182,6 @@ public class WorldScreen extends GameScreen {
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
 		table.setWidth(stage.getWidth());
-	}
-
-	private ModelInstance createSkySphere(float r, Texture t, Color c) {
-		Material sphereMaterial = new Material();
-		if (t != null)
-			sphereMaterial.set(TextureAttribute.createDiffuse(t));
-		if (c != null)
-			sphereMaterial.set(ColorAttribute.createDiffuse(c));
-		int usageCode = Usage.Position + Usage.ColorPacked + Usage.Normal + Usage.TextureCoordinates;
-
-		ModelBuilder builder = new ModelBuilder();
-		Model sphereModel = builder.createSphere(r, r, r, 32, 32, sphereMaterial, usageCode);
-
-		for (Mesh m : sphereModel.meshes)
-			m.scale(1, 1, -1);
-
-		Vector3 position = new Vector3(0, 0, 0);
-
-		ModelInstance sphere = new ModelInstance(sphereModel, position);
-		return sphere;
 	}
 
 }

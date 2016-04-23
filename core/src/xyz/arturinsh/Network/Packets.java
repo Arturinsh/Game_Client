@@ -84,4 +84,9 @@ public class Packets {
 		public List<PlayerPositionUpdate> snapshot;
 		public Date time;
 	}
+	
+	public static class Attack{
+		public UserCharacter character;
+		public Date time;
+	}
 }
