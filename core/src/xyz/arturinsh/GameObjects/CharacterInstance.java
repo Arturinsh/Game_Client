@@ -121,7 +121,8 @@ public class CharacterInstance {
 	}
 
 	public void rotate(float speed) {
-		rotateSpeed = speed;
+		if (!casting && !damaging)
+			rotateSpeed = speed;
 	}
 
 	public void stopMove() {
@@ -225,18 +226,19 @@ public class CharacterInstance {
 			newRot = newRotation;
 		}
 
-		if (!oldPosition.equals(newPosition)) {
+		if (!oldPosition.equals(newPosition) && !casting && !damaging) {
 			realStep.x *= bigDelta;
 			realStep.y *= bigDelta;
 			realStep.z *= bigDelta;
 			newPos.add(realStep);
 			modelAnimController.setAnimation("Armature|Walk", -1, 6, null);
-		} else {
+		} else if (!casting && !damaging) {
 			newPos.set(newPosition);
 			modelAnimController.setAnimation(null);
+			attackAnimController.setAnimation(null);
 		}
 		modelAnimController.update(bigDelta / 1000);
-
+		attackAnimController.update(bigDelta / 1000);
 		int x = (int) getPosition().x;
 		int y = (int) getPosition().z;
 		float height = map.getHeight(x, y);
@@ -290,6 +292,10 @@ public class CharacterInstance {
 	}
 
 	public void attack() {
+		// printTime();
+		stopMove();
+		stopRotate();
+		modelAnimController.setAnimation(null);
 		showCastingAnimation();
 	}
 
@@ -304,12 +310,13 @@ public class CharacterInstance {
 
 	private void showCastingAnimation() {
 		casting = true;
-//		printTime();
+		// printTime();
 		modelAnimController.setAnimation("Armature|Hit", 1, 5, new AnimationListener() {
 			@Override
 			public void onEnd(AnimationDesc animation) {
 				damaging = true;
 				casting = false;
+				System.out.println(character.charName);
 				showDamageAnimation();
 			}
 
@@ -320,11 +327,13 @@ public class CharacterInstance {
 	}
 
 	private void showDamageAnimation() {
+		// printTime();
 		attackAnimController.setAnimation("Cube|Raise", 1, 4, new AnimationListener() {
 			@Override
 			public void onEnd(AnimationDesc animation) {
 				damaging = false;
-//				printTime();
+				// System.out.println(animation.duration);
+				// printTime();
 			}
 
 			@Override
@@ -333,9 +342,13 @@ public class CharacterInstance {
 		});
 	}
 
+	public boolean canAttack() {
+		return !damaging && !casting;
+	}
+
 	private void printTime() {
 		DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSSS");
-		 Date date = new Date();
-		 System.out.println(dateFormat.format(date));
+		Date date = new Date();
+		System.out.println(dateFormat.format(date));
 	}
 }

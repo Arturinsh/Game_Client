@@ -89,4 +89,8 @@ public class Packets {
 		public UserCharacter character;
 		public Date time;
 	}
+	
+	public static class AttackStarted{
+		public UserCharacter character;
+	}
 }

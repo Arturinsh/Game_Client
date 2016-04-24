@@ -19,6 +19,7 @@ import xyz.arturinsh.GameObjects.MobType;
 import xyz.arturinsh.Network.NetworkListener;
 import xyz.arturinsh.Network.Packets.AddPlayer;
 import xyz.arturinsh.Network.Packets.Attack;
+import xyz.arturinsh.Network.Packets.AttackStarted;
 import xyz.arturinsh.Network.Packets.CharacterCreateFailed;
 import xyz.arturinsh.Network.Packets.CharacterCreateSuccess;
 import xyz.arturinsh.Network.Packets.EnterWorld;
@@ -88,6 +89,7 @@ public class GameWorld {
 		kryo.register(MobUpdate.class);
 		kryo.register(SnapShot.class);
 		kryo.register(Attack.class);
+		kryo.register(AttackStarted.class);
 	}
 
 	public void showDialog(String message) {
@@ -287,17 +289,31 @@ public class GameWorld {
 	}
 
 	public void attack() {
-		Attack attack = new Attack();
-		attack.time = new Date();
-		UserCharacter tempChar = usersCharacterInstance.getCharacter();
-		
-		Vector3 position = usersCharacterInstance.getPosition();
-		tempChar.x = position.x;
-		tempChar.y = position.y;
-		tempChar.z = position.z;
-		tempChar.r = usersCharacterInstance.getRotation();
-		
-		attack.character = tempChar;
-		client.sendUDP(attack);
+		if (usersCharacterInstance.canAttack()) {
+			Attack attack = new Attack();
+			attack.time = new Date();
+			UserCharacter tempChar = usersCharacterInstance.getCharacter();
+			usersCharacterInstance.attack();
+
+			Vector3 position = usersCharacterInstance.getPosition();
+			tempChar.x = position.x;
+			tempChar.y = position.y;
+			tempChar.z = position.z;
+			tempChar.r = usersCharacterInstance.getRotation();
+
+			attack.character = tempChar;
+			client.sendTCP(attack);
+		}
+	}
+
+	public void receiveAttack(AttackStarted attack) {
+		for (CharacterInstance player : otherPlayers) {
+			if (!usersCharacterInstance.matchesCharacter(attack.character)
+					&& player.matchesCharacter(attack.character)) {
+				System.out.println(player.getCharacter().charName + "attack");
+				player.attack();
+			}
+		}
+		System.out.println(attack.character.charName + " started attack");
 	}
 }

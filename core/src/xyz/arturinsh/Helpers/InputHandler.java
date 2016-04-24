@@ -47,8 +47,6 @@ public class InputHandler implements InputProcessor {
 			break;
 		case Keys.SPACE:
 			world.attack();
-			userCharacter.stopMove();
-			userCharacter.attack();
 			break;
 		}
 		return false;

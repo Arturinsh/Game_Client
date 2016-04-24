@@ -8,6 +8,7 @@ import com.esotericsoftware.kryonet.Listener;
 import xyz.arturinsh.GameObjects.CharacterInstance;
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Network.Packets.AddPlayer;
+import xyz.arturinsh.Network.Packets.AttackStarted;
 import xyz.arturinsh.Network.Packets.CharacterCreateFailed;
 import xyz.arturinsh.Network.Packets.CharacterCreateSuccess;
 import xyz.arturinsh.Network.Packets.EnterWorld;
@@ -74,7 +75,7 @@ public class NetworkListener extends Listener {
 		}
 
 		if (object instanceof SnapShot) {
-			//TODO do only when is logged in world
+			// TODO do only when is logged in world
 			SnapShot snapShot = (SnapShot) object;
 			if (lastSnapshotTime == null || lastSnapshotTime.getTime() < snapShot.time.getTime()) {
 				lastSnapshotTime = snapShot.time;
@@ -90,6 +91,11 @@ public class NetworkListener extends Listener {
 		if (object instanceof EnterWorld) {
 			EnterWorld enter = (EnterWorld) object;
 			world.succesEnterWorld(enter);
+		}
+
+		if (object instanceof AttackStarted) {
+			AttackStarted attack = (AttackStarted) object;
+			world.receiveAttack(attack);
 		}
 	}
 }
