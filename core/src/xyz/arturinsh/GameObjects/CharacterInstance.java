@@ -25,6 +25,9 @@ import xyz.arturinsh.Network.Packets.UserCharacter;
 
 public class CharacterInstance {
 
+	private final float MOVE_SPEED = 20;
+	private final float ROTATE_SPEED = 360;
+
 	private AnimationController modelAnimController, attackAnimController;
 	private ModelInstance modelInstance, attackInstance, testBoxInstance;
 	private Model model, attackCage, testBox;
@@ -39,7 +42,8 @@ public class CharacterInstance {
 	private float rotationStep = 0;
 	private float oldRotation = 0;
 	private float newRotation = 0;
-	private boolean casting, damaging = false;
+	private boolean casting = false, damaging = false, moveUp = false, moveDown = false, rotateLeft = false,
+			rotateRight = false;
 
 	private ObjectRotation realRotation = new ObjectRotation();
 	private ArrayList<PlayerPositionUpdate> movementBuffer = new ArrayList<PlayerPositionUpdate>();
@@ -134,6 +138,19 @@ public class CharacterInstance {
 	}
 
 	public void update(float delta, HeightMap map) {
+		moveSpeed = 0;
+		rotateSpeed = 0;
+		if (!casting && !damaging) {
+			if (moveUp)
+				moveSpeed = MOVE_SPEED;
+			if (moveDown)
+				moveSpeed = -1 * MOVE_SPEED;
+			if (rotateLeft)
+				rotateSpeed = ROTATE_SPEED;
+			if (rotateRight)
+				rotateSpeed = -1 * ROTATE_SPEED;
+		}
+
 		this.modelInstance.transform.translate(0, 0, moveSpeed * delta);
 		realRotation.addToRot(rotateSpeed * delta);
 
@@ -143,9 +160,10 @@ public class CharacterInstance {
 
 		updatePositionOrientation(getPosition(), realRotation.getRotation(), height);
 
-		if (moveSpeed != 0)
+		if (moveSpeed != 0) {
 			modelAnimController.setAnimation("Armature|Walk", -1, 6, null);
-		else if (!casting && !damaging) {
+			attackAnimController.setAnimation(null);
+		} else if (!casting && !damaging) {
 			modelAnimController.setAnimation(null);
 			attackAnimController.setAnimation(null);
 		}
@@ -351,4 +369,21 @@ public class CharacterInstance {
 		Date date = new Date();
 		System.out.println(dateFormat.format(date));
 	}
+
+	public void setMoveUp(boolean moveUp) {
+		this.moveUp = moveUp;
+	}
+
+	public void setMoveDown(boolean moveDown) {
+		this.moveDown = moveDown;
+	}
+
+	public void setRotateLeft(boolean rotateLeft) {
+		this.rotateLeft = rotateLeft;
+	}
+
+	public void setRotateRight(boolean rotateRight) {
+		this.rotateRight = rotateRight;
+	}
+
 }

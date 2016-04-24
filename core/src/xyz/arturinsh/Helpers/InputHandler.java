@@ -2,7 +2,6 @@ package xyz.arturinsh.Helpers;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.math.Vector3;
 
 import xyz.arturinsh.GameObjects.CharacterInstance;
 import xyz.arturinsh.GameWorld.GameWorld;
@@ -22,16 +21,20 @@ public class InputHandler implements InputProcessor {
 	public boolean keyDown(int keycode) {
 		switch (keycode) {
 		case Keys.W:
-			userCharacter.moveChar(20);
+			userCharacter.setMoveUp(true);
+			// userCharacter.moveChar(20);
 			break;
 		case Keys.A:
-			userCharacter.rotate(360);
+			userCharacter.setRotateLeft(true);
+			//userCharacter.rotate(360);
 			break;
 		case Keys.S:
-			userCharacter.moveChar(-20);
+			userCharacter.setMoveDown(true);
+			// userCharacter.moveChar(-20);
 			break;
 		case Keys.D:
-			userCharacter.rotate(-360);
+			userCharacter.setRotateRight(true);
+			// userCharacter.rotate(-360);
 			break;
 		case Keys.Q:
 			camera.rotateAroundPlayer(-180);
@@ -56,16 +59,20 @@ public class InputHandler implements InputProcessor {
 	public boolean keyUp(int keycode) {
 		switch (keycode) {
 		case Keys.W:
-			userCharacter.stopMove();
+			userCharacter.setMoveUp(false);
+//			userCharacter.stopMove();
 			break;
 		case Keys.A:
-			userCharacter.stopRotate();
+			userCharacter.setRotateLeft(false);
+//			userCharacter.stopRotate();
 			break;
 		case Keys.S:
-			userCharacter.stopMove();
+			userCharacter.setMoveDown(false);
+//			userCharacter.stopMove();
 			break;
 		case Keys.D:
-			userCharacter.stopRotate();
+			userCharacter.setRotateRight(false);
+//			userCharacter.stopRotate();
 			break;
 		case Keys.Q:
 			camera.stopRotate();
