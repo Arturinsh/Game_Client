@@ -26,6 +26,7 @@ import xyz.arturinsh.Network.Packets.EnterWorld;
 import xyz.arturinsh.Network.Packets.LogIn;
 import xyz.arturinsh.Network.Packets.LogInFailed;
 import xyz.arturinsh.Network.Packets.LogInSuccess;
+import xyz.arturinsh.Network.Packets.MobAttack;
 import xyz.arturinsh.Network.Packets.MobUpdate;
 import xyz.arturinsh.Network.Packets.PlayerPositionUpdate;
 import xyz.arturinsh.Network.Packets.Register;
@@ -90,6 +91,7 @@ public class GameWorld {
 		kryo.register(SnapShot.class);
 		kryo.register(Attack.class);
 		kryo.register(AttackStarted.class);
+		kryo.register(MobAttack.class);
 	}
 
 	public void showDialog(String message) {
@@ -305,15 +307,21 @@ public class GameWorld {
 			client.sendTCP(attack);
 		}
 	}
-
+	
+	public void receiveMobAttack(MobAttack attack){
+		for (MobInstance mob : mobs) {
+			if (mob.getID() == attack.mob.ID) {
+				mob.attack();
+			}
+		}
+	}
+	
 	public void receiveAttack(AttackStarted attack) {
 		for (CharacterInstance player : otherPlayers) {
 			if (!usersCharacterInstance.matchesCharacter(attack.character)
 					&& player.matchesCharacter(attack.character)) {
-				System.out.println(player.getCharacter().charName + "attack");
 				player.attack();
 			}
 		}
-		System.out.println(attack.character.charName + " started attack");
 	}
 }

@@ -319,7 +319,7 @@ public class CharacterInstance {
 
 	public void render(ModelBatch batch, Environment env) {
 		batch.render(this.modelInstance, env);
-		// batch.render(this.testBoxInstance, env);
+//		batch.render(this.testBoxInstance, env);
 
 		if (damaging) {
 			batch.render(this.attackInstance, env);
@@ -334,7 +334,6 @@ public class CharacterInstance {
 			public void onEnd(AnimationDesc animation) {
 				damaging = true;
 				casting = false;
-				System.out.println(character.charName);
 				showDamageAnimation();
 			}
 

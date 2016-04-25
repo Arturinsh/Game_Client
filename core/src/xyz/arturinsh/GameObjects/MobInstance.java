@@ -1,8 +1,12 @@
 package xyz.arturinsh.GameObjects;
 
+import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationDesc;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationListener;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
@@ -10,9 +14,9 @@ import xyz.arturinsh.Helpers.AssetsLoader;
 import xyz.arturinsh.Helpers.HeightMap;
 
 public class MobInstance {
-	private AnimationController animController;
-	private ModelInstance modelInstance;
-	private Model model;
+	private AnimationController modelAnimController, attackAnimController;
+	private ModelInstance modelInstance, attackInstance;
+	private Model model, attack;
 
 	private long startTime = 0;
 	private long endTime = 0;
@@ -25,11 +29,16 @@ public class MobInstance {
 
 	private long ID;
 
+	private boolean attacking = false;
+
 	public MobInstance(long id, float x, float y, float z, float rotation) {
 		ID = id;
 		model = AssetsLoader.getDog();
+		attack = AssetsLoader.getDogAttack();
 		modelInstance = new ModelInstance(model);
-		animController = new AnimationController(modelInstance);
+		attackInstance = new ModelInstance(attack);
+		modelAnimController = new AnimationController(modelInstance);
+		attackAnimController = new AnimationController(attackInstance);
 		updatePositionOrientation(new Vector3(x, y, z), rotation, 0);
 		newPosition = getPosition();
 		newRotation = getRotation();
@@ -67,17 +76,20 @@ public class MobInstance {
 			newRot = newRotation;
 		}
 
-		if (!oldPosition.equals(newPosition)) {
+		if (!oldPosition.equals(newPosition) && !attacking) {
 			realStep.x *= bigDelta;
 			realStep.y *= bigDelta;
 			realStep.z *= bigDelta;
 			newPos.add(realStep);
-			animController.setAnimation("Armature|Walk", -1, 1, null);
-		} else {
+			modelAnimController.setAnimation("Armature|Walk", -1, 1, null);
+
+		} else if(!attacking){
 			newPos.set(newPosition);
-			animController.setAnimation(null);
+			modelAnimController.setAnimation(null);
+			attackAnimController.setAnimation(null);
 		}
-		animController.update(bigDelta / 1000);
+		modelAnimController.update(bigDelta / 1000);
+		attackAnimController.update(bigDelta / 1000);
 
 		int x = (int) getPosition().x;
 		int y = (int) getPosition().z;
@@ -121,11 +133,18 @@ public class MobInstance {
 		}
 	}
 
+	public void render(ModelBatch batch, Environment env) {
+		batch.render(this.modelInstance, env);
+		if(attacking)
+		batch.render(this.attackInstance, env);
+	}
+
 	private void updatePositionOrientation(Vector3 position, float r, float height) {
 		Quaternion orientation = new Quaternion();
 		orientation.setEulerAngles(r, 0, 0);
 		position.y = height;
 		this.modelInstance.transform.set(position, orientation);
+		this.attackInstance.transform.set(position, orientation);
 	}
 
 	public long getID() {
@@ -136,4 +155,18 @@ public class MobInstance {
 		ID = iD;
 	}
 
+	public void attack() {
+		attacking = true;
+		modelAnimController.setAnimation(null);
+		attackAnimController.setAnimation("Cube|Attack", 1, 1, new AnimationListener() {
+			@Override
+			public void onEnd(AnimationDesc animation) {
+				attacking = false;
+			}
+
+			@Override
+			public void onLoop(AnimationDesc animation) {
+			}
+		});
+	}
 }

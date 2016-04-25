@@ -88,23 +88,24 @@ public class WorldScreen extends GameScreen {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				Touchpad pad = (Touchpad) actor;
-//				System.out.println(pad.getKnobPercentX() + " " + pad.getKnobPercentY());
+				// System.out.println(pad.getKnobPercentX() + " " +
+				// pad.getKnobPercentY());
 				float xMove = pad.getKnobPercentX();
 				float yMove = pad.getKnobPercentY();
 
 				if (yMove < 0.2f && yMove > -0.2f) {
 					usersCharacterInstance.stopMove();
-				}else if(yMove>0.1f){
+				} else if (yMove > 0.1f) {
 					usersCharacterInstance.moveChar(20);
-				}else if(yMove < -0.1f){
+				} else if (yMove < -0.1f) {
 					usersCharacterInstance.moveChar(-20);
 				}
-				
+
 				if (xMove < 0.4f && xMove > -0.4f) {
 					usersCharacterInstance.stopRotate();
-				}else if(xMove>0.2f){
+				} else if (xMove > 0.2f) {
 					usersCharacterInstance.rotate(-360);
-				}else if(xMove < -0.2f){
+				} else if (xMove < -0.2f) {
 					usersCharacterInstance.rotate(360);
 				}
 			}
@@ -147,7 +148,7 @@ public class WorldScreen extends GameScreen {
 	private void renderMobs(ModelBatch batch, Environment env, float bigDelta, HeightMap map) {
 		for (MobInstance mob : world.getMobs()) {
 			mob.update(bigDelta, map);
-			batch.render(mob.getModelInstance(), env);
+			mob.render(batch, env);
 		}
 	}
 
@@ -167,8 +168,10 @@ public class WorldScreen extends GameScreen {
 
 		modelBatch.begin(camera);
 		usersCharacterInstance.render(modelBatch, environment);
-//		modelBatch.render(usersCharacterInstance.getModelInstance(), environment);
-//		modelBatch.render(usersCharacterInstance.getTestBoxInstance(), environment);
+		// modelBatch.render(usersCharacterInstance.getModelInstance(),
+		// environment);
+		// modelBatch.render(usersCharacterInstance.getTestBoxInstance(),
+		// environment);
 		renderOtherPlayers(modelBatch, environment, delta * 1000, heightMap);
 		renderMobs(modelBatch, environment, delta * 1000, heightMap);
 		renderGround(modelBatch);

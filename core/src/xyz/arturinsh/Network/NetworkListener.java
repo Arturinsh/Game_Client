@@ -14,6 +14,7 @@ import xyz.arturinsh.Network.Packets.CharacterCreateSuccess;
 import xyz.arturinsh.Network.Packets.EnterWorld;
 import xyz.arturinsh.Network.Packets.LogInFailed;
 import xyz.arturinsh.Network.Packets.LogInSuccess;
+import xyz.arturinsh.Network.Packets.MobAttack;
 import xyz.arturinsh.Network.Packets.RegisterFailed;
 import xyz.arturinsh.Network.Packets.RegisterSuccess;
 import xyz.arturinsh.Network.Packets.RemovePlayer;
@@ -96,6 +97,11 @@ public class NetworkListener extends Listener {
 		if (object instanceof AttackStarted) {
 			AttackStarted attack = (AttackStarted) object;
 			world.receiveAttack(attack);
+		}
+
+		if (object instanceof MobAttack) {
+			MobAttack attack = (MobAttack) object;
+			world.receiveMobAttack(attack);
 		}
 	}
 }
