@@ -34,7 +34,7 @@ import xyz.arturinsh.Network.Packets.UserCharacter;
 public class CharacterInstance {
 
 	private final float MOVE_SPEED = 20;
-	private final float ROTATE_SPEED = 360;
+	private final float ROTATE_SPEED = 240;
 
 	private AnimationController modelAnimController, attackAnimController;
 	private ModelInstance modelInstance, attackInstance, testBoxInstance;

@@ -44,8 +44,6 @@ public class WorldScreen extends GameScreen {
 	private CharacterInstance usersCharacterInstance;
 	private ModelInstance groundInstance;
 
-	private Button upButton, downButton, leftButton, rightButton;
-	private Skin skin;
 
 	private Touchpad touchpad;
 	private TouchpadStyle touchpadStyle;
@@ -95,19 +93,21 @@ public class WorldScreen extends GameScreen {
 				float yMove = pad.getKnobPercentY();
 
 				if (yMove < 0.2f && yMove > -0.2f) {
-					usersCharacterInstance.stopMove();
+					usersCharacterInstance.setMoveUp(false);
+					usersCharacterInstance.setMoveDown(false);
 				} else if (yMove > 0.1f) {
-					usersCharacterInstance.moveChar(20);
+					usersCharacterInstance.setMoveUp(true);
 				} else if (yMove < -0.1f) {
-					usersCharacterInstance.moveChar(-20);
+					usersCharacterInstance.setMoveDown(true);
 				}
 
 				if (xMove < 0.4f && xMove > -0.4f) {
-					usersCharacterInstance.stopRotate();
+					usersCharacterInstance.setRotateLeft(false);
+					usersCharacterInstance.setRotateRight(false);
 				} else if (xMove > 0.2f) {
-					usersCharacterInstance.rotate(-360);
+					usersCharacterInstance.setRotateRight(true);
 				} else if (xMove < -0.2f) {
-					usersCharacterInstance.rotate(360);
+					usersCharacterInstance.setRotateLeft(true);
 				}
 			}
 		});
@@ -203,10 +203,6 @@ public class WorldScreen extends GameScreen {
 
 		modelBatch.begin(camera);
 		usersCharacterInstance.render(modelBatch, environment);
-		// modelBatch.render(usersCharacterInstance.getModelInstance(),
-		// environment);
-		// modelBatch.render(usersCharacterInstance.getTestBoxInstance(),
-		// environment);
 		renderOtherPlayers(modelBatch, environment, delta * 1000, heightMap);
 		renderMobs(modelBatch, environment, delta * 1000, heightMap);
 		renderGround(modelBatch);
