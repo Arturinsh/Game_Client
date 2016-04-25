@@ -5,15 +5,23 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationDesc;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationListener;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
@@ -44,6 +52,7 @@ public class CharacterInstance {
 	private float newRotation = 0;
 	private boolean casting = false, damaging = false, moveUp = false, moveDown = false, rotateLeft = false,
 			rotateRight = false;
+	private Decal nameDecal;
 
 	private ObjectRotation realRotation = new ObjectRotation();
 	private ArrayList<PlayerPositionUpdate> movementBuffer = new ArrayList<PlayerPositionUpdate>();
@@ -190,9 +199,11 @@ public class CharacterInstance {
 		if (height != 0)
 			position.y = height;
 
-		Vector3 testPosition = new Vector3(position.x, position.y, position.z);
-		this.attackInstance.transform.set(testPosition, orientation);
-		this.testBoxInstance.transform.set(testPosition, orientation);
+		if (nameDecal != null)
+			nameDecal.setPosition(new Vector3().set(position).add(0, 7, 0));
+
+		this.attackInstance.transform.set(position, orientation);
+		this.testBoxInstance.transform.set(position, orientation);
 		this.modelInstance.transform.set(position, orientation);
 	}
 
@@ -319,7 +330,7 @@ public class CharacterInstance {
 
 	public void render(ModelBatch batch, Environment env) {
 		batch.render(this.modelInstance, env);
-//		batch.render(this.testBoxInstance, env);
+		// batch.render(this.testBoxInstance, env);
 
 		if (damaging) {
 			batch.render(this.attackInstance, env);
@@ -385,4 +396,25 @@ public class CharacterInstance {
 		this.rotateRight = rotateRight;
 	}
 
+	public Decal getNameDecal() {
+		return nameDecal;
+	}
+
+	public void initDecal(SpriteBatch spriteFont) {
+		BitmapFont font = AssetsLoader.getFont();
+		GlyphLayout glyphLayout = new GlyphLayout();
+		glyphLayout.setText(font, character.charName);
+		int w = (int) glyphLayout.width;
+		int h = (int) glyphLayout.height;
+		FrameBuffer fbo = new FrameBuffer(Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
+		fbo.begin();
+		spriteFont.begin();
+		font.draw(spriteFont, character.charName, 0, h);
+		spriteFont.end();
+		fbo.end();
+		TextureRegion fboRegion = new TextureRegion(fbo.getColorBufferTexture(), 0, 0, w, h+1);
+		fboRegion.flip(false, true);
+		nameDecal = Decal.newDecal(w / h, 1, fboRegion, true);
+		nameDecal.setPosition(0, 0, 0);
+	}
 }

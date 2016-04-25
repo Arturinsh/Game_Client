@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -19,6 +20,7 @@ public class AssetsLoader {
 	private static Texture up, down, right, left, sky, heightMapTexture, touchBackground, touchKnob, human1, human2,
 			human3;
 	private static Pixmap heightMapData, heightMapSmall;
+	private static BitmapFont font;
 
 	public static void initUI() {
 		up = new Texture(Gdx.files.internal("triangle_up.png"));
@@ -35,6 +37,7 @@ public class AssetsLoader {
 		human3 = new Texture(Gdx.files.internal("TextureHuman3.png"));
 		sky = new Texture(Gdx.files.internal("sky1.jpg"));
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
+		font = new BitmapFont(Gdx.files.internal("default.fnt"));
 		ModelBuilder modelBuilder = new ModelBuilder();
 		ground = modelBuilder.createBox(100f, 1f, 100f, new Material(ColorAttribute.createDiffuse(Color.TAN)),
 				Usage.Position | Usage.Normal);
@@ -133,5 +136,9 @@ public class AssetsLoader {
 
 	public static Model getDogAttack() {
 		return dogAttack;
+	}
+
+	public static BitmapFont getFont() {
+		return font;
 	}
 }

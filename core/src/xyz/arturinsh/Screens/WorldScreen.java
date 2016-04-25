@@ -4,15 +4,17 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
+import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -31,11 +33,13 @@ import xyz.arturinsh.Helpers.HeightMap;
 import xyz.arturinsh.Helpers.InputHandler;
 import xyz.arturinsh.Helpers.PersonCamera;
 
+@SuppressWarnings("deprecation")
 public class WorldScreen extends GameScreen {
 
 	private PersonCamera camera;
 	private ModelBatch modelBatch;
-
+	private DecalBatch decalBatch;
+	private SpriteBatch spriteFont;
 	private Environment environment;
 	private CharacterInstance usersCharacterInstance;
 	private ModelInstance groundInstance;
@@ -48,7 +52,6 @@ public class WorldScreen extends GameScreen {
 	private Skin touchpadSkin;
 	private Drawable touchBackground;
 	private Drawable touchKnob;
-
 	private Table table;
 
 	HeightField field, field2, field3;
@@ -71,7 +74,7 @@ public class WorldScreen extends GameScreen {
 	}
 
 	private void initUI() {
-
+		spriteFont = new SpriteBatch();
 		touchpadSkin = new Skin();
 		touchpadSkin.add("touchBackground", AssetsLoader.getTouchBackground());
 		touchpadSkin.add("touchKnob", AssetsLoader.getTouchKnob());
@@ -130,11 +133,11 @@ public class WorldScreen extends GameScreen {
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.8f, 0.8f, 0.8f, 1.0f));
 		environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
-		environment.add((shadowLight = new DirectionalShadowLight(4096, 4096, 200f, 200f, 1f, 100f)).set(0.8f, 0.8f, 0.8f,
-				-1f, -.8f, -.2f));
+		environment.add((shadowLight = new DirectionalShadowLight(4096, 4096, 200f, 200f, 1f, 100f)).set(0.8f, 0.8f,
+				0.8f, -1f, -.8f, -.2f));
 		environment.shadowMap = shadowLight;
 		shadowBatch = new ModelBatch(new DepthShaderProvider());
-
+		decalBatch = new DecalBatch(new CameraGroupStrategy(camera));
 		heightMap = new HeightMap(AssetsLoader.getHeightMapTexture(), AssetsLoader.getHeightMapData(),
 				AssetsLoader.getHeightMapSmall(), environment);
 	}
@@ -159,20 +162,29 @@ public class WorldScreen extends GameScreen {
 			batch.render(render);
 		}
 	}
-	
-	private void renderOtherPlayerShadows(ModelBatch shadowBatch){
+
+	private void renderOtherPlayerShadows(ModelBatch shadowBatch) {
 		for (CharacterInstance player : world.getOtherPlayers()) {
 			shadowBatch.render(player.getModelInstance());
 		}
 	}
-	
-	private void renderMobShadows(ModelBatch shadowBatch){
+
+	private void renderMobShadows(ModelBatch shadowBatch) {
 		for (MobInstance mob : world.getMobs()) {
 			shadowBatch.render(mob.getModelInstance());
 		}
 	}
 
-	@SuppressWarnings("deprecation")
+	private void drawOtherPlayerDecals() {
+		for (CharacterInstance player : world.getOtherPlayers()) {
+			if (player.getNameDecal() == null) {
+				player.initDecal(spriteFont);
+			}
+			player.getNameDecal().lookAt(camera.position, camera.up);
+			decalBatch.add(player.getNameDecal());
+		}
+	}
+
 	@Override
 	public void render(float delta) {
 		Gdx.gl.glClearColor(1, 1, 1, 0);
@@ -180,7 +192,7 @@ public class WorldScreen extends GameScreen {
 
 		usersCharacterInstance.update(delta, heightMap);
 		camera.update(delta);
-		
+
 		shadowLight.begin(usersCharacterInstance.getPosition(), camera.direction);
 		shadowBatch.begin(shadowLight.getCamera());
 		shadowBatch.render(usersCharacterInstance.getModelInstance());
@@ -188,7 +200,7 @@ public class WorldScreen extends GameScreen {
 		renderMobShadows(shadowBatch);
 		shadowBatch.end();
 		shadowLight.end();
-		
+
 		modelBatch.begin(camera);
 		usersCharacterInstance.render(modelBatch, environment);
 		// modelBatch.render(usersCharacterInstance.getModelInstance(),
@@ -201,7 +213,8 @@ public class WorldScreen extends GameScreen {
 		modelBatch.end();
 		stage.act(delta);
 		stage.draw();
-
+		drawOtherPlayerDecals();
+		decalBatch.flush();
 	}
 
 	@Override
