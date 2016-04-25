@@ -45,12 +45,11 @@ import xyz.arturinsh.gameclient.MainGame;
 public class GameWorld {
 	private Client client = new Client();
 	private MainGame game;
-	private final String ipAddress = "127.0.0.1";
+	private final String ipAddress = "arturinsh.xyz";
 	private List<UserCharacter> characters;
 	private CharacterInstance usersCharacterInstance;
 	private List<CharacterInstance> otherPlayers;
 	private List<MobInstance> mobs;
-
 	private Timer timer;
 
 	public GameWorld(MainGame _game) {

@@ -58,19 +58,6 @@ public class Packets {
 	public static class PlayerPositionUpdate {
 		public UserCharacter character;
 		public Date timestamp;
-
-		public boolean equals(Object ob) {
-			if (!(ob instanceof PlayerPositionUpdate))
-				return false;
-			if (timestamp != null)
-				return (timestamp.getTime() == ((PlayerPositionUpdate) ob).timestamp.getTime());
-			else
-				return false;
-		}
-
-		public int hashCode(Object ob) {
-			return (timestamp.hashCode());
-		}
 	}
 
 	public static class MobUpdate {

@@ -79,6 +79,7 @@ public class NetworkListener extends Listener {
 			// TODO do only when is logged in world
 			SnapShot snapShot = (SnapShot) object;
 			if (lastSnapshotTime == null || lastSnapshotTime.getTime() < snapShot.time.getTime()) {
+//				System.out.println("Receive "+snapShot.time.getTime());
 				lastSnapshotTime = snapShot.time;
 				world.updateWorld(snapShot);
 			}

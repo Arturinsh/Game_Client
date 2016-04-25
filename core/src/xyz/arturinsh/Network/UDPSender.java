@@ -27,13 +27,14 @@ public class UDPSender extends TimerTask {
 		posUpdate.character.x = position.x;
 		posUpdate.character.y = 0;
 		posUpdate.character.z = position.z;
-		posUpdate.character.r = (int)world.getUsersCharacterInstance().getRotation();
+		posUpdate.character.r = (int) world.getUsersCharacterInstance().getRotation();
 		posUpdate.timestamp = new Date();
 		client.sendUDP(posUpdate);
 		world.getUsersCharacterInstance().addMovementToBuffer(posUpdate);
-		
-//		System.out.println(posUpdate.character.x + " " + posUpdate.character.z + " "
-//				+ posUpdate.character.r);
+//		System.out.println("Send " + posUpdate.timestamp.getTime());
+		// System.out.println(posUpdate.character.x + " " +
+		// posUpdate.character.z + " "
+		// + posUpdate.character.r);
 		// TestUDP test = new TestUDP();
 		// DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		// Date date = new Date();

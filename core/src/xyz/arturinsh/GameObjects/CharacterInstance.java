@@ -276,47 +276,60 @@ public class CharacterInstance {
 	}
 
 	public void addMovementToBuffer(PlayerPositionUpdate update) {
-		movementBuffer.add(update);
-		// System.out.println("Add to buffer");
+		PlayerPositionUpdate temp = new PlayerPositionUpdate();
+		temp.character = new UserCharacter();
+
+		temp.character.x = update.character.x;
+		temp.character.y = update.character.y;
+		temp.character.z = update.character.z;
+		temp.character.r = update.character.r;
+
+		movementBuffer.add(temp);
+		// System.out.println("ADD x=" + update.character.x + " y=" +
+		// update.character.y + " z=" + update.character.z
+		// + " r=" + update.character.r);
 	}
 
 	public void checkMovement(PlayerPositionUpdate update) {
-		// System.out.println(" Buffer size = " + movementBuffer.size());
-		int index = -1;
-		if (movementBuffer.size() > 0)
-			index = movementBuffer.indexOf(update);
-		if (index > -1) {
-			PlayerPositionUpdate toTest = movementBuffer.get(index);
-			if (!positionUpdateCheck(toTest, update)) {
+		int deleteIndex = -1;
+		for (int i = movementBuffer.size() - 1; i >= 0; i--) {
+			if (positionUpdateCheck(movementBuffer.get(i), update)) {
+				// System.out.println("nice " + i);
+				deleteIndex = i;
+				break;
+			} else if (i == 0 && movementBuffer.size()>5) {
+//				System.out.println("x=" + movementBuffer.get(i).character.x + "|" + update.character.x + " y="
+//						+ movementBuffer.get(i).character.y + "|" + update.character.y + " z="
+//						+ movementBuffer.get(i).character.z + "|" + update.character.z + " r="
+//						+ movementBuffer.get(i).character.r + "|" + update.character.r);
+//				System.out.println("Correct");
 				Vector3 positionCorrection = new Vector3(update.character.x, update.character.y, update.character.z);
 				updatePositionOrientation(positionCorrection, update.character.r, getPosition().y);
-				// System.out.println("Incorrect. Buffer size = " +
-				// movementBuffer.size());
-			} else {
-				// System.out.println("Correct. Buffer size = " +
-				// movementBuffer.size());
 			}
-			clearMovementBuffer(update.timestamp);
-			// System.out.println("After clear = " + movementBuffer.size());
-		} else {
-			// System.out.println("Not found");
 		}
+//		System.out.println("buffer size=" + movementBuffer.size() + " del index=" + deleteIndex);
+		if (deleteIndex > 1) {
+			clearMovementBuffer(deleteIndex);
+		}
+		// System.out.println("After clear = " + movementBuffer.size());
 	}
 
 	private boolean positionUpdateCheck(PlayerPositionUpdate pos1, PlayerPositionUpdate pos2) {
-		return pos1.character.x == pos2.character.x && pos1.character.y == pos2.character.y
-				&& pos1.character.z == pos2.character.z && pos1.character.r == pos2.character.r;
+		// System.out.println("x=" + pos1.character.x + "|" + pos2.character.x +
+		// " y=" + pos1.character.y + "|"
+		// + pos2.character.y + " z=" + pos1.character.z + "|" +
+		// pos2.character.z + " r=" + pos1.character.r + "|"
+		// + pos2.character.r);
+
+		return pos1.character.x < pos2.character.x + 0.5f && pos1.character.x > pos2.character.x - 0.5f
+				&& pos1.character.y < pos2.character.y + 0.5f && pos1.character.y > pos2.character.y - 0.5f
+				&& pos1.character.z < pos2.character.z + 0.5f && pos1.character.z > pos2.character.z - 0.5f
+				&& pos1.character.r < pos2.character.r + 90 && pos1.character.r > pos2.character.r - 90;
 	}
 
-	private void clearMovementBuffer(Date timestamp) {
-		ArrayList<PlayerPositionUpdate> toDelete = new ArrayList<PlayerPositionUpdate>();
-		for (PlayerPositionUpdate update : movementBuffer) {
-			if (update.timestamp.getTime() <= timestamp.getTime()) {
-				toDelete.add(update);
-			}
-		}
-		for (PlayerPositionUpdate deleteUpdate : toDelete) {
-			movementBuffer.remove(deleteUpdate);
+	private void clearMovementBuffer(int index) {
+		for (int i = index; i >= 0; i--) {
+			movementBuffer.remove(0);
 		}
 	}
 
@@ -412,7 +425,7 @@ public class CharacterInstance {
 		font.draw(spriteFont, character.charName, 0, h);
 		spriteFont.end();
 		fbo.end();
-		TextureRegion fboRegion = new TextureRegion(fbo.getColorBufferTexture(), 0, 0, w, h+1);
+		TextureRegion fboRegion = new TextureRegion(fbo.getColorBufferTexture(), 0, 0, w, h + 1);
 		fboRegion.flip(false, true);
 		nameDecal = Decal.newDecal(w / h, 1, fboRegion, true);
 		nameDecal.setPosition(0, 0, 0);
