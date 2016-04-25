@@ -2,21 +2,16 @@ package xyz.arturinsh.Screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
+import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -61,6 +56,9 @@ public class WorldScreen extends GameScreen {
 	boolean morph = true;
 	Texture texture, texture2, texture3;
 	HeightMap heightMap;
+
+	DirectionalShadowLight shadowLight;
+	ModelBatch shadowBatch;
 
 	public WorldScreen(GameWorld _world) {
 		super(_world);
@@ -132,6 +130,10 @@ public class WorldScreen extends GameScreen {
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.8f, 0.8f, 0.8f, 1.0f));
 		environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+		environment.add((shadowLight = new DirectionalShadowLight(4096, 4096, 200f, 200f, 1f, 100f)).set(0.8f, 0.8f, 0.8f,
+				-1f, -.8f, -.2f));
+		environment.shadowMap = shadowLight;
+		shadowBatch = new ModelBatch(new DepthShaderProvider());
 
 		heightMap = new HeightMap(AssetsLoader.getHeightMapTexture(), AssetsLoader.getHeightMapData(),
 				AssetsLoader.getHeightMapSmall(), environment);
@@ -157,7 +159,20 @@ public class WorldScreen extends GameScreen {
 			batch.render(render);
 		}
 	}
+	
+	private void renderOtherPlayerShadows(ModelBatch shadowBatch){
+		for (CharacterInstance player : world.getOtherPlayers()) {
+			shadowBatch.render(player.getModelInstance());
+		}
+	}
+	
+	private void renderMobShadows(ModelBatch shadowBatch){
+		for (MobInstance mob : world.getMobs()) {
+			shadowBatch.render(mob.getModelInstance());
+		}
+	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void render(float delta) {
 		Gdx.gl.glClearColor(1, 1, 1, 0);
@@ -165,7 +180,15 @@ public class WorldScreen extends GameScreen {
 
 		usersCharacterInstance.update(delta, heightMap);
 		camera.update(delta);
-
+		
+		shadowLight.begin(usersCharacterInstance.getPosition(), camera.direction);
+		shadowBatch.begin(shadowLight.getCamera());
+		shadowBatch.render(usersCharacterInstance.getModelInstance());
+		renderOtherPlayerShadows(shadowBatch);
+		renderMobShadows(shadowBatch);
+		shadowBatch.end();
+		shadowLight.end();
+		
 		modelBatch.begin(camera);
 		usersCharacterInstance.render(modelBatch, environment);
 		// modelBatch.render(usersCharacterInstance.getModelInstance(),
