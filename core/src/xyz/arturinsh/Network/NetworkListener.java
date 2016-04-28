@@ -34,6 +34,7 @@ public class NetworkListener extends Listener {
 
 	@Override
 	public void disconnected(Connection connection) {
+		world.showDCdialog("You have been disconnected!");
 	}
 
 	@Override

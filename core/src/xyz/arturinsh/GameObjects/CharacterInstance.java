@@ -216,7 +216,7 @@ public class CharacterInstance {
 		this.modelInstance.transform.set(position, orientation);
 	}
 
-	public void updatePlayer(float x, float y, float z, float rotation, long time) {
+	private void updatePlayer(float x, float y, float z, float rotation, long time) {
 		startTime = endTime;
 		endTime = time;
 
@@ -253,12 +253,6 @@ public class CharacterInstance {
 	}
 
 	public void updatePlayer(PlayerPositionUpdate update, long time) {
-//		long timestamp = 0;
-//		if (update.timestamp != null)
-//			timestamp = update.timestamp.getTime();
-		
-//		System.out.println("x=" + update.character.x + " y=" + update.character.y + " z=" + update.character.z + " r="
-//				+ update.character.r + " time=" + time + " chTime" + timestamp);
 		update.timestamp = new Date(time);
 		movementBuffer.add(update);
 		if (movementBuffer.size() > 1) {

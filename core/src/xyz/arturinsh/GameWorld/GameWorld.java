@@ -45,7 +45,7 @@ import xyz.arturinsh.gameclient.MainGame;
 public class GameWorld {
 	private Client client = new Client();
 	private MainGame game;
-	private final String ipAddress = "arturinsh.xyz";
+	private final String ipAddress = "127.0.0.1";
 	private List<UserCharacter> characters;
 	private CharacterInstance usersCharacterInstance;
 	private List<CharacterInstance> otherPlayers;
@@ -56,10 +56,10 @@ public class GameWorld {
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 		game = _game;
 		registerKryo();
-		startNetworkClient();
 		otherPlayers = new ArrayList<CharacterInstance>();
 		mobs = new ArrayList<MobInstance>();
 		game.setScreen(new LoginScreen(this));
+		startNetworkClient();
 		timer = new Timer();
 	}
 
@@ -96,6 +96,11 @@ public class GameWorld {
 	public void showDialog(String message) {
 		GameScreen current = getCurrentScreen();
 		current.showDialog(message);
+	}
+	
+	public void showDCdialog(String message){
+		GameScreen current = getCurrentScreen();
+		current.showDCDialog(message);
 	}
 
 	public void logIn(String username, String psw) {
@@ -182,6 +187,7 @@ public class GameWorld {
 		} catch (IOException e) {
 			System.out.print(e);
 			Gdx.app.debug("Test", e.toString());
+			showDCdialog("Can not connect to server!");
 		}
 	}
 

@@ -1,9 +1,14 @@
 package xyz.arturinsh.Screens;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import xyz.arturinsh.GameWorld.GameWorld;
@@ -15,32 +20,52 @@ public class GameScreen implements Screen {
 	protected GameWorld world;
 	protected MainGame game;
 	protected Label worldMessage;
-	private Dialog worldDialog;
+	private Dialog worldDialog, disconnectDialog;
 
 	public GameScreen(GameWorld _world) {
 		world = _world;
 		game = world.getGame();
 		stage = new Stage(new StretchViewport(1024, 576));
-		
+
 		worldMessage = new Label("", AssetsLoader.getSkin());
 		worldDialog = new Dialog("", AssetsLoader.getSkin());
 		worldDialog.button("Close", false);
 		worldDialog.text(worldMessage);
+		initDCDialog();
+	}
+
+	private void initDCDialog() {
+		Skin skin = AssetsLoader.getSkin();
+		disconnectDialog = new Dialog("", AssetsLoader.getSkin());
+		TextButton exitButton = new TextButton("Exit", skin);
+		exitButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				Gdx.app.exit();
+			}
+		});
+		disconnectDialog.button(exitButton);
+		disconnectDialog.text(worldMessage);
 	}
 
 	public void showDialog(String message) {
 		worldMessage.setText(message);
 		worldDialog.show(stage);
 	}
+	
+	public void showDCDialog(String message){
+		worldMessage.setText(message);
+		disconnectDialog.show(stage);
+	}
 
 	public Stage getStage() {
 		return stage;
 	}
-	
-	public void changeScreen(GameScreen screen){
+
+	public void changeScreen(GameScreen screen) {
 		game.setScreen(screen);
 	}
-	
+
 	@Override
 	public void show() {
 
