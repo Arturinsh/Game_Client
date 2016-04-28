@@ -15,7 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class AssetsLoader {
 	private static Skin skin;
-	private static Model humanModel, ground, dog, attackCage, testBox, dogAttack;
+	private static Model humanModel, ground, dog, attackCage, testBox, dogAttack, graveStone;
 	private static AssetManager assets;
 	private static Texture up, down, right, left, sky, heightMapTexture, touchBackground, touchKnob, human1, human2,
 			human3;
@@ -50,12 +50,14 @@ public class AssetsLoader {
 		assets.load("tDog.g3db", Model.class);
 		assets.load("cage.g3db", Model.class);
 		assets.load("dogAttack.g3db", Model.class);
+		assets.load("graveStone.g3db", Model.class);
 		// assets.load("testBox.g3db", Model.class);
 		assets.finishLoading();
 		humanModel = assets.get("human.g3db", Model.class);
 		dog = assets.get("tDog.g3db", Model.class);
 		attackCage = assets.get("cage.g3db", Model.class);
 		dogAttack = assets.get("dogAttack.g3db", Model.class);
+		graveStone = assets.get("graveStone.g3db", Model.class);
 		// testBox = assets.get("testBox.g3db", Model.class);
 		// TODO add dispose
 		initBoundingMap();
@@ -69,16 +71,15 @@ public class AssetsLoader {
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				Color pixelColor = new Color(boundingPixmap.getPixel(j, i));
-				if (pixelColor.r == 1 && pixelColor.g == 1 && pixelColor.b == 1){
+				if (pixelColor.r == 1 && pixelColor.g == 1 && pixelColor.b == 1) {
 					boundingMap[j][i] = 0;
-				}
-				else{
+				} else {
 					boundingMap[j][i] = 1;
 				}
 			}
 		}
 	}
-	
+
 	public static int getBoundingMapPoint(int x, int y) {
 		if (x >= 0 && x < boundingMap.length && y >= 0 && y < boundingMap[0].length)
 			return boundingMap[x][y];
@@ -168,5 +169,9 @@ public class AssetsLoader {
 
 	public static BitmapFont getFont() {
 		return font;
+	}
+
+	public static Model getGraveStone() {
+		return graveStone;
 	}
 }

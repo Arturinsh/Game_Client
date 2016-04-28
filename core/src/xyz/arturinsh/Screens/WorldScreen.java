@@ -206,7 +206,7 @@ public class WorldScreen extends GameScreen {
 		camera.update(delta);
 		shadowLight.begin(usersCharacterInstance.getPosition(), camera.direction);
 		shadowBatch.begin(shadowLight.getCamera());
-		shadowBatch.render(usersCharacterInstance.getModelInstance());
+		usersCharacterInstance.renderShadow(shadowBatch);
 		renderOtherPlayerShadows(shadowBatch);
 		renderMobShadows(shadowBatch);
 		shadowBatch.end();

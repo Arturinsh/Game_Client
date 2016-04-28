@@ -41,8 +41,8 @@ public class CharacterInstance {
 	private int hp = 100;
 
 	private AnimationController modelAnimController, attackAnimController;
-	private ModelInstance modelInstance, attackInstance, testBoxInstance;
-	private Model model, attackCage, testBox;
+	private ModelInstance modelInstance, attackInstance, testBoxInstance, graveStoneInstance;
+	private Model model, attackCage, testBox, graveStone;
 	private float moveSpeed = 0;
 	private float rotateSpeed = 0;
 	private UserCharacter character;
@@ -67,11 +67,13 @@ public class CharacterInstance {
 		model = AssetsLoader.getHumanModel();
 		attackCage = AssetsLoader.getAttackCage();
 		testBox = AssetsLoader.getTestBox();
+		graveStone = AssetsLoader.getGraveStone();
 		character = _character;
 		changeModelMaterial(_character.charClass);
 		modelInstance = new ModelInstance(model);
 		attackInstance = new ModelInstance(attackCage);
 		testBoxInstance = new ModelInstance(testBox);
+		graveStoneInstance = new ModelInstance(graveStone);
 		modelAnimController = new AnimationController(modelInstance);
 		attackAnimController = new AnimationController(attackInstance);
 		updatePositionOrientation(new Vector3(_character.x, _character.y, _character.z), _character.r, 0);
@@ -167,7 +169,7 @@ public class CharacterInstance {
 	public void update(float delta, HeightMap map) {
 		moveSpeed = 0;
 		rotateSpeed = 0;
-		if (!casting && !damaging) {
+		if (!casting && !damaging && hp > 0) {
 			if (moveUp)
 				moveSpeed = MOVE_SPEED;
 			if (moveDown)
@@ -231,6 +233,7 @@ public class CharacterInstance {
 
 		this.attackInstance.transform.set(position, orientation);
 		this.testBoxInstance.transform.set(position, orientation);
+		this.graveStoneInstance.transform.set(position, orientation);
 		this.modelInstance.transform.set(position, orientation);
 	}
 
@@ -275,7 +278,6 @@ public class CharacterInstance {
 		movementBuffer.add(update);
 		if (update.character.hp != this.hp) {
 			this.hp = update.character.hp;
-			System.out.println(character.charName + " Hp:" + hp);
 		}
 		if (movementBuffer.size() > 1) {
 			PlayerPositionUpdate temp0 = movementBuffer.get(0);
@@ -406,11 +408,23 @@ public class CharacterInstance {
 	}
 
 	public void render(ModelBatch batch, Environment env) {
-		batch.render(this.modelInstance, env);
-		// batch.render(this.testBoxInstance, env);
+		if (hp > 0) {
+			batch.render(this.modelInstance, env);
+			// batch.render(this.testBoxInstance, env);
 
-		if (damaging) {
-			batch.render(this.attackInstance, env);
+			if (damaging) {
+				batch.render(this.attackInstance, env);
+			}
+		} else {
+			batch.render(graveStoneInstance, env);
+		}
+	}
+
+	public void renderShadow(ModelBatch shadowBatch) {
+		if (hp > 0) {
+			shadowBatch.render(modelInstance);
+		} else {
+			shadowBatch.render(graveStoneInstance);
 		}
 	}
 
@@ -501,7 +515,4 @@ public class CharacterInstance {
 		nameDecal.setPosition(0, 0, 0);
 	}
 
-	public void renderShadow(ModelBatch shadowBatch) {
-		shadowBatch.render(modelInstance);
-	}
 }
