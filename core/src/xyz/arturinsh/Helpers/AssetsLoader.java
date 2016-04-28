@@ -19,8 +19,9 @@ public class AssetsLoader {
 	private static AssetManager assets;
 	private static Texture up, down, right, left, sky, heightMapTexture, touchBackground, touchKnob, human1, human2,
 			human3;
-	private static Pixmap heightMapData, heightMapSmall;
+	private static Pixmap heightMapData, heightMapSmall, boundingPixmap;
 	private static BitmapFont font;
+	private static int[][] boundingMap;
 
 	public static void initUI() {
 		up = new Texture(Gdx.files.internal("triangle_up.png"));
@@ -32,6 +33,7 @@ public class AssetsLoader {
 		heightMapTexture = new Texture(Gdx.files.internal("big512.png"));
 		heightMapData = new Pixmap(Gdx.files.internal("big512.png"));
 		heightMapSmall = new Pixmap(Gdx.files.internal("small128.png"));
+		boundingPixmap = new Pixmap(Gdx.files.internal("MapBounds.png"));
 		human1 = new Texture(Gdx.files.internal("TextureHuman.png"));
 		human2 = new Texture(Gdx.files.internal("TextureHuman2.png"));
 		human3 = new Texture(Gdx.files.internal("TextureHuman3.png"));
@@ -56,6 +58,32 @@ public class AssetsLoader {
 		dogAttack = assets.get("dogAttack.g3db", Model.class);
 		// testBox = assets.get("testBox.g3db", Model.class);
 		// TODO add dispose
+		initBoundingMap();
+	}
+
+	private static void initBoundingMap() {
+		int width = boundingPixmap.getWidth();
+		int height = boundingPixmap.getHeight();
+
+		boundingMap = new int[height][width];
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				Color pixelColor = new Color(boundingPixmap.getPixel(j, i));
+				if (pixelColor.r == 1 && pixelColor.g == 1 && pixelColor.b == 1){
+					boundingMap[j][i] = 0;
+				}
+				else{
+					boundingMap[j][i] = 1;
+				}
+			}
+		}
+	}
+	
+	public static int getBoundingMapPoint(int x, int y) {
+		if (x >= 0 && x < boundingMap.length && y >= 0 && y < boundingMap[0].length)
+			return boundingMap[x][y];
+		else
+			return 0;
 	}
 
 	public static Model getTestBox() {

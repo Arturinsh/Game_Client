@@ -8,6 +8,8 @@ import java.util.Timer;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
@@ -16,6 +18,7 @@ import xyz.arturinsh.GameObjects.CharacterClass;
 import xyz.arturinsh.GameObjects.CharacterInstance;
 import xyz.arturinsh.GameObjects.MobInstance;
 import xyz.arturinsh.GameObjects.MobType;
+import xyz.arturinsh.Helpers.AssetsLoader;
 import xyz.arturinsh.Network.NetworkListener;
 import xyz.arturinsh.Network.Packets.AddPlayer;
 import xyz.arturinsh.Network.Packets.Attack;
@@ -97,8 +100,8 @@ public class GameWorld {
 		GameScreen current = getCurrentScreen();
 		current.showDialog(message);
 	}
-	
-	public void showDCdialog(String message){
+
+	public void showDCdialog(String message) {
 		GameScreen current = getCurrentScreen();
 		current.showDCDialog(message);
 	}
@@ -257,10 +260,11 @@ public class GameWorld {
 	private boolean hasCharacter(PlayerPositionUpdate update, List<CharacterInstance> list, long time) {
 		for (CharacterInstance player : list) {
 			if (player.matchesCharacter(update.character)) {
-				//player.updatePlayer(update.character.x, update.character.y, update.character.z, update.character.r,
-					//	time);
+				// player.updatePlayer(update.character.x, update.character.y,
+				// update.character.z, update.character.r,
+				// time);
 				System.out.println(update.tick);
-				 player.updatePlayer(update, time);
+				player.updatePlayer(update, time);
 				return true;
 			}
 		}

@@ -58,7 +58,7 @@ public class CharacterInstance {
 	private ArrayList<PlayerPositionUpdate> movementBuffer = new ArrayList<PlayerPositionUpdate>();
 
 	private boolean lagPackage = false;
-	
+
 	public CharacterInstance(UserCharacter _character) {
 		model = AssetsLoader.getHumanModel();
 		attackCage = AssetsLoader.getAttackCage();
@@ -169,15 +169,24 @@ public class CharacterInstance {
 				rotateSpeed = -1 * ROTATE_SPEED;
 		}
 
+		Vector3 oldPosition = getPosition();
 		this.modelInstance.transform.translate(0, 0, moveSpeed * delta);
+
 		realRotation.addToRot(rotateSpeed * delta);
 
-		int x = (int) getPosition().x;
-		int y = (int) getPosition().z;
-		float height = map.getHeight(x, y);
+		Vector3 newPosition = getPosition();
 
-		updatePositionOrientation(getPosition(), realRotation.getRotation(), height);
-
+		if (AssetsLoader.getBoundingMapPoint((int) newPosition.x, (int) newPosition.z) == 1) {
+			int x = (int) newPosition.x;
+			int y = (int) newPosition.z;
+			float height = map.getHeight(x, y);
+			updatePositionOrientation(newPosition, realRotation.getRotation(), height);
+		} else {
+			int x = (int) oldPosition.x;
+			int y = (int) oldPosition.z;
+			float height = map.getHeight(x, y);
+			updatePositionOrientation(oldPosition, realRotation.getRotation(), height);
+		}
 		if (moveSpeed != 0) {
 			modelAnimController.setAnimation("Armature|Walk", -1, 6, null);
 			attackAnimController.setAnimation(null);
