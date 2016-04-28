@@ -20,14 +20,15 @@ public class GameScreen implements Screen {
 	protected GameWorld world;
 	protected MainGame game;
 	protected Label worldMessage;
+	protected Label disconnectMessage;
 	private Dialog worldDialog, disconnectDialog;
 
 	public GameScreen(GameWorld _world) {
 		world = _world;
 		game = world.getGame();
 		stage = new Stage(new StretchViewport(1024, 576));
-
 		worldMessage = new Label("", AssetsLoader.getSkin());
+
 		worldDialog = new Dialog("", AssetsLoader.getSkin());
 		worldDialog.button("Close", false);
 		worldDialog.text(worldMessage);
@@ -36,7 +37,8 @@ public class GameScreen implements Screen {
 
 	private void initDCDialog() {
 		Skin skin = AssetsLoader.getSkin();
-		disconnectDialog = new Dialog("", AssetsLoader.getSkin());
+		disconnectMessage = new Label("", skin);
+		disconnectDialog = new Dialog("", skin);
 		TextButton exitButton = new TextButton("Exit", skin);
 		exitButton.addListener(new ClickListener() {
 			@Override
@@ -45,16 +47,16 @@ public class GameScreen implements Screen {
 			}
 		});
 		disconnectDialog.button(exitButton);
-		disconnectDialog.text(worldMessage);
+		disconnectDialog.text(disconnectMessage);
 	}
 
 	public void showDialog(String message) {
 		worldMessage.setText(message);
 		worldDialog.show(stage);
 	}
-	
-	public void showDCDialog(String message){
-		worldMessage.setText(message);
+
+	public void showDCDialog(String message) {
+		disconnectMessage.setText(message);
 		disconnectDialog.show(stage);
 	}
 

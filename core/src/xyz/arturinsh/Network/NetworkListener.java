@@ -46,14 +46,12 @@ public class NetworkListener extends Listener {
 		}
 
 		if (object instanceof LogInFailed) {
-			world.showDialog("LogInFailed");
+			world.showDialog("LogIn Failed");
 		}
 		if (object instanceof RegisterSuccess) {
-			System.out.println("Reg ok");
 			world.registerSuccess();
 		}
 		if (object instanceof RegisterFailed) {
-			System.out.println("Reg fail");
 			world.registerFailed();
 		}
 		if (object instanceof AddPlayer) {
