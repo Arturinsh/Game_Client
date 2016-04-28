@@ -57,6 +57,8 @@ public class CharacterInstance {
 	private ObjectRotation realRotation = new ObjectRotation();
 	private ArrayList<PlayerPositionUpdate> movementBuffer = new ArrayList<PlayerPositionUpdate>();
 
+	private boolean lagPackage = false;
+	
 	public CharacterInstance(UserCharacter _character) {
 		model = AssetsLoader.getHumanModel();
 		attackCage = AssetsLoader.getAttackCage();
@@ -119,6 +121,13 @@ public class CharacterInstance {
 	public Vector3 getPosition() {
 		Vector3 position = new Vector3();
 		this.modelInstance.transform.getTranslation(position);
+		return position;
+	}
+
+	public Vector3 getXZPosition() {
+		Vector3 position = new Vector3();
+		this.modelInstance.transform.getTranslation(position);
+		position.y = 0;
 		return position;
 	}
 
@@ -240,13 +249,45 @@ public class CharacterInstance {
 			rotationStep = trot / timeDifference;
 			step = new Vector3(tx, ty, tz);
 		}
+
+	}
+
+	public void updatePlayer(PlayerPositionUpdate update, long time) {
+//		long timestamp = 0;
+//		if (update.timestamp != null)
+//			timestamp = update.timestamp.getTime();
+//		
+//		System.out.println("x=" + update.character.x + " y=" + update.character.y + " z=" + update.character.z + " r="
+//				+ update.character.r + " time=" + time + " chTime" + timestamp);
+//		update.timestamp = new Date(time);
+		movementBuffer.add(update);
+		if (movementBuffer.size() > 1) {
+			PlayerPositionUpdate temp0 = movementBuffer.get(0);
+			PlayerPositionUpdate temp1 = movementBuffer.get(1);
+
+			if (lagPackage) {
+				updatePlayer(temp1.character.x, temp1.character.y, temp1.character.z, temp1.character.r,
+						temp1.timestamp.getTime());
+				lagPackage = false;
+				movementBuffer.remove(0);
+			} else {
+				updatePlayer(temp0.character.x, temp0.character.y, temp0.character.z, temp0.character.r,
+						temp0.timestamp.getTime());
+			}
+
+			if (temp0.tick == temp1.tick) {
+				lagPackage = true;
+			}
+
+			movementBuffer.remove(0);
+		}
 	}
 
 	// bigDelta = delta *1000
 	public void updateOther(float bigDelta, HeightMap map) {
 		Vector3 realStep = new Vector3();
 		realStep.set(step);
-		Vector3 newPos = getPosition();
+		Vector3 newPos = getXZPosition();
 		float newRot = getRotation();
 
 		if (oldRotation != newRotation) {
@@ -297,17 +338,22 @@ public class CharacterInstance {
 				// System.out.println("nice " + i);
 				deleteIndex = i;
 				break;
-			} else if (i == 0 && movementBuffer.size()>5) {
-//				System.out.println("x=" + movementBuffer.get(i).character.x + "|" + update.character.x + " y="
-//						+ movementBuffer.get(i).character.y + "|" + update.character.y + " z="
-//						+ movementBuffer.get(i).character.z + "|" + update.character.z + " r="
-//						+ movementBuffer.get(i).character.r + "|" + update.character.r);
-//				System.out.println("Correct");
+			} else if (i == 0 && movementBuffer.size() > 5) {
+				// System.out.println("x=" + movementBuffer.get(i).character.x +
+				// "|" + update.character.x + " y="
+				// + movementBuffer.get(i).character.y + "|" +
+				// update.character.y + " z="
+				// + movementBuffer.get(i).character.z + "|" +
+				// update.character.z + " r="
+				// + movementBuffer.get(i).character.r + "|" +
+				// update.character.r);
+				// System.out.println("Correct");
 				Vector3 positionCorrection = new Vector3(update.character.x, update.character.y, update.character.z);
 				updatePositionOrientation(positionCorrection, update.character.r, getPosition().y);
 			}
 		}
-//		System.out.println("buffer size=" + movementBuffer.size() + " del index=" + deleteIndex);
+		// System.out.println("buffer size=" + movementBuffer.size() + " del
+		// index=" + deleteIndex);
 		if (deleteIndex > 1) {
 			clearMovementBuffer(deleteIndex);
 		}
@@ -391,6 +437,11 @@ public class CharacterInstance {
 		DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSSS");
 		Date date = new Date();
 		System.out.println(dateFormat.format(date));
+	}
+
+	private String timeString(Date date) {
+		DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSSS");
+		return dateFormat.format(date);
 	}
 
 	public void setMoveUp(boolean moveUp) {

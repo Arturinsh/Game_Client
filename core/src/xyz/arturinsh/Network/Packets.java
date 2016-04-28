@@ -58,6 +58,7 @@ public class Packets {
 	public static class PlayerPositionUpdate {
 		public UserCharacter character;
 		public Date timestamp;
+		public long tick;
 	}
 
 	public static class MobUpdate {
@@ -70,6 +71,7 @@ public class Packets {
 		public List<MobUpdate> mobSnapshot;
 		public List<PlayerPositionUpdate> snapshot;
 		public Date time;
+		public long tick;
 	}
 	
 	public static class Attack{

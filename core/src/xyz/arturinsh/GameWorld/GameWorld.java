@@ -45,7 +45,7 @@ import xyz.arturinsh.gameclient.MainGame;
 public class GameWorld {
 	private Client client = new Client();
 	private MainGame game;
-	private final String ipAddress = "arturinsh.xyz";
+	private final String ipAddress = "192.168.1.2";
 	private List<UserCharacter> characters;
 	private CharacterInstance usersCharacterInstance;
 	private List<CharacterInstance> otherPlayers;
@@ -251,8 +251,10 @@ public class GameWorld {
 	private boolean hasCharacter(PlayerPositionUpdate update, List<CharacterInstance> list, long time) {
 		for (CharacterInstance player : list) {
 			if (player.matchesCharacter(update.character)) {
-				player.updatePlayer(update.character.x, update.character.y, update.character.z, update.character.r,
-						time);
+				//player.updatePlayer(update.character.x, update.character.y, update.character.z, update.character.r,
+					//	time);
+				System.out.println(update.tick);
+				 player.updatePlayer(update, time);
 				return true;
 			}
 		}
@@ -306,15 +308,15 @@ public class GameWorld {
 			client.sendTCP(attack);
 		}
 	}
-	
-	public void receiveMobAttack(MobAttack attack){
+
+	public void receiveMobAttack(MobAttack attack) {
 		for (MobInstance mob : mobs) {
 			if (mob.getID() == attack.mob.ID) {
 				mob.attack();
 			}
 		}
 	}
-	
+
 	public void receiveAttack(AttackStarted attack) {
 		for (CharacterInstance player : otherPlayers) {
 			if (!usersCharacterInstance.matchesCharacter(attack.character)
