@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import xyz.arturinsh.Helpers.AssetsLoader;
 import xyz.arturinsh.Helpers.HeightMap;
+import xyz.arturinsh.Network.Packets.MobUpdate;
 
 public class MobInstance {
 	private AnimationController modelAnimController, attackAnimController;
@@ -26,6 +27,7 @@ public class MobInstance {
 	private float rotationStep = 0;
 	private float oldRotation = 0;
 	private float newRotation = 0;
+	private int hp = 100;
 
 	private long ID;
 
@@ -83,7 +85,7 @@ public class MobInstance {
 			newPos.add(realStep);
 			modelAnimController.setAnimation("Armature|Walk", -1, 1, null);
 
-		} else if(!attacking){
+		} else if (!attacking) {
 			newPos.set(newPosition);
 			modelAnimController.setAnimation(null);
 			attackAnimController.setAnimation(null);
@@ -98,7 +100,15 @@ public class MobInstance {
 		updatePositionOrientation(newPos, newRot, height);
 	}
 
-	public void updateMob(float x, float y, float z, float rotation, long time) {
+	public void updateMob(MobUpdate update, long time) {
+		float x = update.x;
+		float y = update.y;
+		float z = update.z;
+		float rotation = update.r;
+		if (hp != update.hp) {
+			this.hp = update.hp;
+			System.out.println(this.hp);
+		}
 		startTime = endTime;
 		endTime = time;
 
@@ -134,9 +144,17 @@ public class MobInstance {
 	}
 
 	public void render(ModelBatch batch, Environment env) {
-		batch.render(this.modelInstance, env);
-		if(attacking)
-		batch.render(this.attackInstance, env);
+		if (hp > 0) {
+			batch.render(this.modelInstance, env);
+			if (attacking)
+				batch.render(this.attackInstance, env);
+		}
+	}
+
+	public void renderShadow(ModelBatch shadowBatch) {
+		if (hp > 0) {
+			shadowBatch.render(modelInstance);
+		}
 	}
 
 	private void updatePositionOrientation(Vector3 position, float r, float height) {

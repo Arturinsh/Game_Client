@@ -16,13 +16,14 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Align;
 
 import xyz.arturinsh.GameObjects.CharacterInstance;
 import xyz.arturinsh.GameObjects.MobInstance;
@@ -44,13 +45,13 @@ public class WorldScreen extends GameScreen {
 	private CharacterInstance usersCharacterInstance;
 	private ModelInstance groundInstance;
 
-
 	private Touchpad touchpad;
 	private TouchpadStyle touchpadStyle;
 	private Skin touchpadSkin;
 	private Drawable touchBackground;
 	private Drawable touchKnob;
 	private Table table;
+	private Label hpLabel;
 
 	HeightField field, field2, field3;
 	Renderable ground, ground2, ground3;
@@ -112,10 +113,15 @@ public class WorldScreen extends GameScreen {
 			}
 		});
 
+		hpLabel = new Label("HP:100", AssetsLoader.getSkin());
+		hpLabel.setFontScale(2);
 		table = new Table();
-
-		table.add(touchpad).padBottom(300).padLeft(30);
-		table.left();
+		table.setFillParent(true);
+		// table.debug();
+		table.add(hpLabel).expandY().align(Align.topLeft).padTop(20).padLeft(30);
+		table.row();
+		table.add(touchpad).padBottom(30).padLeft(30);
+		table.top().left();
 		stage.addActor(table);
 	}
 
@@ -165,13 +171,14 @@ public class WorldScreen extends GameScreen {
 
 	private void renderOtherPlayerShadows(ModelBatch shadowBatch) {
 		for (CharacterInstance player : world.getOtherPlayers()) {
-			shadowBatch.render(player.getModelInstance());
+			player.renderShadow(shadowBatch);
 		}
 	}
 
 	private void renderMobShadows(ModelBatch shadowBatch) {
 		for (MobInstance mob : world.getMobs()) {
-			shadowBatch.render(mob.getModelInstance());
+			mob.renderShadow(shadowBatch);
+			
 		}
 	}
 
@@ -185,6 +192,11 @@ public class WorldScreen extends GameScreen {
 		}
 	}
 
+	private void updateUI() {
+		int hp = usersCharacterInstance.getHP();
+		hpLabel.setText("HP:" + hp);
+	}
+
 	@Override
 	public void render(float delta) {
 		Gdx.gl.glClearColor(1, 1, 1, 0);
@@ -192,7 +204,6 @@ public class WorldScreen extends GameScreen {
 
 		usersCharacterInstance.update(delta, heightMap);
 		camera.update(delta);
-
 		shadowLight.begin(usersCharacterInstance.getPosition(), camera.direction);
 		shadowBatch.begin(shadowLight.getCamera());
 		shadowBatch.render(usersCharacterInstance.getModelInstance());
@@ -207,6 +218,9 @@ public class WorldScreen extends GameScreen {
 		renderMobs(modelBatch, environment, delta * 1000, heightMap);
 		renderGround(modelBatch);
 		modelBatch.end();
+
+		updateUI();
+
 		stage.act(delta);
 		stage.draw();
 		drawOtherPlayerDecals();

@@ -248,7 +248,7 @@ public class GameWorld {
 				// usersCharacterInstance.testPosition(update.character.x,
 				// update.character.y, update.character.z,
 				// update.character.r);
-				usersCharacterInstance.checkMovement(update);
+				usersCharacterInstance.checkUpdate(update);
 			} else if (hasCharacter(update, otherPlayers, snapShot.time.getTime())) {
 			} else {
 				CharacterInstance playerInstance = new CharacterInstance(update.character);
@@ -263,7 +263,7 @@ public class GameWorld {
 				// player.updatePlayer(update.character.x, update.character.y,
 				// update.character.z, update.character.r,
 				// time);
-				System.out.println(update.tick);
+//				System.out.println(update.tick);
 				player.updatePlayer(update, time);
 				return true;
 			}
@@ -284,7 +284,7 @@ public class GameWorld {
 	private boolean hasMob(MobUpdate update, List<MobInstance> list, long time) {
 		for (MobInstance mob : list) {
 			if (mob.getID() == update.ID) {
-				mob.updateMob(update.x, update.y, update.z, update.r, time);
+				mob.updateMob(update, time);
 				return true;
 			}
 		}

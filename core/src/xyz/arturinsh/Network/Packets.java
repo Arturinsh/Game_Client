@@ -42,6 +42,7 @@ public class Packets {
 		public String charName;
 		public CharacterClass charClass;
 		public float x, y, z, r;
+		public int hp;
 	}
 
 	public static class CharacterCreateSuccess {
@@ -65,6 +66,7 @@ public class Packets {
 		public long ID;
 		public float x, y, z, r;
 		public MobType type;
+		public int hp;
 	}
 
 	public static class SnapShot {
@@ -73,17 +75,17 @@ public class Packets {
 		public Date time;
 		public long tick;
 	}
-	
-	public static class Attack{
+
+	public static class Attack {
 		public UserCharacter character;
 		public Date time;
 	}
-	
-	public static class AttackStarted{
+
+	public static class AttackStarted {
 		public UserCharacter character;
 	}
-	
-	public static class MobAttack{
+
+	public static class MobAttack {
 		public MobUpdate mob;
 	}
 }

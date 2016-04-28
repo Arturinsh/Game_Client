@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -24,6 +25,7 @@ import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationListener
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 
 import xyz.arturinsh.Helpers.AssetsLoader;
 import xyz.arturinsh.Helpers.HeightMap;
@@ -35,6 +37,8 @@ public class CharacterInstance {
 
 	private final float MOVE_SPEED = 20;
 	private final float ROTATE_SPEED = 240;
+
+	private int hp = 100;
 
 	private AnimationController modelAnimController, attackAnimController;
 	private ModelInstance modelInstance, attackInstance, testBoxInstance;
@@ -74,6 +78,7 @@ public class CharacterInstance {
 		newPosition = getPosition();
 		newRotation = getRotation();
 		realRotation = new ObjectRotation(_character.r);
+
 	}
 
 	public void changeClass(CharacterClass charClass) {
@@ -100,6 +105,10 @@ public class CharacterInstance {
 
 	public void setModel(Model model) {
 		this.model = model;
+	}
+
+	public int getHP() {
+		return hp;
 	}
 
 	private void changeModelMaterial(CharacterClass charClass) {
@@ -264,6 +273,10 @@ public class CharacterInstance {
 	public void updatePlayer(PlayerPositionUpdate update, long time) {
 		update.timestamp = new Date(time);
 		movementBuffer.add(update);
+		if (update.character.hp != this.hp) {
+			this.hp = update.character.hp;
+			System.out.println(character.charName + " Hp:" + hp);
+		}
 		if (movementBuffer.size() > 1) {
 			PlayerPositionUpdate temp0 = movementBuffer.get(0);
 			PlayerPositionUpdate temp1 = movementBuffer.get(1);
@@ -333,7 +346,10 @@ public class CharacterInstance {
 		// + " r=" + update.character.r);
 	}
 
-	public void checkMovement(PlayerPositionUpdate update) {
+	public void checkUpdate(PlayerPositionUpdate update) {
+		if (update.character.hp != this.hp) {
+			this.hp = update.character.hp;
+		}
 		int deleteIndex = -1;
 		for (int i = movementBuffer.size() - 1; i >= 0; i--) {
 			if (positionUpdateCheck(movementBuffer.get(i), update)) {
@@ -475,12 +491,17 @@ public class CharacterInstance {
 		FrameBuffer fbo = new FrameBuffer(Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
 		fbo.begin();
 		spriteFont.begin();
-		font.draw(spriteFont, character.charName, 0, h);
+		font.setColor(Color.WHITE);
+		font.draw(spriteFont, character.charName, 0, h + 2);
 		spriteFont.end();
 		fbo.end();
-		TextureRegion fboRegion = new TextureRegion(fbo.getColorBufferTexture(), 0, 0, w, h + 1);
+		TextureRegion fboRegion = new TextureRegion(fbo.getColorBufferTexture(), 0, 0, w, h + 5);
 		fboRegion.flip(false, true);
 		nameDecal = Decal.newDecal(w / h, 1, fboRegion, true);
 		nameDecal.setPosition(0, 0, 0);
+	}
+
+	public void renderShadow(ModelBatch shadowBatch) {
+		shadowBatch.render(modelInstance);
 	}
 }
