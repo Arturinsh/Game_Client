@@ -256,10 +256,10 @@ public class CharacterInstance {
 //		long timestamp = 0;
 //		if (update.timestamp != null)
 //			timestamp = update.timestamp.getTime();
-//		
+		
 //		System.out.println("x=" + update.character.x + " y=" + update.character.y + " z=" + update.character.z + " r="
 //				+ update.character.r + " time=" + time + " chTime" + timestamp);
-//		update.timestamp = new Date(time);
+		update.timestamp = new Date(time);
 		movementBuffer.add(update);
 		if (movementBuffer.size() > 1) {
 			PlayerPositionUpdate temp0 = movementBuffer.get(0);
@@ -278,7 +278,6 @@ public class CharacterInstance {
 			if (temp0.tick == temp1.tick) {
 				lagPackage = true;
 			}
-
 			movementBuffer.remove(0);
 		}
 	}
