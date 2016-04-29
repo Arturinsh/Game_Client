@@ -245,9 +245,6 @@ public class GameWorld {
 	private void updatePlayers(SnapShot snapShot) {
 		for (PlayerPositionUpdate update : snapShot.snapshot) {
 			if (usersCharacterInstance != null && usersCharacterInstance.matchesCharacter(update.character)) {
-				// usersCharacterInstance.testPosition(update.character.x,
-				// update.character.y, update.character.z,
-				// update.character.r);
 				usersCharacterInstance.checkUpdate(update);
 			} else if (hasCharacter(update, otherPlayers, snapShot.time.getTime())) {
 			} else {
@@ -260,10 +257,6 @@ public class GameWorld {
 	private boolean hasCharacter(PlayerPositionUpdate update, List<CharacterInstance> list, long time) {
 		for (CharacterInstance player : list) {
 			if (player.matchesCharacter(update.character)) {
-				// player.updatePlayer(update.character.x, update.character.y,
-				// update.character.z, update.character.r,
-				// time);
-//				System.out.println(update.tick);
 				player.updatePlayer(update, time);
 				return true;
 			}

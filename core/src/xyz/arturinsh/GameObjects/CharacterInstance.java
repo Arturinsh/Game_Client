@@ -40,7 +40,7 @@ public class CharacterInstance {
 
 	private int hp = 100;
 
-	private AnimationController modelAnimController, attackAnimController;
+	private AnimationController modelAnimController, attackAnimController, graveAnimController;
 	private ModelInstance modelInstance, attackInstance, testBoxInstance, graveStoneInstance;
 	private Model model, attackCage, testBox, graveStone;
 	private float moveSpeed = 0;
@@ -55,7 +55,7 @@ public class CharacterInstance {
 	private float oldRotation = 0;
 	private float newRotation = 0;
 	private boolean casting = false, damaging = false, moveUp = false, moveDown = false, rotateLeft = false,
-			rotateRight = false;
+			rotateRight = false, dying = false, graveRaising = false, dead = false;
 	private Decal nameDecal;
 
 	private ObjectRotation realRotation = new ObjectRotation();
@@ -76,6 +76,7 @@ public class CharacterInstance {
 		graveStoneInstance = new ModelInstance(graveStone);
 		modelAnimController = new AnimationController(modelInstance);
 		attackAnimController = new AnimationController(attackInstance);
+		graveAnimController = new AnimationController(graveStoneInstance);
 		updatePositionOrientation(new Vector3(_character.x, _character.y, _character.z), _character.r, 0);
 		newPosition = getPosition();
 		newRotation = getRotation();
@@ -111,6 +112,10 @@ public class CharacterInstance {
 
 	public int getHP() {
 		return hp;
+	}
+
+	public boolean isDead() {
+		return dead;
 	}
 
 	private void changeModelMaterial(CharacterClass charClass) {
@@ -201,13 +206,14 @@ public class CharacterInstance {
 		if (moveSpeed != 0) {
 			modelAnimController.setAnimation("Armature|Walk", -1, 6, null);
 			attackAnimController.setAnimation(null);
-		} else if (!casting && !damaging) {
+		} else if (!casting && !damaging && !dying) {
 			modelAnimController.setAnimation(null);
 			attackAnimController.setAnimation(null);
 		}
 
 		modelAnimController.update(delta);
 		attackAnimController.update(delta);
+		graveAnimController.update(delta);
 	}
 
 	public UserCharacter getCharacter() {
@@ -278,6 +284,9 @@ public class CharacterInstance {
 		movementBuffer.add(update);
 		if (update.character.hp != this.hp) {
 			this.hp = update.character.hp;
+			if (hp <= 0 && !dead) {
+				die();
+			}
 		}
 		if (movementBuffer.size() > 1) {
 			PlayerPositionUpdate temp0 = movementBuffer.get(0);
@@ -319,13 +328,14 @@ public class CharacterInstance {
 			realStep.z *= bigDelta;
 			newPos.add(realStep);
 			modelAnimController.setAnimation("Armature|Walk", -1, 6, null);
-		} else if (!casting && !damaging) {
+		} else if (!casting && !damaging && !dying) {
 			newPos.set(newPosition);
 			modelAnimController.setAnimation(null);
 			attackAnimController.setAnimation(null);
 		}
 		modelAnimController.update(bigDelta / 1000);
 		attackAnimController.update(bigDelta / 1000);
+		graveAnimController.update(bigDelta / 1000);
 		int x = (int) getPosition().x;
 		int y = (int) getPosition().z;
 		float height = map.getHeight(x, y);
@@ -343,50 +353,31 @@ public class CharacterInstance {
 		temp.character.r = update.character.r;
 
 		movementBuffer.add(temp);
-		// System.out.println("ADD x=" + update.character.x + " y=" +
-		// update.character.y + " z=" + update.character.z
-		// + " r=" + update.character.r);
 	}
 
 	public void checkUpdate(PlayerPositionUpdate update) {
 		if (update.character.hp != this.hp) {
 			this.hp = update.character.hp;
+			if (hp <= 0 && !dead) {
+				die();
+			}
 		}
 		int deleteIndex = -1;
 		for (int i = movementBuffer.size() - 1; i >= 0; i--) {
 			if (positionUpdateCheck(movementBuffer.get(i), update)) {
-				// System.out.println("nice " + i);
 				deleteIndex = i;
 				break;
 			} else if (i == 0 && movementBuffer.size() > 5) {
-				// System.out.println("x=" + movementBuffer.get(i).character.x +
-				// "|" + update.character.x + " y="
-				// + movementBuffer.get(i).character.y + "|" +
-				// update.character.y + " z="
-				// + movementBuffer.get(i).character.z + "|" +
-				// update.character.z + " r="
-				// + movementBuffer.get(i).character.r + "|" +
-				// update.character.r);
-				// System.out.println("Correct");
 				Vector3 positionCorrection = new Vector3(update.character.x, update.character.y, update.character.z);
 				updatePositionOrientation(positionCorrection, update.character.r, getPosition().y);
 			}
 		}
-		// System.out.println("buffer size=" + movementBuffer.size() + " del
-		// index=" + deleteIndex);
 		if (deleteIndex > 1) {
 			clearMovementBuffer(deleteIndex);
 		}
-		// System.out.println("After clear = " + movementBuffer.size());
 	}
 
 	private boolean positionUpdateCheck(PlayerPositionUpdate pos1, PlayerPositionUpdate pos2) {
-		// System.out.println("x=" + pos1.character.x + "|" + pos2.character.x +
-		// " y=" + pos1.character.y + "|"
-		// + pos2.character.y + " z=" + pos1.character.z + "|" +
-		// pos2.character.z + " r=" + pos1.character.r + "|"
-		// + pos2.character.r);
-
 		return pos1.character.x < pos2.character.x + 0.5f && pos1.character.x > pos2.character.x - 0.5f
 				&& pos1.character.y < pos2.character.y + 0.5f && pos1.character.y > pos2.character.y - 0.5f
 				&& pos1.character.z < pos2.character.z + 0.5f && pos1.character.z > pos2.character.z - 0.5f
@@ -407,8 +398,48 @@ public class CharacterInstance {
 		showCastingAnimation();
 	}
 
+	public void die() {
+		System.out.println("die");
+		dead = true;
+		showDyingAnim();
+	}
+
+	private void showDyingAnim() {
+		modelAnimController.setAnimation(null);
+		dying = true;
+		modelAnimController.setAnimation("Armature|Die", 1, 5, new AnimationListener() {
+			@Override
+			public void onEnd(AnimationDesc animation) {
+				System.out.println("End dying");
+				dying = false;
+				showGraveRaiseAnim();
+			}
+
+			@Override
+			public void onLoop(AnimationDesc animation) {
+			}
+		});
+	}
+
+	private void showGraveRaiseAnim() {
+		graveRaising = true;
+		System.out.println("Grave raises");
+		graveAnimController.setAnimation(null);
+		graveAnimController.setAnimation("Cylinder|Raise", 1, -2f, new AnimationListener() {
+			@Override
+			public void onEnd(AnimationDesc animation) {
+				graveRaising = false;
+				System.out.println("Grave raised");
+			}
+
+			@Override
+			public void onLoop(AnimationDesc animation) {
+			}
+		});
+	}
+
 	public void render(ModelBatch batch, Environment env) {
-		if (hp > 0) {
+		if (hp > 0 || dying) {
 			batch.render(this.modelInstance, env);
 			// batch.render(this.testBoxInstance, env);
 
@@ -421,7 +452,7 @@ public class CharacterInstance {
 	}
 
 	public void renderShadow(ModelBatch shadowBatch) {
-		if (hp > 0) {
+		if (hp > 0 || dying) {
 			shadowBatch.render(modelInstance);
 		} else {
 			shadowBatch.render(graveStoneInstance);
