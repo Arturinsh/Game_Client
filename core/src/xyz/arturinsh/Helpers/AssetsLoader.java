@@ -9,8 +9,10 @@ import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class AssetsLoader {
@@ -22,6 +24,7 @@ public class AssetsLoader {
 	private static Pixmap heightMapData, heightMapSmall, boundingPixmap;
 	private static BitmapFont font;
 	private static int[][] boundingMap;
+	private static BoundingBox playerBoundingBox;
 
 	public static void initUI() {
 		up = new Texture(Gdx.files.internal("triangle_up.png"));
@@ -50,19 +53,26 @@ public class AssetsLoader {
 		assets.load("tDog.g3db", Model.class);
 		assets.load("cage.g3db", Model.class);
 		assets.load("dogAttack.g3db", Model.class);
-		assets.load("graveStone.g3db", Model.class);
+		assets.load("gravestone.g3db", Model.class);
 		// assets.load("testBox.g3db", Model.class);
 		assets.finishLoading();
 		humanModel = assets.get("human.g3db", Model.class);
 		dog = assets.get("tDog.g3db", Model.class);
 		attackCage = assets.get("cage.g3db", Model.class);
 		dogAttack = assets.get("dogAttack.g3db", Model.class);
-		graveStone = assets.get("graveStone.g3db", Model.class);
+		graveStone = assets.get("gravestone.g3db", Model.class);
 		// testBox = assets.get("testBox.g3db", Model.class);
 		// TODO add dispose
 		initBoundingMap();
+		initBoundingBoxes();
 	}
-
+	
+	private static void initBoundingBoxes(){
+		playerBoundingBox = new BoundingBox();
+		ModelInstance playerInstance = new ModelInstance(humanModel);
+		playerInstance.calculateBoundingBox(playerBoundingBox);
+	}
+	
 	private static void initBoundingMap() {
 		int width = boundingPixmap.getWidth();
 		int height = boundingPixmap.getHeight();
@@ -173,5 +183,9 @@ public class AssetsLoader {
 
 	public static Model getGraveStone() {
 		return graveStone;
+	}
+
+	public static BoundingBox getPlayerBoundingBox() {
+		return playerBoundingBox;
 	}
 }

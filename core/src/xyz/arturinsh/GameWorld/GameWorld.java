@@ -8,8 +8,6 @@ import java.util.Timer;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
@@ -18,7 +16,6 @@ import xyz.arturinsh.GameObjects.CharacterClass;
 import xyz.arturinsh.GameObjects.CharacterInstance;
 import xyz.arturinsh.GameObjects.MobInstance;
 import xyz.arturinsh.GameObjects.MobType;
-import xyz.arturinsh.Helpers.AssetsLoader;
 import xyz.arturinsh.Network.NetworkListener;
 import xyz.arturinsh.Network.Packets.AddPlayer;
 import xyz.arturinsh.Network.Packets.Attack;
@@ -48,12 +45,13 @@ import xyz.arturinsh.gameclient.MainGame;
 public class GameWorld {
 	private Client client = new Client();
 	private MainGame game;
-	private final String ipAddress = "127.0.0.1";
+	private final String ipAddress = "arturinsh.xyz";
 	private List<UserCharacter> characters;
 	private CharacterInstance usersCharacterInstance;
 	private List<CharacterInstance> otherPlayers;
 	private List<MobInstance> mobs;
 	private Timer timer;
+	private CharacterInstance selected = null;
 
 	public GameWorld(MainGame _game) {
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
@@ -327,5 +325,13 @@ public class GameWorld {
 				player.attack();
 			}
 		}
+	}
+	
+	public void setSelectedCharacterInstance(CharacterInstance instance){
+		selected = instance;
+	}
+
+	public CharacterInstance getSelected() {
+		return selected;
 	}
 }

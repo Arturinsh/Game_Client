@@ -63,6 +63,10 @@ public class CharacterInstance {
 
 	private boolean lagPackage = false;
 
+	public Vector3 center = new Vector3();;
+	public Vector3 dimensions = new Vector3();;
+	public float radius;
+
 	public CharacterInstance(UserCharacter _character) {
 		model = AssetsLoader.getHumanModel();
 		attackCage = AssetsLoader.getAttackCage();
@@ -81,7 +85,14 @@ public class CharacterInstance {
 		newPosition = getPosition();
 		newRotation = getRotation();
 		realRotation = new ObjectRotation(_character.r);
+		initBounds();
+	}
 
+	private void initBounds() {
+		BoundingBox box = AssetsLoader.getPlayerBoundingBox();
+		box.getCenter(center);
+		box.getDimensions(dimensions);
+		radius = dimensions.len() / 2f;
 	}
 
 	public void changeClass(CharacterClass charClass) {

@@ -68,8 +68,9 @@ public class WorldScreen extends GameScreen {
 		init3D();
 		initUI();
 
-		InputMultiplexer multiplexer = new InputMultiplexer(new InputHandler(world, camera), stage);
+		InputMultiplexer multiplexer = new InputMultiplexer(new InputHandler(world, camera, stage), stage);
 		Gdx.input.setInputProcessor(multiplexer);
+
 	}
 
 	private void initUI() {
@@ -178,7 +179,7 @@ public class WorldScreen extends GameScreen {
 	private void renderMobShadows(ModelBatch shadowBatch) {
 		for (MobInstance mob : world.getMobs()) {
 			mob.renderShadow(shadowBatch);
-			
+
 		}
 	}
 
@@ -194,7 +195,12 @@ public class WorldScreen extends GameScreen {
 
 	private void updateUI() {
 		int hp = usersCharacterInstance.getHP();
-		hpLabel.setText("HP:" + hp);
+		if (world.getSelected() == null) {
+			hpLabel.setText("HP:" + hp);
+		}else{
+			int otherHP = world.getSelected().getHP();
+			hpLabel.setText("HP:" + hp+" Target HP:" + otherHP);
+		}
 	}
 
 	@Override
