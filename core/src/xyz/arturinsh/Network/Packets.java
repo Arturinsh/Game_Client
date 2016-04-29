@@ -88,4 +88,8 @@ public class Packets {
 	public static class MobAttack {
 		public MobUpdate mob;
 	}
+	
+	public static class ServerMessage{
+		public String message;
+	}
 }

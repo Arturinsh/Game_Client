@@ -18,6 +18,7 @@ import xyz.arturinsh.Network.Packets.MobAttack;
 import xyz.arturinsh.Network.Packets.RegisterFailed;
 import xyz.arturinsh.Network.Packets.RegisterSuccess;
 import xyz.arturinsh.Network.Packets.RemovePlayer;
+import xyz.arturinsh.Network.Packets.ServerMessage;
 import xyz.arturinsh.Network.Packets.SnapShot;
 
 public class NetworkListener extends Listener {
@@ -101,6 +102,11 @@ public class NetworkListener extends Listener {
 		if (object instanceof MobAttack) {
 			MobAttack attack = (MobAttack) object;
 			world.receiveMobAttack(attack);
+		}
+
+		if (object instanceof ServerMessage) {
+			ServerMessage message = (ServerMessage) object;
+			world.showDialog(message.message);
 		}
 	}
 }

@@ -37,6 +37,7 @@ import xyz.arturinsh.Network.Packets.Register;
 import xyz.arturinsh.Network.Packets.RegisterFailed;
 import xyz.arturinsh.Network.Packets.RegisterSuccess;
 import xyz.arturinsh.Network.Packets.RemovePlayer;
+import xyz.arturinsh.Network.Packets.ServerMessage;
 import xyz.arturinsh.Network.Packets.SnapShot;
 import xyz.arturinsh.Network.Packets.UserCharacter;
 import xyz.arturinsh.Network.UDPSender;
@@ -100,6 +101,7 @@ public class GameWorld {
 		kryo.register(Attack.class);
 		kryo.register(AttackStarted.class);
 		kryo.register(MobAttack.class);
+		kryo.register(ServerMessage.class);
 	}
 
 	public void showDialog(String message) {

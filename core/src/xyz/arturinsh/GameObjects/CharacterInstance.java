@@ -129,6 +129,12 @@ public class CharacterInstance {
 		return dead;
 	}
 
+	public void reset() {
+		dead = false;
+		dying = false;
+		graveRaising = false;
+	}
+
 	private void changeModelMaterial(CharacterClass charClass) {
 		switch (charClass) {
 		case RED:
@@ -298,6 +304,10 @@ public class CharacterInstance {
 			if (hp <= 0 && !dead) {
 				die();
 			}
+			if (dead && hp > 0) {
+				reset();
+				System.out.println(update.character.x+" "+update.character.z);
+			}
 		}
 		if (movementBuffer.size() > 1) {
 			PlayerPositionUpdate temp0 = movementBuffer.get(0);
@@ -371,6 +381,10 @@ public class CharacterInstance {
 			this.hp = update.character.hp;
 			if (hp <= 0 && !dead) {
 				die();
+			}
+			if (dead && hp > 0) {
+				reset();
+				System.out.println(update.character.x+" "+update.character.z);
 			}
 		}
 		int deleteIndex = -1;
@@ -563,5 +577,5 @@ public class CharacterInstance {
 	public void setSelected(boolean selected) {
 		this.selected = selected;
 	}
-	
+
 }
