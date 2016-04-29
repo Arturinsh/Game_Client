@@ -195,11 +195,14 @@ public class WorldScreen extends GameScreen {
 
 	private void updateUI() {
 		int hp = usersCharacterInstance.getHP();
-		if (world.getSelected() == null) {
+		if (world.getSelectedPlayer() != null) {
+			int otherHP = world.getSelectedPlayer().getHP();
+			hpLabel.setText("HP:" + hp + " Target HP:" + otherHP);
+		}else if(world.getSelectedMob()!=null){	
+			int otherHP = world.getSelectedMob().getHP();
+			hpLabel.setText("HP:" + hp + " Target HP:" + otherHP);
+		} else {
 			hpLabel.setText("HP:" + hp);
-		}else{
-			int otherHP = world.getSelected().getHP();
-			hpLabel.setText("HP:" + hp+" Target HP:" + otherHP);
 		}
 	}
 

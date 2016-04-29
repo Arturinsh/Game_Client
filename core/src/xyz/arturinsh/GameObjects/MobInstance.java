@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationDesc;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationListener;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 
 import xyz.arturinsh.Helpers.AssetsLoader;
 import xyz.arturinsh.Helpers.HeightMap;
@@ -16,8 +17,8 @@ import xyz.arturinsh.Network.Packets.MobUpdate;
 
 public class MobInstance {
 	private AnimationController modelAnimController, attackAnimController;
-	private ModelInstance modelInstance, attackInstance;
-	private Model model, attack;
+	private ModelInstance modelInstance, attackInstance, selectBoxInstance;
+	private Model model, attack, selectBox;
 
 	private long startTime = 0;
 	private long endTime = 0;
@@ -31,12 +32,18 @@ public class MobInstance {
 
 	private long ID;
 
-	private boolean attacking = false;
+	public Vector3 center = new Vector3();;
+	public Vector3 dimensions = new Vector3();;
+	public float radius;
+
+	private boolean attacking = false, selected = false;
 
 	public MobInstance(long id, float x, float y, float z, float rotation) {
 		ID = id;
 		model = AssetsLoader.getDog();
 		attack = AssetsLoader.getDogAttack();
+		selectBox = AssetsLoader.getSelectBox();
+		selectBoxInstance = new ModelInstance(selectBox);
 		modelInstance = new ModelInstance(model);
 		attackInstance = new ModelInstance(attack);
 		modelAnimController = new AnimationController(modelInstance);
@@ -44,6 +51,14 @@ public class MobInstance {
 		updatePositionOrientation(new Vector3(x, y, z), rotation, 0);
 		newPosition = getPosition();
 		newRotation = getRotation();
+		initBounds();
+	}
+
+	private void initBounds() {
+		BoundingBox box = AssetsLoader.getDogBoundingBox();
+		box.getCenter(center);
+		box.getDimensions(dimensions);
+		radius = dimensions.len() / 2f;
 	}
 
 	public ModelInstance getModelInstance() {
@@ -107,7 +122,6 @@ public class MobInstance {
 		float rotation = update.r;
 		if (hp != update.hp) {
 			this.hp = update.hp;
-			System.out.println(this.hp);
 		}
 		startTime = endTime;
 		endTime = time;
@@ -149,6 +163,9 @@ public class MobInstance {
 			if (attacking)
 				batch.render(this.attackInstance, env);
 		}
+		if (selected) {
+			batch.render(this.selectBoxInstance, env);
+		}
 	}
 
 	public void renderShadow(ModelBatch shadowBatch) {
@@ -161,6 +178,7 @@ public class MobInstance {
 		Quaternion orientation = new Quaternion();
 		orientation.setEulerAngles(r, 0, 0);
 		position.y = height;
+		this.selectBoxInstance.transform.set(position, orientation);
 		this.modelInstance.transform.set(position, orientation);
 		this.attackInstance.transform.set(position, orientation);
 	}
@@ -186,5 +204,17 @@ public class MobInstance {
 			public void onLoop(AnimationDesc animation) {
 			}
 		});
+	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
+	}
+
+	public int getHP() {
+		return hp;
 	}
 }

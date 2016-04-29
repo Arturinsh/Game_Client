@@ -410,7 +410,6 @@ public class CharacterInstance {
 	}
 
 	public void die() {
-		System.out.println("die");
 		dead = true;
 		showDyingAnim();
 	}
@@ -421,7 +420,6 @@ public class CharacterInstance {
 		modelAnimController.setAnimation("Armature|Die", 1, 5, new AnimationListener() {
 			@Override
 			public void onEnd(AnimationDesc animation) {
-				System.out.println("End dying");
 				dying = false;
 				showGraveRaiseAnim();
 			}
@@ -434,13 +432,11 @@ public class CharacterInstance {
 
 	private void showGraveRaiseAnim() {
 		graveRaising = true;
-		System.out.println("Grave raises");
 		graveAnimController.setAnimation(null);
 		graveAnimController.setAnimation("Cylinder|Raise", 1, -2f, new AnimationListener() {
 			@Override
 			public void onEnd(AnimationDesc animation) {
 				graveRaising = false;
-				System.out.println("Grave raised");
 			}
 
 			@Override

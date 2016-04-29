@@ -24,7 +24,7 @@ public class AssetsLoader {
 	private static Pixmap heightMapData, heightMapSmall, boundingPixmap;
 	private static BitmapFont font;
 	private static int[][] boundingMap;
-	private static BoundingBox playerBoundingBox;
+	private static BoundingBox playerBoundingBox, dogBoundingBox;
 
 	public static void initUI() {
 		up = new Texture(Gdx.files.internal("triangle_up.png"));
@@ -71,6 +71,9 @@ public class AssetsLoader {
 		playerBoundingBox = new BoundingBox();
 		ModelInstance playerInstance = new ModelInstance(humanModel);
 		playerInstance.calculateBoundingBox(playerBoundingBox);
+		dogBoundingBox = new BoundingBox();
+		ModelInstance dogInstance = new ModelInstance(dog);
+		dogInstance.calculateBoundingBox(dogBoundingBox);
 	}
 	
 	private static void initBoundingMap() {
@@ -187,5 +190,9 @@ public class AssetsLoader {
 
 	public static BoundingBox getPlayerBoundingBox() {
 		return playerBoundingBox;
+	}
+
+	public static BoundingBox getDogBoundingBox() {
+		return dogBoundingBox;
 	}
 }

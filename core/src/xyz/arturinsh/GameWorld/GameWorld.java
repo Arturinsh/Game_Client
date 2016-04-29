@@ -55,7 +55,8 @@ public class GameWorld {
 	private List<CharacterInstance> otherPlayers;
 	private List<MobInstance> mobs;
 	private Timer timer;
-	private CharacterInstance selected = null;
+	private CharacterInstance selectedPlayer = null;
+	private MobInstance selectedMob = null;
 	private Material originalSelectedMaterial;
 	private Material selectedMaterial;
 
@@ -335,39 +336,75 @@ public class GameWorld {
 	}
 
 	public void setSelectedCharacterInstance(CharacterInstance instance) {
-		if (selected == null && instance != null) {
+		if (selectedPlayer == null && instance != null) {
 			ModelInstance temp = instance.getModelInstance();
 			Material mat = temp.materials.get(0);
 			originalSelectedMaterial = new Material();
 			originalSelectedMaterial.set(mat);
 			mat.set(selectedMaterial);
-			selected = instance;
-			selected.setSelected(true);
-		} else if (instance == null && selected != null) {
-			ModelInstance temp = selected.getModelInstance();
+			selectedPlayer = instance;
+			selectedPlayer.setSelected(true);
+		} else if (instance == null && selectedPlayer != null) {
+			ModelInstance temp = selectedPlayer.getModelInstance();
 			Material mat = temp.materials.get(0);
 			mat.clear();
 			mat.set(originalSelectedMaterial);
-			selected.setSelected(false);
-			selected = instance;
-		} else if (selected != null && instance != null) {
-			ModelInstance temp = selected.getModelInstance();
+			selectedPlayer.setSelected(false);
+			selectedPlayer = instance;
+		} else if (selectedPlayer != null && instance != null) {
+			ModelInstance temp = selectedPlayer.getModelInstance();
 			Material mat = temp.materials.get(0);
 			mat.clear();
 			mat.set(originalSelectedMaterial);
-			selected.setSelected(false);
+			selectedPlayer.setSelected(false);
 			ModelInstance temp2 = instance.getModelInstance();
 			Material mat2 = temp2.materials.get(0);
 			originalSelectedMaterial = new Material();
 			originalSelectedMaterial.set(mat2);
 			mat2.set(selectedMaterial);
-			
-			selected = instance;
-			selected.setSelected(true);
+
+			selectedPlayer = instance;
+			selectedPlayer.setSelected(true);
 		}
 	}
 
-	public CharacterInstance getSelected() {
-		return selected;
+	public void setSelectedMob(MobInstance instance) {
+		if (selectedMob == null && instance != null) {
+			ModelInstance temp = instance.getModelInstance();
+			Material mat = temp.materials.get(0);
+			originalSelectedMaterial = new Material();
+			originalSelectedMaterial.set(mat);
+			mat.set(selectedMaterial);
+			selectedMob = instance;
+			selectedMob.setSelected(true);
+		} else if (instance == null && selectedMob != null) {
+			ModelInstance temp = selectedMob.getModelInstance();
+			Material mat = temp.materials.get(0);
+			mat.clear();
+			mat.set(originalSelectedMaterial);
+			selectedMob.setSelected(false);
+			selectedMob = instance;
+		} else if (selectedMob != null && instance != null) {
+			ModelInstance temp = selectedMob.getModelInstance();
+			Material mat = temp.materials.get(0);
+			mat.clear();
+			mat.set(originalSelectedMaterial);
+			selectedMob.setSelected(false);
+			ModelInstance temp2 = instance.getModelInstance();
+			Material mat2 = temp2.materials.get(0);
+			originalSelectedMaterial = new Material();
+			originalSelectedMaterial.set(mat2);
+			mat2.set(selectedMaterial);
+			selectedMob = instance;
+			selectedMob.setSelected(true);
+		}
+	}
+
+	public CharacterInstance getSelectedPlayer() {
+		return selectedPlayer;
+	}
+
+	public MobInstance getSelectedMob() {
+		return selectedMob;
 	}
 }
