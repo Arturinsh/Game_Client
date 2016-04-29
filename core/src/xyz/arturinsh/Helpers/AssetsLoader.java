@@ -17,7 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class AssetsLoader {
 	private static Skin skin;
-	private static Model humanModel, ground, dog, attackCage, testBox, dogAttack, graveStone;
+	private static Model humanModel, ground, dog, attackCage, selecBox, dogAttack, graveStone;
 	private static AssetManager assets;
 	private static Texture up, down, right, left, sky, heightMapTexture, touchBackground, touchKnob, human1, human2,
 			human3;
@@ -46,7 +46,7 @@ public class AssetsLoader {
 		ModelBuilder modelBuilder = new ModelBuilder();
 		ground = modelBuilder.createBox(100f, 1f, 100f, new Material(ColorAttribute.createDiffuse(Color.TAN)),
 				Usage.Position | Usage.Normal);
-		testBox = modelBuilder.createBox(2f, 1f, 10f, new Material(ColorAttribute.createDiffuse(Color.TAN)),
+		selecBox = modelBuilder.createBox(3f, 0.5f, 3f, new Material(ColorAttribute.createDiffuse(Color.GREEN)),
 				Usage.Position | Usage.Normal);
 		assets = new AssetManager();
 		assets.load("human.g3db", Model.class);
@@ -97,8 +97,8 @@ public class AssetsLoader {
 			return 0;
 	}
 
-	public static Model getTestBox() {
-		return testBox;
+	public static Model getSelectBox() {
+		return selecBox;
 	}
 
 	public static Model getAttackCage() {

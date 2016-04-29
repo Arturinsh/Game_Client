@@ -8,6 +8,10 @@ import java.util.Timer;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
@@ -45,13 +49,15 @@ import xyz.arturinsh.gameclient.MainGame;
 public class GameWorld {
 	private Client client = new Client();
 	private MainGame game;
-	private final String ipAddress = "arturinsh.xyz";
+	private final String ipAddress = "192.168.1.2";
 	private List<UserCharacter> characters;
 	private CharacterInstance usersCharacterInstance;
 	private List<CharacterInstance> otherPlayers;
 	private List<MobInstance> mobs;
 	private Timer timer;
 	private CharacterInstance selected = null;
+	private Material originalSelectedMaterial;
+	private Material selectedMaterial;
 
 	public GameWorld(MainGame _game) {
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
@@ -62,6 +68,7 @@ public class GameWorld {
 		game.setScreen(new LoginScreen(this));
 		startNetworkClient();
 		timer = new Timer();
+		selectedMaterial = new Material(ColorAttribute.createDiffuse(new Color(0.7f, 0.7f, 0.7f, 1)));
 	}
 
 	public MainGame getGame() {
@@ -326,9 +333,38 @@ public class GameWorld {
 			}
 		}
 	}
-	
-	public void setSelectedCharacterInstance(CharacterInstance instance){
-		selected = instance;
+
+	public void setSelectedCharacterInstance(CharacterInstance instance) {
+		if (selected == null && instance != null) {
+			ModelInstance temp = instance.getModelInstance();
+			Material mat = temp.materials.get(0);
+			originalSelectedMaterial = new Material();
+			originalSelectedMaterial.set(mat);
+			mat.set(selectedMaterial);
+			selected = instance;
+			selected.setSelected(true);
+		} else if (instance == null && selected != null) {
+			ModelInstance temp = selected.getModelInstance();
+			Material mat = temp.materials.get(0);
+			mat.clear();
+			mat.set(originalSelectedMaterial);
+			selected.setSelected(false);
+			selected = instance;
+		} else if (selected != null && instance != null) {
+			ModelInstance temp = selected.getModelInstance();
+			Material mat = temp.materials.get(0);
+			mat.clear();
+			mat.set(originalSelectedMaterial);
+			selected.setSelected(false);
+			ModelInstance temp2 = instance.getModelInstance();
+			Material mat2 = temp2.materials.get(0);
+			originalSelectedMaterial = new Material();
+			originalSelectedMaterial.set(mat2);
+			mat2.set(selectedMaterial);
+			
+			selected = instance;
+			selected.setSelected(true);
+		}
 	}
 
 	public CharacterInstance getSelected() {

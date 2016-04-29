@@ -41,8 +41,8 @@ public class CharacterInstance {
 	private int hp = 100;
 
 	private AnimationController modelAnimController, attackAnimController, graveAnimController;
-	private ModelInstance modelInstance, attackInstance, testBoxInstance, graveStoneInstance;
-	private Model model, attackCage, testBox, graveStone;
+	private ModelInstance modelInstance, attackInstance, selectBoxInstance, graveStoneInstance;
+	private Model model, attackCage, selectBox, graveStone;
 	private float moveSpeed = 0;
 	private float rotateSpeed = 0;
 	private UserCharacter character;
@@ -55,7 +55,7 @@ public class CharacterInstance {
 	private float oldRotation = 0;
 	private float newRotation = 0;
 	private boolean casting = false, damaging = false, moveUp = false, moveDown = false, rotateLeft = false,
-			rotateRight = false, dying = false, graveRaising = false, dead = false;
+			rotateRight = false, dying = false, graveRaising = false, dead = false, selected = false;
 	private Decal nameDecal;
 
 	private ObjectRotation realRotation = new ObjectRotation();
@@ -70,13 +70,13 @@ public class CharacterInstance {
 	public CharacterInstance(UserCharacter _character) {
 		model = AssetsLoader.getHumanModel();
 		attackCage = AssetsLoader.getAttackCage();
-		testBox = AssetsLoader.getTestBox();
+		selectBox = AssetsLoader.getSelectBox();
 		graveStone = AssetsLoader.getGraveStone();
 		character = _character;
 		changeModelMaterial(_character.charClass);
 		modelInstance = new ModelInstance(model);
 		attackInstance = new ModelInstance(attackCage);
-		testBoxInstance = new ModelInstance(testBox);
+		selectBoxInstance = new ModelInstance(selectBox);
 		graveStoneInstance = new ModelInstance(graveStone);
 		modelAnimController = new AnimationController(modelInstance);
 		attackAnimController = new AnimationController(attackInstance);
@@ -249,7 +249,7 @@ public class CharacterInstance {
 			nameDecal.setPosition(new Vector3().set(position).add(0, 7, 0));
 
 		this.attackInstance.transform.set(position, orientation);
-		this.testBoxInstance.transform.set(position, orientation);
+		this.selectBoxInstance.transform.set(position, orientation);
 		this.graveStoneInstance.transform.set(position, orientation);
 		this.modelInstance.transform.set(position, orientation);
 	}
@@ -460,6 +460,9 @@ public class CharacterInstance {
 		} else {
 			batch.render(graveStoneInstance, env);
 		}
+		if (selected) {
+			batch.render(this.selectBoxInstance, env);
+		}
 	}
 
 	public void renderShadow(ModelBatch shadowBatch) {
@@ -557,4 +560,12 @@ public class CharacterInstance {
 		nameDecal.setPosition(0, 0, 0);
 	}
 
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
+	}
+	
 }
