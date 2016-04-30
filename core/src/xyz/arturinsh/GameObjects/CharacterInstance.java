@@ -134,6 +134,8 @@ public class CharacterInstance {
 		attackAnimController.setAnimation(null);
 		dead = false;
 		dying = false;
+		damaging = false;
+		casting = false;
 		graveRaising = false;
 	}
 
@@ -193,7 +195,7 @@ public class CharacterInstance {
 	public void update(float delta, HeightMap map) {
 		moveSpeed = 0;
 		rotateSpeed = 0;
-		if (!casting && !damaging && hp > 0) {
+		if (!casting && !damaging && !dead) {
 			if (moveUp)
 				moveSpeed = MOVE_SPEED;
 			if (moveDown)
@@ -215,6 +217,7 @@ public class CharacterInstance {
 			int x = (int) newPosition.x;
 			int y = (int) newPosition.z;
 			float height = map.getHeight(x, y);
+			System.out.println(height);
 			updatePositionOrientation(newPosition, realRotation.getRotation(), height);
 		} else {
 			int x = (int) oldPosition.x;
@@ -250,8 +253,8 @@ public class CharacterInstance {
 	private void updatePositionOrientation(Vector3 position, float r, float height) {
 		Quaternion orientation = new Quaternion();
 		orientation.setEulerAngles(r, 0, 0);
-		if (height != 0)
-			position.y = height;
+
+		position.y = height;
 
 		if (nameDecal != null)
 			nameDecal.setPosition(new Vector3().set(position).add(0, 7, 0));
@@ -385,7 +388,7 @@ public class CharacterInstance {
 			}
 			if (dead && hp > 0) {
 				reset();
-				System.out.println(update.character.x+" "+update.character.z);
+				System.out.println(update.character.x + " " + update.character.z);
 			}
 		}
 		int deleteIndex = -1;
@@ -426,8 +429,10 @@ public class CharacterInstance {
 
 	public void die() {
 		dead = true;
+		casting = false;
+		damaging = false;
 		showDyingAnim();
-		
+
 	}
 
 	private void showDyingAnim() {
@@ -461,7 +466,7 @@ public class CharacterInstance {
 			public void onLoop(AnimationDesc animation) {
 			}
 		});
-		
+
 	}
 
 	public void render(ModelBatch batch, Environment env) {

@@ -149,7 +149,7 @@ public class MobInstance {
 		int x = (int) getPosition().x;
 		int y = (int) getPosition().z;
 		float height = map.getHeight(x, y);
-
+		
 		updatePositionOrientation(newPos, newRot, height);
 	}
 
