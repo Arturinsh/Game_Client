@@ -39,6 +39,7 @@ public class CharacterInstance {
 	private final float ROTATE_SPEED = 240;
 
 	private int hp = 100;
+	private int experience = 0;
 
 	private AnimationController modelAnimController, attackAnimController, graveAnimController;
 	private ModelInstance modelInstance, attackInstance, selectBoxInstance, graveStoneInstance;
@@ -217,7 +218,6 @@ public class CharacterInstance {
 			int x = (int) newPosition.x;
 			int y = (int) newPosition.z;
 			float height = map.getHeight(x, y);
-			System.out.println(height);
 			updatePositionOrientation(newPosition, realRotation.getRotation(), height);
 		} else {
 			int x = (int) oldPosition.x;
@@ -313,6 +313,9 @@ public class CharacterInstance {
 				reset();
 			}
 		}
+		if (update.character.experience != this.experience) {
+			this.experience = update.character.experience;
+		}
 		if (movementBuffer.size() > 1) {
 			PlayerPositionUpdate temp0 = movementBuffer.get(0);
 			PlayerPositionUpdate temp1 = movementBuffer.get(1);
@@ -388,9 +391,12 @@ public class CharacterInstance {
 			}
 			if (dead && hp > 0) {
 				reset();
-				System.out.println(update.character.x + " " + update.character.z);
 			}
 		}
+		if (this.experience != update.character.experience) {
+			this.experience = update.character.experience;
+		}
+
 		int deleteIndex = -1;
 		for (int i = movementBuffer.size() - 1; i >= 0; i--) {
 			if (positionUpdateCheck(movementBuffer.get(i), update)) {
@@ -586,6 +592,10 @@ public class CharacterInstance {
 
 	public void setSelected(boolean selected) {
 		this.selected = selected;
+	}
+
+	public int getExperience() {
+		return experience;
 	}
 
 }

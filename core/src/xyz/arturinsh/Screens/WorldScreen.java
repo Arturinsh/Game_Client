@@ -33,6 +33,7 @@ import xyz.arturinsh.Helpers.HeightField;
 import xyz.arturinsh.Helpers.HeightMap;
 import xyz.arturinsh.Helpers.InputHandler;
 import xyz.arturinsh.Helpers.PersonCamera;
+import xyz.arturinsh.Network.Packets.UserCharacter;
 
 @SuppressWarnings("deprecation")
 public class WorldScreen extends GameScreen {
@@ -50,8 +51,8 @@ public class WorldScreen extends GameScreen {
 	private Skin touchpadSkin;
 	private Drawable touchBackground;
 	private Drawable touchKnob;
-	private Table table;
-	private Label hpLabel;
+	private Table mainTable, leftTable, midTable, rightTable;
+	private Label hpLabel, targetLabel, expLabel;
 
 	HeightField field, field2, field3;
 	Renderable ground, ground2, ground3;
@@ -116,14 +117,30 @@ public class WorldScreen extends GameScreen {
 
 		hpLabel = new Label("HP:100", AssetsLoader.getSkin());
 		hpLabel.setFontScale(2);
-		table = new Table();
-		table.setFillParent(true);
-		// table.debug();
-		table.add(hpLabel).expandY().align(Align.topLeft).padTop(20).padLeft(30);
-		table.row();
-		table.add(touchpad).padBottom(30).padLeft(30);
-		table.top().left();
-		stage.addActor(table);
+		leftTable = new Table();
+		leftTable.add(hpLabel).padTop(20).top();
+		leftTable.row();
+		leftTable.add(touchpad).bottom().expand().padBottom(30).padLeft(30);
+
+		targetLabel = new Label("", AssetsLoader.getSkin());
+		targetLabel.setFontScale(2);
+		midTable = new Table();
+		midTable.add(targetLabel).padTop(20);
+
+		expLabel = new Label("Exp:100", AssetsLoader.getSkin());
+		expLabel.setFontScale(2);
+		rightTable = new Table();
+		rightTable.add(expLabel).padTop(20).padRight(20);
+
+		mainTable = new Table();
+		mainTable.setWidth(stage.getWidth());
+		mainTable.setFillParent(true);
+
+		mainTable.add(leftTable).fillY();
+		mainTable.add(midTable).expand().align(Align.top | Align.center);
+		mainTable.add(rightTable).expandY().align(Align.top | Align.center);
+
+		stage.addActor(mainTable);
 	}
 
 	private void init3D() {
@@ -169,7 +186,7 @@ public class WorldScreen extends GameScreen {
 			batch.render(render);
 		}
 	}
-	
+
 	private void renderOtherPlayerShadows(ModelBatch shadowBatch) {
 		for (CharacterInstance player : world.getOtherPlayers()) {
 			player.renderShadow(shadowBatch);
@@ -195,15 +212,17 @@ public class WorldScreen extends GameScreen {
 
 	private void updateUI() {
 		int hp = usersCharacterInstance.getHP();
+		int exp = usersCharacterInstance.getExperience();
 		if (world.getSelectedPlayer() != null) {
 			int otherHP = world.getSelectedPlayer().getHP();
-			hpLabel.setText("HP:" + hp + " Target HP:" + otherHP);
-		}else if(world.getSelectedMob()!=null){	
+			targetLabel.setText("Target HP:" + otherHP);
+		} else if (world.getSelectedMob() != null) {
 			int otherHP = world.getSelectedMob().getHP();
-			hpLabel.setText("HP:" + hp + " Target HP:" + otherHP);
-		} else {
-			hpLabel.setText("HP:" + hp);
+			targetLabel.setText("Target HP:" + otherHP);
 		}
+		hpLabel.setText("HP:" + hp);
+		expLabel.setText("Exp:" + exp);
+
 	}
 
 	@Override
@@ -239,7 +258,7 @@ public class WorldScreen extends GameScreen {
 	@Override
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
-		table.setWidth(stage.getWidth());
+		mainTable.setWidth(stage.getWidth());
 	}
 
 }
