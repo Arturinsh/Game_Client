@@ -21,7 +21,7 @@ public class AssetsLoader {
 	private static AssetManager assets;
 	private static Texture up, down, right, left, sky, heightMapTexture, touchBackground, touchKnob, human1, human2,
 			human3;
-	private static Pixmap heightMapData, heightMapSmall, boundingPixmap;
+	private static Pixmap  heightMapSmall, boundingPixmap;
 	private static BitmapFont font;
 	private static int[][] boundingMap;
 	private static BoundingBox playerBoundingBox, dogBoundingBox;
@@ -33,8 +33,7 @@ public class AssetsLoader {
 		left = new Texture(Gdx.files.internal("triangle_left.png"));
 		touchBackground = new Texture(Gdx.files.internal("touchBackground.png"));
 		touchKnob = new Texture(Gdx.files.internal("touchKnob.png"));
-		heightMapTexture = new Texture(Gdx.files.internal("big512.png"));
-		heightMapData = new Pixmap(Gdx.files.internal("big512.png"));
+		heightMapTexture = new Texture(Gdx.files.internal("mapTexture.png"));
 		heightMapSmall = new Pixmap(Gdx.files.internal("small128.png"));
 		boundingPixmap = new Pixmap(Gdx.files.internal("MapBounds.png"));
 		human1 = new Texture(Gdx.files.internal("TextureHuman.png"));
@@ -148,10 +147,6 @@ public class AssetsLoader {
 		return heightMapTexture;
 	}
 
-	public static Pixmap getHeightMapData() {
-		return heightMapData;
-	}
-
 	public static Pixmap getHeightMapSmall() {
 		return heightMapSmall;
 	}
@@ -194,5 +189,9 @@ public class AssetsLoader {
 
 	public static BoundingBox getDogBoundingBox() {
 		return dogBoundingBox;
+	}
+
+	public static Pixmap getBoundingPixmap() {
+		return boundingPixmap;
 	}
 }

@@ -145,7 +145,7 @@ public class WorldScreen extends GameScreen {
 		environment.shadowMap = shadowLight;
 		shadowBatch = new ModelBatch(new DepthShaderProvider());
 		decalBatch = new DecalBatch(new CameraGroupStrategy(camera));
-		heightMap = new HeightMap(AssetsLoader.getHeightMapTexture(), AssetsLoader.getHeightMapData(),
+		heightMap = new HeightMap(AssetsLoader.getHeightMapTexture(), AssetsLoader.getBoundingPixmap(),
 				AssetsLoader.getHeightMapSmall(), environment);
 	}
 
@@ -169,7 +169,7 @@ public class WorldScreen extends GameScreen {
 			batch.render(render);
 		}
 	}
-
+	
 	private void renderOtherPlayerShadows(ModelBatch shadowBatch) {
 		for (CharacterInstance player : world.getOtherPlayers()) {
 			player.renderShadow(shadowBatch);

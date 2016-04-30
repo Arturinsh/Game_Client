@@ -13,7 +13,7 @@ public class PersonCamera extends PerspectiveCamera {
 	private boolean rotatePlayer = false, changeHeight = false;
 	private float upSpeed = 0;
 	private float rotateAngle = 0;
-	private float cameraHeight = 10;
+	private float cameraHeight = 8;
 
 	public PersonCamera(CharacterInstance _player) {
 		super();

@@ -306,7 +306,6 @@ public class CharacterInstance {
 			}
 			if (dead && hp > 0) {
 				reset();
-				System.out.println(update.character.x+" "+update.character.z);
 			}
 		}
 		if (movementBuffer.size() > 1) {
