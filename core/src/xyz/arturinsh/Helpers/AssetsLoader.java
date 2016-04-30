@@ -17,14 +17,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class AssetsLoader {
 	private static Skin skin;
-	private static Model humanModel, ground, dog, attackCage, selecBox, dogAttack, graveStone;
+	private static Model humanModel, ground, dog, vladinator, attackCage, selecBox, dogAttack, graveStone;
 	private static AssetManager assets;
 	private static Texture up, down, right, left, sky, heightMapTexture, touchBackground, touchKnob, human1, human2,
 			human3;
-	private static Pixmap  heightMapSmall, boundingPixmap;
+	private static Pixmap heightMapSmall, boundingPixmap;
 	private static BitmapFont font;
 	private static int[][] boundingMap;
-	private static BoundingBox playerBoundingBox, dogBoundingBox;
+	private static BoundingBox playerBoundingBox, dogBoundingBox, vladinatorBoundingBox;
 
 	public static void initUI() {
 		up = new Texture(Gdx.files.internal("triangle_up.png"));
@@ -53,6 +53,7 @@ public class AssetsLoader {
 		assets.load("cage.g3db", Model.class);
 		assets.load("dogAttack.g3db", Model.class);
 		assets.load("gravestone.g3db", Model.class);
+		assets.load("vladinators.g3db", Model.class);
 		// assets.load("testBox.g3db", Model.class);
 		assets.finishLoading();
 		humanModel = assets.get("human.g3db", Model.class);
@@ -60,21 +61,27 @@ public class AssetsLoader {
 		attackCage = assets.get("cage.g3db", Model.class);
 		dogAttack = assets.get("dogAttack.g3db", Model.class);
 		graveStone = assets.get("gravestone.g3db", Model.class);
+		vladinator = assets.get("vladinators.g3db", Model.class);
 		// testBox = assets.get("testBox.g3db", Model.class);
 		// TODO add dispose
 		initBoundingMap();
 		initBoundingBoxes();
 	}
-	
-	private static void initBoundingBoxes(){
+
+	private static void initBoundingBoxes() {
 		playerBoundingBox = new BoundingBox();
 		ModelInstance playerInstance = new ModelInstance(humanModel);
 		playerInstance.calculateBoundingBox(playerBoundingBox);
+		
 		dogBoundingBox = new BoundingBox();
 		ModelInstance dogInstance = new ModelInstance(dog);
 		dogInstance.calculateBoundingBox(dogBoundingBox);
+		
+		vladinatorBoundingBox = new BoundingBox();
+		ModelInstance vladinatorInstance = new ModelInstance(vladinator);
+		vladinatorInstance.calculateBoundingBox(vladinatorBoundingBox);
 	}
-	
+
 	private static void initBoundingMap() {
 		int width = boundingPixmap.getWidth();
 		int height = boundingPixmap.getHeight();
@@ -193,5 +200,13 @@ public class AssetsLoader {
 
 	public static Pixmap getBoundingPixmap() {
 		return boundingPixmap;
+	}
+
+	public static Model getVladinator() {
+		return vladinator;
+	}
+
+	public static BoundingBox getVladinatorBoundingBox() {
+		return vladinatorBoundingBox;
 	}
 }

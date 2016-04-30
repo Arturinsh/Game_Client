@@ -37,11 +37,14 @@ public class MobInstance {
 	public float radius;
 
 	private boolean attacking = false, selected = false;
+	private String walkAnimation = "Armature|Walk";
+	private String attackAnimation = "Cube|Attack";
+	private BoundingBox box;
 
-	public MobInstance(long id, float x, float y, float z, float rotation) {
+	public MobInstance(long id, float x, float y, float z, float rotation, MobType type) {
 		ID = id;
-		model = AssetsLoader.getDog();
-		attack = AssetsLoader.getDogAttack();
+		setMobType(type);
+		
 		selectBox = AssetsLoader.getSelectBox();
 		selectBoxInstance = new ModelInstance(selectBox);
 		modelInstance = new ModelInstance(model);
@@ -54,8 +57,26 @@ public class MobInstance {
 		initBounds();
 	}
 
+	private void setMobType(MobType type) {
+		switch (type) {
+		case VLADINATORS:
+			model = AssetsLoader.getVladinator();
+			attack = AssetsLoader.getDogAttack();
+			box = AssetsLoader.getVladinatorBoundingBox();
+			walkAnimation = "Armature|Walk";
+			attackAnimation = "Cube|Attack";
+			break;
+		case DOG:
+			model = AssetsLoader.getDog();
+			attack = AssetsLoader.getDogAttack();
+			box = AssetsLoader.getDogBoundingBox();
+			walkAnimation = "Armature|Walk";
+			attackAnimation = "Cube|Attack";
+			break;
+		}
+	}
+
 	private void initBounds() {
-		BoundingBox box = AssetsLoader.getDogBoundingBox();
 		box.getCenter(center);
 		box.getDimensions(dimensions);
 		radius = dimensions.len() / 2f;
@@ -98,7 +119,7 @@ public class MobInstance {
 			realStep.y *= bigDelta;
 			realStep.z *= bigDelta;
 			newPos.add(realStep);
-			modelAnimController.setAnimation("Armature|Walk", -1, 1, null);
+			modelAnimController.setAnimation(walkAnimation, -1, 1, null);
 
 		} else if (!attacking) {
 			newPos.set(newPosition);
@@ -194,7 +215,7 @@ public class MobInstance {
 	public void attack() {
 		attacking = true;
 		modelAnimController.setAnimation(null);
-		attackAnimController.setAnimation("Cube|Attack", 1, 1, new AnimationListener() {
+		attackAnimController.setAnimation(attackAnimation, 1, 1, new AnimationListener() {
 			@Override
 			public void onEnd(AnimationDesc animation) {
 				attacking = false;
