@@ -130,6 +130,8 @@ public class CharacterInstance {
 	}
 
 	public void reset() {
+		modelAnimController.setAnimation(null);
+		attackAnimController.setAnimation(null);
 		dead = false;
 		dying = false;
 		graveRaising = false;
@@ -425,6 +427,7 @@ public class CharacterInstance {
 	public void die() {
 		dead = true;
 		showDyingAnim();
+		
 	}
 
 	private void showDyingAnim() {
@@ -450,12 +453,15 @@ public class CharacterInstance {
 			@Override
 			public void onEnd(AnimationDesc animation) {
 				graveRaising = false;
+				modelAnimController.setAnimation(null);
+				attackAnimController.setAnimation(null);
 			}
 
 			@Override
 			public void onLoop(AnimationDesc animation) {
 			}
 		});
+		
 	}
 
 	public void render(ModelBatch batch, Environment env) {

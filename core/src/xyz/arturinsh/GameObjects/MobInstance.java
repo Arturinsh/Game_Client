@@ -1,5 +1,9 @@
 package xyz.arturinsh.GameObjects;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -37,14 +41,20 @@ public class MobInstance {
 	public float radius;
 
 	private boolean attacking = false, selected = false;
-	private String walkAnimation = "Armature|Walk";
-	private String attackAnimation = "Cube|Attack";
+	private String walkModelAnimation = "Armature|Walk";
+	private String attackModelAnimation = "Armature|Attack";
+	private String attackAttackAnimation = "Cube|Attack";
+	private float walkModelAnimSpeed = 1;
+	private float attackModelAnimSpeed = 1;
+	private float attackAttackAnimSpeed = 1;
 	private BoundingBox box;
+
+	private boolean casting = false, damaging = false;
 
 	public MobInstance(long id, float x, float y, float z, float rotation, MobType type) {
 		ID = id;
 		setMobType(type);
-		
+
 		selectBox = AssetsLoader.getSelectBox();
 		selectBoxInstance = new ModelInstance(selectBox);
 		modelInstance = new ModelInstance(model);
@@ -61,17 +71,25 @@ public class MobInstance {
 		switch (type) {
 		case VLADINATORS:
 			model = AssetsLoader.getVladinator();
-			attack = AssetsLoader.getDogAttack();
+			attack = AssetsLoader.getVladinatorAttack();
 			box = AssetsLoader.getVladinatorBoundingBox();
-			walkAnimation = "Armature|Walk";
-			attackAnimation = "Cube|Attack";
+			walkModelAnimation = "Armature|Walk";
+			attackAttackAnimation = "Armature|Attack";
+			attackModelAnimation = "Armature|Attack";
+			walkModelAnimSpeed = 1;
+			attackModelAnimSpeed = 2;
+			attackAttackAnimSpeed = 2;
 			break;
 		case DOG:
 			model = AssetsLoader.getDog();
 			attack = AssetsLoader.getDogAttack();
 			box = AssetsLoader.getDogBoundingBox();
-			walkAnimation = "Armature|Walk";
-			attackAnimation = "Cube|Attack";
+			walkModelAnimation = "Armature|Walk";
+			attackAttackAnimation = "Cube|Attack";
+			attackModelAnimation = "Armature|Attack";
+			walkModelAnimSpeed = 1;
+			attackModelAnimSpeed = 4;
+			attackAttackAnimSpeed = 2;
 			break;
 		}
 	}
@@ -114,14 +132,13 @@ public class MobInstance {
 			newRot = newRotation;
 		}
 
-		if (!oldPosition.equals(newPosition) && !attacking) {
+		if (!oldPosition.equals(newPosition) && !casting && !damaging) {
 			realStep.x *= bigDelta;
 			realStep.y *= bigDelta;
 			realStep.z *= bigDelta;
 			newPos.add(realStep);
-			modelAnimController.setAnimation(walkAnimation, -1, 1, null);
-
-		} else if (!attacking) {
+			modelAnimController.setAnimation(walkModelAnimation, -1, walkModelAnimSpeed, null);
+		} else if (!casting && !damaging) {
 			newPos.set(newPosition);
 			modelAnimController.setAnimation(null);
 			attackAnimController.setAnimation(null);
@@ -181,7 +198,7 @@ public class MobInstance {
 	public void render(ModelBatch batch, Environment env) {
 		if (hp > 0) {
 			batch.render(this.modelInstance, env);
-			if (attacking)
+			if (damaging)
 				batch.render(this.attackInstance, env);
 		}
 		if (selected) {
@@ -213,12 +230,38 @@ public class MobInstance {
 	}
 
 	public void attack() {
-		attacking = true;
+		casting = true;
 		modelAnimController.setAnimation(null);
-		attackAnimController.setAnimation(attackAnimation, 1, 1, new AnimationListener() {
+		attackAnimController.setAnimation(null);
+		showCastingAnimation();
+	}
+
+	private void showCastingAnimation() {
+		casting = true;
+		System.out.println("cast start");
+		printTime();
+		modelAnimController.setAnimation(attackModelAnimation, 1, attackModelAnimSpeed, new AnimationListener() {
 			@Override
 			public void onEnd(AnimationDesc animation) {
-				attacking = false;
+				damaging = true;
+				casting = false;
+				System.out.println("cast end");
+				showDamageAnimation();
+			}
+
+			@Override
+			public void onLoop(AnimationDesc animation) {
+			}
+		});
+	}
+
+	private void showDamageAnimation() {
+		attackAnimController.setAnimation(attackAttackAnimation, 1, attackAttackAnimSpeed, new AnimationListener() {
+			@Override
+			public void onEnd(AnimationDesc animation) {
+				damaging = false;
+				System.out.println("dmg end");
+				printTime();
 			}
 
 			@Override
@@ -237,5 +280,11 @@ public class MobInstance {
 
 	public int getHP() {
 		return hp;
+	}
+
+	private void printTime() {
+		DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSSS");
+		Date date = new Date();
+		System.out.println(dateFormat.format(date));
 	}
 }

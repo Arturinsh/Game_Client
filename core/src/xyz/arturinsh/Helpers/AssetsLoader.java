@@ -17,9 +17,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class AssetsLoader {
 	private static Skin skin;
-	private static Model humanModel, ground, dog, vladinator, attackCage, selecBox, dogAttack, graveStone;
+	private static Model humanModel, ground, dog, vladinator, attackCage, selecBox, dogAttack, graveStone, vladinatorAttack;
 	private static AssetManager assets;
-	private static Texture up, down, right, left, sky, heightMapTexture, touchBackground, touchKnob, human1, human2,
+	private static Texture up, down, right, left, heightMapTexture, touchBackground, touchKnob, human1, human2,
 			human3;
 	private static Pixmap heightMapSmall, boundingPixmap;
 	private static BitmapFont font;
@@ -39,7 +39,6 @@ public class AssetsLoader {
 		human1 = new Texture(Gdx.files.internal("TextureHuman.png"));
 		human2 = new Texture(Gdx.files.internal("TextureHuman2.png"));
 		human3 = new Texture(Gdx.files.internal("TextureHuman3.png"));
-		sky = new Texture(Gdx.files.internal("sky1.jpg"));
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
 		font = new BitmapFont(Gdx.files.internal("default.fnt"));
 		ModelBuilder modelBuilder = new ModelBuilder();
@@ -49,19 +48,21 @@ public class AssetsLoader {
 				Usage.Position | Usage.Normal);
 		assets = new AssetManager();
 		assets.load("human.g3db", Model.class);
-		assets.load("tDog.g3db", Model.class);
+		assets.load("textDog.g3db", Model.class);
 		assets.load("cage.g3db", Model.class);
 		assets.load("dogAttack.g3db", Model.class);
 		assets.load("gravestone.g3db", Model.class);
 		assets.load("vladinators.g3db", Model.class);
+		assets.load("vladinatorAttack.g3db", Model.class);
 		// assets.load("testBox.g3db", Model.class);
 		assets.finishLoading();
 		humanModel = assets.get("human.g3db", Model.class);
-		dog = assets.get("tDog.g3db", Model.class);
+		dog = assets.get("textDog.g3db", Model.class);
 		attackCage = assets.get("cage.g3db", Model.class);
 		dogAttack = assets.get("dogAttack.g3db", Model.class);
 		graveStone = assets.get("gravestone.g3db", Model.class);
 		vladinator = assets.get("vladinators.g3db", Model.class);
+		vladinatorAttack = assets.get("vladinatorAttack.g3db", Model.class);
 		// testBox = assets.get("testBox.g3db", Model.class);
 		// TODO add dispose
 		initBoundingMap();
@@ -146,10 +147,6 @@ public class AssetsLoader {
 		return dog;
 	}
 
-	public static Texture getSky() {
-		return sky;
-	}
-
 	public static Texture getHeightMapTexture() {
 		return heightMapTexture;
 	}
@@ -208,5 +205,9 @@ public class AssetsLoader {
 
 	public static BoundingBox getVladinatorBoundingBox() {
 		return vladinatorBoundingBox;
+	}
+
+	public static Model getVladinatorAttack() {
+		return vladinatorAttack;
 	}
 }

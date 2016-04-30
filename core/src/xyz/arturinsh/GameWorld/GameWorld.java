@@ -276,7 +276,6 @@ public class GameWorld {
 		for (MobUpdate update : snapShot.mobSnapshot) {
 			if (hasMob(update, mobs, snapShot.time.getTime())) {
 			} else {
-				System.out.println(update.type);
 				MobInstance mobInstance = new MobInstance(update.ID, update.x, update.y, update.z, update.r, update.type);
 				mobs.add(mobInstance);
 			}
