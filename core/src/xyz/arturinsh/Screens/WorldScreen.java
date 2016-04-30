@@ -209,6 +209,15 @@ public class WorldScreen extends GameScreen {
 			decalBatch.add(player.getNameDecal());
 		}
 	}
+	private void drawOtherMobDecals(){
+		for (MobInstance mob : world.getMobs()) {
+			if (mob.getNameDecal() == null) {
+				mob.initDecal(spriteFont);
+			}
+			mob.getNameDecal().lookAt(camera.position, camera.up);
+			decalBatch.add(mob.getNameDecal());
+		}
+	}
 
 	private void updateUI() {
 		int hp = usersCharacterInstance.getHP();
@@ -219,6 +228,8 @@ public class WorldScreen extends GameScreen {
 		} else if (world.getSelectedMob() != null) {
 			int otherHP = world.getSelectedMob().getHP();
 			targetLabel.setText("Target HP:" + otherHP);
+		}else{
+			targetLabel.setText("");
 		}
 		hpLabel.setText("HP:" + hp);
 		expLabel.setText("Exp:" + exp);
@@ -252,6 +263,7 @@ public class WorldScreen extends GameScreen {
 		stage.act(delta);
 		stage.draw();
 		drawOtherPlayerDecals();
+		drawOtherMobDecals();
 		decalBatch.flush();
 	}
 

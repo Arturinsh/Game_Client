@@ -4,13 +4,22 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationDesc;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationListener;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -48,11 +57,14 @@ public class MobInstance {
 	private float attackModelAnimSpeed = 1;
 	private float attackAttackAnimSpeed = 1;
 	private BoundingBox box;
+	private Decal nameDecal;
 
 	private boolean casting = false, damaging = false;
+	private MobType type;
 
-	public MobInstance(long id, float x, float y, float z, float rotation, MobType type) {
+	public MobInstance(long id, float x, float y, float z, float rotation, MobType _type) {
 		ID = id;
+		this.type = _type;
 		setMobType(type);
 
 		selectBox = AssetsLoader.getSelectBox();
@@ -149,7 +161,7 @@ public class MobInstance {
 		int x = (int) getPosition().x;
 		int y = (int) getPosition().z;
 		float height = map.getHeight(x, y);
-		
+
 		updatePositionOrientation(newPos, newRot, height);
 	}
 
@@ -216,6 +228,10 @@ public class MobInstance {
 		Quaternion orientation = new Quaternion();
 		orientation.setEulerAngles(r, 0, 0);
 		position.y = height;
+
+		if (nameDecal != null)
+			nameDecal.setPosition(new Vector3().set(position).add(0, dimensions.y + 1, 0));
+
 		this.selectBoxInstance.transform.set(position, orientation);
 		this.modelInstance.transform.set(position, orientation);
 		this.attackInstance.transform.set(position, orientation);
@@ -238,14 +254,14 @@ public class MobInstance {
 
 	private void showCastingAnimation() {
 		casting = true;
-//		System.out.println("cast start");
-//		printTime();
+		// System.out.println("cast start");
+		// printTime();
 		modelAnimController.setAnimation(attackModelAnimation, 1, attackModelAnimSpeed, new AnimationListener() {
 			@Override
 			public void onEnd(AnimationDesc animation) {
 				damaging = true;
 				casting = false;
-//				System.out.println("cast end");
+				// System.out.println("cast end");
 				showDamageAnimation();
 			}
 
@@ -260,8 +276,8 @@ public class MobInstance {
 			@Override
 			public void onEnd(AnimationDesc animation) {
 				damaging = false;
-//				System.out.println("dmg end");
-//				printTime();
+				// System.out.println("dmg end");
+				// printTime();
 			}
 
 			@Override
@@ -282,9 +298,36 @@ public class MobInstance {
 		return hp;
 	}
 
+	public void initDecal(SpriteBatch spriteFont) {
+		BitmapFont font = AssetsLoader.getFont();
+		GlyphLayout glyphLayout = new GlyphLayout();
+		glyphLayout.setText(font, type + "");
+		int w = (int) glyphLayout.width;
+		int h = (int) glyphLayout.height;
+		FrameBuffer fbo = new FrameBuffer(Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
+		fbo.begin();
+		spriteFont.begin();
+		if (type == MobType.VLADINATORS) {
+			font.setColor(Color.BLUE);
+		} else {
+			font.setColor(Color.RED);
+		}
+		font.draw(spriteFont, type + "", 0, h + 2);
+		spriteFont.end();
+		fbo.end();
+		TextureRegion fboRegion = new TextureRegion(fbo.getColorBufferTexture(), 0, 0, w, h + 5);
+		fboRegion.flip(false, true);
+		nameDecal = Decal.newDecal(w / h, 1, fboRegion, true);
+		nameDecal.setPosition(0, 0, 0);
+	}
+
 	private void printTime() {
 		DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSSS");
 		Date date = new Date();
 		System.out.println(dateFormat.format(date));
+	}
+
+	public Decal getNameDecal() {
+		return nameDecal;
 	}
 }
