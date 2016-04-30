@@ -50,7 +50,7 @@ import xyz.arturinsh.gameclient.MainGame;
 public class GameWorld {
 	private Client client = new Client();
 	private MainGame game;
-	private final String ipAddress = "192.168.1.2";
+	private final String ipAddress = "arturinsh.xyz";
 	private List<UserCharacter> characters;
 	private CharacterInstance usersCharacterInstance;
 	private List<CharacterInstance> otherPlayers;
@@ -60,6 +60,7 @@ public class GameWorld {
 	private MobInstance selectedMob = null;
 	private Material originalSelectedMaterial;
 	private Material selectedMaterial;
+	private int ping = 0;
 
 	public GameWorld(MainGame _game) {
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
@@ -119,7 +120,6 @@ public class GameWorld {
 		login.userName = username;
 		login.password = psw;
 		client.sendTCP(login);
-
 	}
 
 	public void logiInSucess() {
@@ -276,7 +276,8 @@ public class GameWorld {
 		for (MobUpdate update : snapShot.mobSnapshot) {
 			if (hasMob(update, mobs, snapShot.time.getTime())) {
 			} else {
-				MobInstance mobInstance = new MobInstance(update.ID, update.x, update.y, update.z, update.r, update.type);
+				MobInstance mobInstance = new MobInstance(update.ID, update.x, update.y, update.z, update.r,
+						update.type);
 				mobs.add(mobInstance);
 			}
 		}
@@ -408,5 +409,17 @@ public class GameWorld {
 
 	public MobInstance getSelectedMob() {
 		return selectedMob;
+	}
+
+	public int getPing() {
+		return ping;
+	}
+
+	public void setPing(int ping) {
+		this.ping = ping;
+	}
+
+	public Client getClient() {
+		return client;
 	}
 }

@@ -260,7 +260,7 @@ public class CharacterInstance {
 			nameDecal.setPosition(new Vector3().set(position).add(0, 7, 0));
 
 		this.attackInstance.transform.set(position, orientation);
-		this.selectBoxInstance.transform.set(position, orientation);
+		this.selectBoxInstance.transform.set(position, orientation, new Vector3(radius,1,radius));
 		this.graveStoneInstance.transform.set(position, orientation);
 		this.modelInstance.transform.set(position, orientation);
 	}

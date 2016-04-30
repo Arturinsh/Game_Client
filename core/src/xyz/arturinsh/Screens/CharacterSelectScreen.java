@@ -181,12 +181,15 @@ public class CharacterSelectScreen extends GameScreen {
 		switch (selectedChar.charClass) {
 		case RED:
 			characterInstance.changeClass(CharacterClass.RED);
+			charInfo.setText("HP:"+userChar.hp +"\nExp:"+userChar.experience);
 			break;
 		case GREEN:
 			characterInstance.changeClass(CharacterClass.GREEN);
+			charInfo.setText("HP:"+userChar.hp +"\nExp:"+userChar.experience);
 			break;
 		case BLUE:
 			characterInstance.changeClass(CharacterClass.BLUE);
+			charInfo.setText("HP:"+userChar.hp +"\nExp:"+userChar.experience);
 			break;
 		default:
 			selectedChar = null;

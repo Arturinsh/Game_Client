@@ -40,11 +40,11 @@ public class AssetsLoader {
 		human2 = new Texture(Gdx.files.internal("TextureHuman2.png"));
 		human3 = new Texture(Gdx.files.internal("TextureHuman3.png"));
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
-		font = new BitmapFont(Gdx.files.internal("default.fnt"));
+		font = new BitmapFont(Gdx.files.internal("franklin.fnt"));
 		ModelBuilder modelBuilder = new ModelBuilder();
 		ground = modelBuilder.createBox(100f, 1f, 100f, new Material(ColorAttribute.createDiffuse(Color.TAN)),
 				Usage.Position | Usage.Normal);
-		selecBox = modelBuilder.createBox(3f, 0.5f, 3f, new Material(ColorAttribute.createDiffuse(Color.GREEN)),
+		selecBox = modelBuilder.createBox(1f, 0.5f, 1f, new Material(ColorAttribute.createDiffuse(Color.GREEN)),
 				Usage.Position | Usage.Normal);
 		assets = new AssetManager();
 		assets.load("human.g3db", Model.class);

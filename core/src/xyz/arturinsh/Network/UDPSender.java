@@ -13,6 +13,7 @@ public class UDPSender extends TimerTask {
 
 	private Client client;
 	private GameWorld world;
+	private int counter = 0;
 
 	public UDPSender(Client _client, GameWorld _world) {
 		client = _client;
@@ -31,7 +32,7 @@ public class UDPSender extends TimerTask {
 		posUpdate.timestamp = new Date();
 		client.sendTCP(posUpdate);
 		world.getUsersCharacterInstance().addMovementToBuffer(posUpdate);
-//		System.out.println("Send " + posUpdate.timestamp.getTime());
+		// System.out.println("Send " + posUpdate.timestamp.getTime());
 		// System.out.println(posUpdate.character.x + " " +
 		// posUpdate.character.z + " "
 		// + posUpdate.character.r);

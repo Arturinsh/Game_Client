@@ -3,6 +3,7 @@ package xyz.arturinsh.Network;
 import java.util.Date;
 
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.FrameworkMessage.Ping;
 import com.esotericsoftware.kryonet.Listener;
 
 import xyz.arturinsh.GameObjects.CharacterInstance;
@@ -31,6 +32,7 @@ public class NetworkListener extends Listener {
 
 	@Override
 	public void connected(Connection connection) {
+		world.getClient().updateReturnTripTime();
 	}
 
 	@Override
@@ -107,6 +109,10 @@ public class NetworkListener extends Listener {
 		if (object instanceof ServerMessage) {
 			ServerMessage message = (ServerMessage) object;
 			world.showDialog(message.message);
+		}
+		if(object instanceof Ping){
+			world.setPing(connection.getReturnTripTime());
+			world.getClient().updateReturnTripTime();
 		}
 	}
 }

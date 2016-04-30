@@ -232,7 +232,7 @@ public class MobInstance {
 		if (nameDecal != null)
 			nameDecal.setPosition(new Vector3().set(position).add(0, dimensions.y + 1, 0));
 
-		this.selectBoxInstance.transform.set(position, orientation);
+		this.selectBoxInstance.transform.set(position, orientation, new Vector3(radius, 1, radius));
 		this.modelInstance.transform.set(position, orientation);
 		this.attackInstance.transform.set(position, orientation);
 	}
@@ -308,9 +308,9 @@ public class MobInstance {
 		fbo.begin();
 		spriteFont.begin();
 		if (type == MobType.VLADINATORS) {
-			font.setColor(Color.BLUE);
+			font.setColor(Color.PINK);
 		} else {
-			font.setColor(Color.RED);
+			font.setColor(Color.BLACK);
 		}
 		font.draw(spriteFont, type + "", 0, h + 2);
 		spriteFont.end();

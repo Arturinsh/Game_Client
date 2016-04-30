@@ -52,7 +52,7 @@ public class WorldScreen extends GameScreen {
 	private Drawable touchBackground;
 	private Drawable touchKnob;
 	private Table mainTable, leftTable, midTable, rightTable;
-	private Label hpLabel, targetLabel, expLabel;
+	private Label hpLabel, targetLabel, pingLabel;
 
 	HeightField field, field2, field3;
 	Renderable ground, ground2, ground3;
@@ -127,10 +127,10 @@ public class WorldScreen extends GameScreen {
 		midTable = new Table();
 		midTable.add(targetLabel).padTop(20);
 
-		expLabel = new Label("Exp:100", AssetsLoader.getSkin());
-		expLabel.setFontScale(2);
+		pingLabel = new Label("Exp:100", AssetsLoader.getSkin());
+		pingLabel.setFontScale(2);
 		rightTable = new Table();
-		rightTable.add(expLabel).padTop(20).padRight(20);
+		rightTable.add(pingLabel).padTop(20).padRight(20);
 
 		mainTable = new Table();
 		mainTable.setWidth(stage.getWidth());
@@ -209,7 +209,8 @@ public class WorldScreen extends GameScreen {
 			decalBatch.add(player.getNameDecal());
 		}
 	}
-	private void drawOtherMobDecals(){
+
+	private void drawOtherMobDecals() {
 		for (MobInstance mob : world.getMobs()) {
 			if (mob.getNameDecal() == null) {
 				mob.initDecal(spriteFont);
@@ -228,17 +229,16 @@ public class WorldScreen extends GameScreen {
 		} else if (world.getSelectedMob() != null) {
 			int otherHP = world.getSelectedMob().getHP();
 			targetLabel.setText("Target HP:" + otherHP);
-		}else{
+		} else {
 			targetLabel.setText("");
 		}
-		hpLabel.setText("HP:" + hp);
-		expLabel.setText("Exp:" + exp);
-
+		hpLabel.setText("HP:" + hp + "\nEXP:" + exp);
+		pingLabel.setText("Ping: "+world.getPing());
 	}
 
 	@Override
 	public void render(float delta) {
-		Gdx.gl.glClearColor(1, 1, 1, 0);
+		Gdx.gl.glClearColor(0.2f, 0.2f, 0.9f, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
 		usersCharacterInstance.update(delta, heightMap);
