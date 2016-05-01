@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -260,7 +261,7 @@ public class CharacterInstance {
 			nameDecal.setPosition(new Vector3().set(position).add(0, 7, 0));
 
 		this.attackInstance.transform.set(position, orientation);
-		this.selectBoxInstance.transform.set(position, orientation, new Vector3(radius,1,radius));
+		this.selectBoxInstance.transform.set(position, orientation, new Vector3(radius, 1, radius));
 		this.graveStoneInstance.transform.set(position, orientation);
 		this.modelInstance.transform.set(position, orientation);
 	}
@@ -475,20 +476,29 @@ public class CharacterInstance {
 
 	}
 
-	public void render(ModelBatch batch, Environment env) {
-		if (hp > 0 || dying) {
-			batch.render(this.modelInstance, env);
-			// batch.render(this.testBoxInstance, env);
+	public void render(ModelBatch batch, Environment env, Camera cam) {
+		if (isVisible(cam)) {
+			if (hp > 0 || dying) {
+				batch.render(this.modelInstance, env);
+				// batch.render(this.testBoxInstance, env);
 
-			if (damaging) {
-				batch.render(this.attackInstance, env);
+				if (damaging) {
+					batch.render(this.attackInstance, env);
+				}
+			} else {
+				batch.render(graveStoneInstance, env);
 			}
-		} else {
-			batch.render(graveStoneInstance, env);
+			if (selected) {
+				batch.render(this.selectBoxInstance, env);
+			}
 		}
-		if (selected) {
-			batch.render(this.selectBoxInstance, env);
-		}
+	}
+
+	private boolean isVisible(final Camera cam) {
+		Vector3 temp = new Vector3();
+		temp = getPosition();
+		temp.add(center);
+		return cam.frustum.boundsInFrustum(temp, dimensions);
 	}
 
 	public void renderShadow(ModelBatch shadowBatch) {

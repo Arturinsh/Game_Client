@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -207,15 +208,24 @@ public class MobInstance {
 		}
 	}
 
-	public void render(ModelBatch batch, Environment env) {
-		if (hp > 0) {
-			batch.render(this.modelInstance, env);
-			if (damaging)
-				batch.render(this.attackInstance, env);
+	public void render(ModelBatch batch, Environment env, Camera cam) {
+		if (isVisible(cam)) {
+			if (hp > 0) {
+				batch.render(this.modelInstance, env);
+				if (damaging)
+					batch.render(this.attackInstance, env);
+			}
+			if (selected) {
+				batch.render(this.selectBoxInstance, env);
+			}
 		}
-		if (selected) {
-			batch.render(this.selectBoxInstance, env);
-		}
+	}
+
+	private boolean isVisible(final Camera cam) {
+		Vector3 temp = new Vector3();
+		temp = getPosition();
+		temp.add(center);
+		return cam.frustum.boundsInFrustum(temp,dimensions);
 	}
 
 	public void renderShadow(ModelBatch shadowBatch) {

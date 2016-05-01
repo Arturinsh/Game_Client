@@ -20,7 +20,7 @@ public class AssetsLoader {
 	private static Model humanModel, ground, dog, vladinator, attackCage, selecBox, dogAttack, graveStone, vladinatorAttack;
 	private static AssetManager assets;
 	private static Texture up, down, right, left, heightMapTexture, touchBackground, touchKnob, human1, human2,
-			human3;
+			human3, attack;
 	private static Pixmap heightMapSmall, boundingPixmap;
 	private static BitmapFont font;
 	private static int[][] boundingMap;
@@ -34,6 +34,7 @@ public class AssetsLoader {
 		touchBackground = new Texture(Gdx.files.internal("touchBackground.png"));
 		touchKnob = new Texture(Gdx.files.internal("touchKnob.png"));
 		heightMapTexture = new Texture(Gdx.files.internal("mapTexture.png"));
+		attack = new Texture(Gdx.files.internal("attack.png"));
 		heightMapSmall = new Pixmap(Gdx.files.internal("small128.png"));
 		boundingPixmap = new Pixmap(Gdx.files.internal("MapBounds.png"));
 		human1 = new Texture(Gdx.files.internal("TextureHuman.png"));
@@ -209,5 +210,9 @@ public class AssetsLoader {
 
 	public static Model getVladinatorAttack() {
 		return vladinatorAttack;
+	}
+
+	public static Texture getAttack() {
+		return attack;
 	}
 }

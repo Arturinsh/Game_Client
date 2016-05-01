@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -16,12 +17,16 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 
@@ -33,7 +38,6 @@ import xyz.arturinsh.Helpers.HeightField;
 import xyz.arturinsh.Helpers.HeightMap;
 import xyz.arturinsh.Helpers.InputHandler;
 import xyz.arturinsh.Helpers.PersonCamera;
-import xyz.arturinsh.Network.Packets.UserCharacter;
 
 @SuppressWarnings("deprecation")
 public class WorldScreen extends GameScreen {
@@ -53,6 +57,7 @@ public class WorldScreen extends GameScreen {
 	private Drawable touchKnob;
 	private Table mainTable, leftTable, midTable, rightTable;
 	private Label hpLabel, targetLabel, pingLabel;
+	private Button attack;
 
 	HeightField field, field2, field3;
 	Renderable ground, ground2, ground3;
@@ -76,6 +81,8 @@ public class WorldScreen extends GameScreen {
 
 	private void initUI() {
 		spriteFont = new SpriteBatch();
+
+		// start init left table
 		touchpadSkin = new Skin();
 		touchpadSkin.add("touchBackground", AssetsLoader.getTouchBackground());
 		touchpadSkin.add("touchKnob", AssetsLoader.getTouchKnob());
@@ -85,7 +92,8 @@ public class WorldScreen extends GameScreen {
 		touchpadStyle.background = touchBackground;
 		touchpadStyle.knob = touchKnob;
 		touchpad = new Touchpad(10, touchpadStyle);
-		touchpad.setBounds(15, 15, 200, 200);
+		touchpad.setBounds(15, 15, 300, 300);
+		touchpad.setSize(300, 300);
 		touchpad.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -118,10 +126,11 @@ public class WorldScreen extends GameScreen {
 		hpLabel = new Label("HP:100", AssetsLoader.getSkin());
 		hpLabel.setFontScale(2);
 		leftTable = new Table();
-		leftTable.add(hpLabel).padTop(20).top();
+		leftTable.add(hpLabel).padTop(20).padLeft(30).top().left();
 		leftTable.row();
-		leftTable.add(touchpad).bottom().expand().padBottom(30).padLeft(30);
+		leftTable.add(touchpad).width(300).height(300).bottom().expand().padBottom(30).padLeft(30);
 
+		// Start init mid table
 		targetLabel = new Label("", AssetsLoader.getSkin());
 		targetLabel.setFontScale(2);
 		midTable = new Table();
@@ -129,8 +138,22 @@ public class WorldScreen extends GameScreen {
 
 		pingLabel = new Label("Exp:100", AssetsLoader.getSkin());
 		pingLabel.setFontScale(2);
+
+		// Start Init right table
+		TextureRegion attackRegion = new TextureRegion(AssetsLoader.getAttack());
+		attack = new Button(new Image(attackRegion), AssetsLoader.getSkin());
+		attack.setColor(1, 0, 0, 0.6f);
+		attack.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				world.attack();
+			}
+		});
+
 		rightTable = new Table();
-		rightTable.add(pingLabel).padTop(20).padRight(20);
+		rightTable.add(pingLabel).padTop(20).padRight(20).top();
+		rightTable.row();
+		rightTable.add(attack).height(200).width(200).bottom().expand().padRight(30).padBottom(80);
 
 		mainTable = new Table();
 		mainTable.setWidth(stage.getWidth());
@@ -138,7 +161,7 @@ public class WorldScreen extends GameScreen {
 
 		mainTable.add(leftTable).fillY();
 		mainTable.add(midTable).expand().align(Align.top | Align.center);
-		mainTable.add(rightTable).expandY().align(Align.top | Align.center);
+		mainTable.add(rightTable).fillY();
 
 		stage.addActor(mainTable);
 	}
@@ -170,14 +193,14 @@ public class WorldScreen extends GameScreen {
 	private void renderOtherPlayers(ModelBatch batch, Environment env, float bigDelta, HeightMap map) {
 		for (CharacterInstance player : world.getOtherPlayers()) {
 			player.updateOther(bigDelta, map);
-			player.render(modelBatch, env);
+			player.render(modelBatch, env, camera);
 		}
 	}
 
 	private void renderMobs(ModelBatch batch, Environment env, float bigDelta, HeightMap map) {
 		for (MobInstance mob : world.getMobs()) {
 			mob.update(bigDelta, map);
-			mob.render(batch, env);
+			mob.render(batch, env, camera);
 		}
 	}
 
@@ -233,7 +256,7 @@ public class WorldScreen extends GameScreen {
 			targetLabel.setText("");
 		}
 		hpLabel.setText("HP:" + hp + "\nEXP:" + exp);
-		pingLabel.setText("Ping: "+world.getPing());
+		pingLabel.setText("Ping: " + world.getPing() + "\nFPS:" + Gdx.graphics.getFramesPerSecond());
 	}
 
 	@Override
@@ -252,7 +275,7 @@ public class WorldScreen extends GameScreen {
 		shadowLight.end();
 
 		modelBatch.begin(camera);
-		usersCharacterInstance.render(modelBatch, environment);
+		usersCharacterInstance.render(modelBatch, environment, camera);
 		renderOtherPlayers(modelBatch, environment, delta * 1000, heightMap);
 		renderMobs(modelBatch, environment, delta * 1000, heightMap);
 		renderGround(modelBatch);
@@ -260,11 +283,11 @@ public class WorldScreen extends GameScreen {
 
 		updateUI();
 
-		stage.act(delta);
-		stage.draw();
 		drawOtherPlayerDecals();
 		drawOtherMobDecals();
 		decalBatch.flush();
+		stage.act(delta);
+		stage.draw();
 	}
 
 	@Override
