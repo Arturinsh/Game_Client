@@ -93,4 +93,10 @@ public class Packets {
 	public static class ServerMessage{
 		public String message;
 	}
+	
+	public static class LogOut{
+	}
+	
+	public static class SwitchCharacter{
+	}
 }

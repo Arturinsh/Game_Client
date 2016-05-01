@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -30,7 +31,7 @@ public class AssetsLoader {
 	private static int[][] boundingMap;
 	private static BoundingBox playerBoundingBox, dogBoundingBox, vladinatorBoundingBox;
 	private static Music music;
-
+	
 	public static void initUI() {
 		preferences = Gdx.app.getPreferences("World of Vladinator");
 		up = new Texture(Gdx.files.internal("triangle_up.png"));

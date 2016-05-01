@@ -33,6 +33,7 @@ import xyz.arturinsh.Network.Packets.EnterWorld;
 import xyz.arturinsh.Network.Packets.LogIn;
 import xyz.arturinsh.Network.Packets.LogInFailed;
 import xyz.arturinsh.Network.Packets.LogInSuccess;
+import xyz.arturinsh.Network.Packets.LogOut;
 import xyz.arturinsh.Network.Packets.MobAttack;
 import xyz.arturinsh.Network.Packets.MobUpdate;
 import xyz.arturinsh.Network.Packets.PlayerPositionUpdate;
@@ -42,6 +43,7 @@ import xyz.arturinsh.Network.Packets.RegisterSuccess;
 import xyz.arturinsh.Network.Packets.RemovePlayer;
 import xyz.arturinsh.Network.Packets.ServerMessage;
 import xyz.arturinsh.Network.Packets.SnapShot;
+import xyz.arturinsh.Network.Packets.SwitchCharacter;
 import xyz.arturinsh.Network.Packets.UserCharacter;
 import xyz.arturinsh.Network.UDPSender;
 import xyz.arturinsh.Screens.CharacterSelectScreen;
@@ -53,7 +55,7 @@ import xyz.arturinsh.gameclient.MainGame;
 public class GameWorld {
 	private Client client = new Client();
 	private MainGame game;
-	private final String ipAddress = "arturinsh.xyz";
+	private final String ipAddress = "192.168.1.2";
 	private List<UserCharacter> characters;
 	private CharacterInstance usersCharacterInstance;
 	private List<CharacterInstance> otherPlayers;
@@ -80,6 +82,30 @@ public class GameWorld {
 		timer = new Timer();
 		selectedMaterial = new Material(ColorAttribute.createDiffuse(new Color(0.7f, 0.7f, 0.7f, 1)));
 	}
+
+	public void logOut() {
+		client.sendTCP(new LogOut());
+		otherPlayers = new ArrayList<CharacterInstance>();
+		mobs = new ArrayList<MobInstance>();
+		timer.cancel();
+		timer = new Timer();
+		characters = new ArrayList<UserCharacter>();
+		Gdx.app.postRunnable(new Runnable() {
+			@Override
+			public void run() {
+				changeScreen(new LoginScreen(GameWorld.this));
+			}
+		});
+	}
+	
+	public void switchCharacter(){
+		otherPlayers = new ArrayList<CharacterInstance>();
+		mobs = new ArrayList<MobInstance>();
+		timer.cancel();
+		timer = new Timer();
+		characters = new ArrayList<UserCharacter>();
+		client.sendTCP(new SwitchCharacter());
+	}	
 
 	private void initPreferences() {
 		preferences = AssetsLoader.getPreferences();
@@ -114,6 +140,8 @@ public class GameWorld {
 		kryo.register(AttackStarted.class);
 		kryo.register(MobAttack.class);
 		kryo.register(ServerMessage.class);
+		kryo.register(LogOut.class);
+		kryo.register(SwitchCharacter.class);
 	}
 
 	public void showDialog(String message) {
@@ -308,7 +336,8 @@ public class GameWorld {
 		for (CharacterInstance instance : otherPlayers) {
 			if (instance.matchesCharacter(player.character)) {
 				int index = otherPlayers.indexOf(instance);
-				otherPlayers.remove(index);
+				if (index >= 0)
+					otherPlayers.remove(index);
 				break;
 			}
 		}
@@ -491,4 +520,5 @@ public class GameWorld {
 	public boolean isMusicPlaying() {
 		return music.isPlaying();
 	}
+
 }

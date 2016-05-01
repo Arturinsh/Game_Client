@@ -37,7 +37,7 @@ public class CharacterSelectScreen extends GameScreen {
 	private Skin skin;
 	private Table mainTable, centerTable, scrollTable, infoTable, leftTable;
 	private ScrollPane charScroll;
-	private TextButton enterCharacter, createCharacter;
+	private TextButton enterCharacter, createCharacter, logOut;
 	private Button musicButton;
 	private Label charInfo;
 	private String[] testStrings;
@@ -66,8 +66,20 @@ public class CharacterSelectScreen extends GameScreen {
 
 	private void initUI() {
 		skin = AssetsLoader.getSkin();
+		logOut = new TextButton("Log Out", skin);
+		logOut.addListener(new ClickListener(){
+			@Override
+			public void clicked(InputEvent event, float x, float y){
+				world.logOut();
+			}
+		});
+		
+		logOut.setPosition(20, 20);
+		logOut.setSize(128, 64);
+		stage.addActor(logOut);
+		
 		musicButton = new Button(new Image(AssetsLoader.getSound()), AssetsLoader.getSkin(), "toggle");
-		musicButton.setPosition(20, 20);
+		musicButton.setPosition(20, 104);
 		musicButton.setSize(64, 64);
 		if (!world.isMusicPlaying()) {
 			musicButton.setChecked(true);
@@ -88,11 +100,11 @@ public class CharacterSelectScreen extends GameScreen {
 			public void clicked(InputEvent event, float x, float y) {
 				// TODO add dialog to show if not seleceted or disable button
 				if (selectedChar != null) {
-//					characterInstance.setCharacter(selectedChar);
-//					world.setUsersCharacterInstance(characterInstance);
+					// characterInstance.setCharacter(selectedChar);
+					// world.setUsersCharacterInstance(characterInstance);
 					world.enterWorld(selectedChar);
-//					WorldScreen worldScreen = new WorldScreen(world);
-//					game.setScreen(worldScreen);
+					// WorldScreen worldScreen = new WorldScreen(world);
+					// game.setScreen(worldScreen);
 				}
 			}
 		});
@@ -136,7 +148,7 @@ public class CharacterSelectScreen extends GameScreen {
 		mainTable.add(infoTable).pad(20, 20, 0, 0).align(Align.top | Align.center);
 		mainTable.add(centerTable).expand().bottom().center().align(Align.bottom | Align.center).padBottom(20);
 		mainTable.add(leftTable).fillY();
-		
+
 		stage.addActor(musicButton);
 		stage.addActor(mainTable);
 
@@ -190,15 +202,15 @@ public class CharacterSelectScreen extends GameScreen {
 		switch (selectedChar.charClass) {
 		case RED:
 			characterInstance.changeClass(CharacterClass.RED);
-			charInfo.setText("HP:"+userChar.hp +"\nExp:"+userChar.experience);
+			charInfo.setText(userChar.charName + "\nHP:" + userChar.hp + "\nExp:" + userChar.experience);
 			break;
 		case GREEN:
 			characterInstance.changeClass(CharacterClass.GREEN);
-			charInfo.setText("HP:"+userChar.hp +"\nExp:"+userChar.experience);
+			charInfo.setText(userChar.charName + "\nHP:" + userChar.hp + "\nExp:" + userChar.experience);
 			break;
 		case BLUE:
 			characterInstance.changeClass(CharacterClass.BLUE);
-			charInfo.setText("HP:"+userChar.hp +"\nExp:"+userChar.experience);
+			charInfo.setText(userChar.charName + "\nHP:" + userChar.hp + "\nExp:" + userChar.experience);
 			break;
 		default:
 			selectedChar = null;

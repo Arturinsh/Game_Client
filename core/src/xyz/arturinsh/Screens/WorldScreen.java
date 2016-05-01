@@ -1,5 +1,6 @@
 package xyz.arturinsh.Screens;
 
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
@@ -57,14 +58,10 @@ public class WorldScreen extends GameScreen {
 	private Skin touchpadSkin;
 	private Drawable touchBackground;
 	private Drawable touchKnob;
-	private Table mainTable, leftTable, midTable, rightTable;
 	private Label hpLabel, targetLabel, pingLabel;
 	private Button attack, settings;
 
-	private HeightField field, field2, field3;
-	private Renderable ground, ground2, ground3;
 	boolean morph = true;
-	private Texture texture, texture2, texture3;
 	private HeightMap heightMap;
 	private Dialog settingsDialog;
 
@@ -176,6 +173,10 @@ public class WorldScreen extends GameScreen {
 		initSettingsDialog();
 
 		stage.addActor(settings);
+		if (Gdx.app.getType() != ApplicationType.Android || Gdx.app.getType() != ApplicationType.iOS) {
+			touchpad.setVisible(false);
+			attack.setVisible(false);
+		}
 	}
 
 	private void initSettingsDialog() {
@@ -220,7 +221,21 @@ public class WorldScreen extends GameScreen {
 		});
 
 		TextButton changeCharacter = new TextButton("Switch Character", AssetsLoader.getSkin());
+		changeCharacter.addListener(new ClickListener(){
+			@Override
+			public void clicked(InputEvent event, float x, float y){
+				world.switchCharacter();
+			}
+		});
+		
 		TextButton logOut = new TextButton("Log Out", AssetsLoader.getSkin());
+		logOut.addListener(new ClickListener(){
+			@Override
+			public void clicked(InputEvent event, float x, float y){
+				world.logOut();
+			}
+		});
+		
 		TextButton exitGame = new TextButton("Exit Game", AssetsLoader.getSkin());
 		exitGame.addListener(new ClickListener() {
 			@Override
@@ -250,10 +265,7 @@ public class WorldScreen extends GameScreen {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				Slider slider = (Slider) actor;
-
 				float volume = slider.getValue();
-				System.out.println(volume);
-
 				world.setMusicVolume(volume);
 			}
 		});
@@ -412,7 +424,6 @@ public class WorldScreen extends GameScreen {
 	@Override
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
-		// mainTable.setWidth(stage.getWidth());
 	}
 
 }
