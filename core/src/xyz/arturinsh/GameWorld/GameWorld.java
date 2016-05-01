@@ -8,6 +8,8 @@ import java.util.Timer;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -20,6 +22,7 @@ import xyz.arturinsh.GameObjects.CharacterClass;
 import xyz.arturinsh.GameObjects.CharacterInstance;
 import xyz.arturinsh.GameObjects.MobInstance;
 import xyz.arturinsh.GameObjects.MobType;
+import xyz.arturinsh.Helpers.AssetsLoader;
 import xyz.arturinsh.Network.NetworkListener;
 import xyz.arturinsh.Network.Packets.AddPlayer;
 import xyz.arturinsh.Network.Packets.Attack;
@@ -50,7 +53,7 @@ import xyz.arturinsh.gameclient.MainGame;
 public class GameWorld {
 	private Client client = new Client();
 	private MainGame game;
-	private final String ipAddress = "192.168.1.2";
+	private final String ipAddress = "arturinsh.xyz";
 	private List<UserCharacter> characters;
 	private CharacterInstance usersCharacterInstance;
 	private List<CharacterInstance> otherPlayers;
@@ -61,17 +64,25 @@ public class GameWorld {
 	private Material originalSelectedMaterial;
 	private Material selectedMaterial;
 	private int ping = 0;
+	private Music music;
+	private Preferences preferences;
 
 	public GameWorld(MainGame _game) {
+		initPreferences();
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 		game = _game;
 		registerKryo();
 		otherPlayers = new ArrayList<CharacterInstance>();
 		mobs = new ArrayList<MobInstance>();
+		initMusic();
 		game.setScreen(new LoginScreen(this));
 		startNetworkClient();
 		timer = new Timer();
 		selectedMaterial = new Material(ColorAttribute.createDiffuse(new Color(0.7f, 0.7f, 0.7f, 1)));
+	}
+
+	private void initPreferences() {
+		preferences = AssetsLoader.getPreferences();
 	}
 
 	public MainGame getGame() {
@@ -421,5 +432,63 @@ public class GameWorld {
 
 	public Client getClient() {
 		return client;
+	}
+
+	private void initMusic() {
+		music = AssetsLoader.getMusic();
+
+		boolean musicOn = preferences.getBoolean("musicOn", true);
+		float musicVolume = preferences.getFloat("musicVolume", 1);
+		music.setLooping(true);
+		if (musicOn) {
+			music.play();
+		}
+		music.setVolume(musicVolume);
+	}
+
+	public void musicPause() {
+		preferences.putBoolean("musicOn", false);
+		preferences.flush();
+		music.pause();
+	}
+
+	public void musicResume() {
+		preferences.putBoolean("musicOn", true);
+		preferences.flush();
+		music.play();
+	}
+
+	public float getMusicVolume() {
+		return music.getVolume();
+	}
+
+	public void setMusicVolume(float volume) {
+		preferences.putFloat("musicVolume", volume);
+		preferences.flush();
+		music.setVolume(volume);
+	}
+
+	public boolean showFPS() {
+		boolean getFps = preferences.getBoolean("showFPS", false);
+		return getFps;
+	}
+
+	public boolean showPing() {
+		boolean getPing = preferences.getBoolean("showPing", true);
+		return getPing;
+	}
+
+	public void setShowFPS(boolean show) {
+		preferences.putBoolean("showFPS", show);
+		preferences.flush();
+	}
+
+	public void setShowPing(boolean show) {
+		preferences.putBoolean("showPing", show);
+		preferences.flush();
+	}
+
+	public boolean isMusicPlaying() {
+		return music.isPlaying();
 	}
 }

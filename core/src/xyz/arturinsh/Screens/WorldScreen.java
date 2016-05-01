@@ -19,16 +19,18 @@ import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.utils.Align;
 
 import xyz.arturinsh.GameObjects.CharacterInstance;
 import xyz.arturinsh.GameObjects.MobInstance;
@@ -57,13 +59,14 @@ public class WorldScreen extends GameScreen {
 	private Drawable touchKnob;
 	private Table mainTable, leftTable, midTable, rightTable;
 	private Label hpLabel, targetLabel, pingLabel;
-	private Button attack;
+	private Button attack, settings;
 
-	HeightField field, field2, field3;
-	Renderable ground, ground2, ground3;
+	private HeightField field, field2, field3;
+	private Renderable ground, ground2, ground3;
 	boolean morph = true;
-	Texture texture, texture2, texture3;
-	HeightMap heightMap;
+	private Texture texture, texture2, texture3;
+	private HeightMap heightMap;
+	private Dialog settingsDialog;
 
 	DirectionalShadowLight shadowLight;
 	ModelBatch shadowBatch;
@@ -82,7 +85,6 @@ public class WorldScreen extends GameScreen {
 	private void initUI() {
 		spriteFont = new SpriteBatch();
 
-		// start init left table
 		touchpadSkin = new Skin();
 		touchpadSkin.add("touchBackground", AssetsLoader.getTouchBackground());
 		touchpadSkin.add("touchKnob", AssetsLoader.getTouchKnob());
@@ -92,14 +94,13 @@ public class WorldScreen extends GameScreen {
 		touchpadStyle.background = touchBackground;
 		touchpadStyle.knob = touchKnob;
 		touchpad = new Touchpad(10, touchpadStyle);
-		touchpad.setBounds(15, 15, 300, 300);
+		touchpad.setColor(1, 1, 1, 0.3f);
 		touchpad.setSize(300, 300);
+
 		touchpad.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				Touchpad pad = (Touchpad) actor;
-				// System.out.println(pad.getKnobPercentX() + " " +
-				// pad.getKnobPercentY());
 				float xMove = pad.getKnobPercentX();
 				float yMove = pad.getKnobPercentY();
 
@@ -123,26 +124,28 @@ public class WorldScreen extends GameScreen {
 			}
 		});
 
-		hpLabel = new Label("HP:100", AssetsLoader.getSkin());
+		hpLabel = new Label("HP:100\nEXP:100", AssetsLoader.getSkin());
 		hpLabel.setFontScale(2);
-		leftTable = new Table();
-		leftTable.add(hpLabel).padTop(20).padLeft(30).top().left();
-		leftTable.row();
-		leftTable.add(touchpad).width(300).height(300).bottom().expand().padBottom(30).padLeft(30);
+		hpLabel.setPosition(30, stage.getHeight() - (hpLabel.getHeight() * 2));
 
-		// Start init mid table
-		targetLabel = new Label("", AssetsLoader.getSkin());
+		touchpad.setPosition(30, 30);
+
+		stage.addActor(hpLabel);
+		stage.addActor(touchpad);
+
+		targetLabel = new Label("Target HP:100", AssetsLoader.getSkin());
 		targetLabel.setFontScale(2);
-		midTable = new Table();
-		midTable.add(targetLabel).padTop(20);
+		targetLabel.setPosition(stage.getWidth() / 2 - targetLabel.getWidth(),
+				stage.getHeight() - targetLabel.getHeight() * 2 - 10);
+		stage.addActor(targetLabel);
 
-		pingLabel = new Label("Exp:100", AssetsLoader.getSkin());
+		pingLabel = new Label("Ping:100\nFPS:100", AssetsLoader.getSkin());
 		pingLabel.setFontScale(2);
 
-		// Start Init right table
 		TextureRegion attackRegion = new TextureRegion(AssetsLoader.getAttack());
+
 		attack = new Button(new Image(attackRegion), AssetsLoader.getSkin());
-		attack.setColor(1, 0, 0, 0.6f);
+		attack.setColor(1, 1, 1, 0.3f);
 		attack.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -150,20 +153,126 @@ public class WorldScreen extends GameScreen {
 			}
 		});
 
-		rightTable = new Table();
-		rightTable.add(pingLabel).padTop(20).padRight(20).top();
-		rightTable.row();
-		rightTable.add(attack).height(200).width(200).bottom().expand().padRight(30).padBottom(80);
+		settings = new Button(new Image(AssetsLoader.getSettings()), AssetsLoader.getSkin());
+		settings.setColor(1, 1, 1, 0.3f);
+		settings.setPosition(stage.getWidth() - settings.getWidth() - 30,
+				stage.getHeight() - settings.getHeight() - 30);
 
-		mainTable = new Table();
-		mainTable.setWidth(stage.getWidth());
-		mainTable.setFillParent(true);
+		settings.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				settingsDialog.show(stage);
+			}
+		});
 
-		mainTable.add(leftTable).fillY();
-		mainTable.add(midTable).expand().align(Align.top | Align.center);
-		mainTable.add(rightTable).fillY();
+		pingLabel.setPosition(stage.getWidth() - pingLabel.getWidth() * 2 - 20,
+				stage.getHeight() - (pingLabel.getHeight() * 2) - settings.getHeight() - 20);
+		attack.setSize(200, 200);
+		attack.setPosition(stage.getWidth() - attack.getWidth() - 30, 30);
 
-		stage.addActor(mainTable);
+		stage.addActor(pingLabel);
+		stage.addActor(attack);
+
+		initSettingsDialog();
+
+		stage.addActor(settings);
+	}
+
+	private void initSettingsDialog() {
+		settingsDialog = new Dialog("Settings", AssetsLoader.getSkin());
+
+		TextButton closeDialog = new TextButton("Close", AssetsLoader.getSkin());
+		closeDialog.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				settingsDialog.hide();
+			}
+		});
+
+		final TextButton fpsButton = new TextButton("FPS", AssetsLoader.getSkin(), "toggle");
+		if (!world.showFPS()) {
+			fpsButton.setChecked(true);
+		}
+		fpsButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				if (fpsButton.isChecked()) {
+					world.setShowFPS(false);
+				} else {
+					world.setShowFPS(true);
+				}
+			}
+		});
+
+		final TextButton pingButton = new TextButton("Ping", AssetsLoader.getSkin(), "toggle");
+		if (!world.showPing()) {
+			pingButton.setChecked(true);
+		}
+		pingButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				if (pingButton.isChecked()) {
+					world.setShowPing(false);
+				} else {
+					world.setShowPing(true);
+				}
+			}
+		});
+
+		TextButton changeCharacter = new TextButton("Switch Character", AssetsLoader.getSkin());
+		TextButton logOut = new TextButton("Log Out", AssetsLoader.getSkin());
+		TextButton exitGame = new TextButton("Exit Game", AssetsLoader.getSkin());
+		exitGame.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				Gdx.app.exit();
+			}
+		});
+
+		final Button musicButton = new Button(new Image(AssetsLoader.getSound()), AssetsLoader.getSkin(), "toggle");
+		if (!world.isMusicPlaying()) {
+			musicButton.setChecked(true);
+		}
+		musicButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				if (musicButton.isChecked()) {
+					world.musicPause();
+				} else {
+					world.musicResume();
+				}
+			}
+		});
+		Slider volumeSlider = new Slider(0, 1, 0.1f, false, AssetsLoader.getSkin());
+		volumeSlider.setValue(world.getMusicVolume());
+		Label volume = new Label("Music\nvolume", AssetsLoader.getSkin());
+		volumeSlider.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				Slider slider = (Slider) actor;
+
+				float volume = slider.getValue();
+				System.out.println(volume);
+
+				world.setMusicVolume(volume);
+			}
+		});
+
+		settingsDialog.getButtonTable().add(pingButton).size(64, 64);
+		settingsDialog.getButtonTable().add(fpsButton).size(64, 64);
+		settingsDialog.getButtonTable().add(musicButton).size(64, 64);
+		settingsDialog.getButtonTable().row();
+		settingsDialog.getButtonTable().add(volume);
+		settingsDialog.getButtonTable().add(volumeSlider).size(128, 64).colspan(2);
+		settingsDialog.getButtonTable().row();
+		settingsDialog.getButtonTable().add(changeCharacter).size(200, 64).colspan(3);
+		settingsDialog.getButtonTable().row();
+		settingsDialog.getButtonTable().add(logOut).size(200, 64).colspan(3);
+		settingsDialog.getButtonTable().row();
+		settingsDialog.getButtonTable().add(exitGame).size(200, 64).colspan(3);
+		settingsDialog.getButtonTable().row();
+		settingsDialog.getButtonTable().add(closeDialog).size(200, 64).colspan(3);
+
 	}
 
 	private void init3D() {
@@ -256,7 +365,17 @@ public class WorldScreen extends GameScreen {
 			targetLabel.setText("");
 		}
 		hpLabel.setText("HP:" + hp + "\nEXP:" + exp);
-		pingLabel.setText("Ping: " + world.getPing() + "\nFPS:" + Gdx.graphics.getFramesPerSecond());
+
+		String pingText = "";
+		if (world.showFPS() && world.showPing()) {
+			pingText = "Ping:" + world.getPing() + "\nFPS:" + Gdx.graphics.getFramesPerSecond();
+		} else if (world.showFPS()) {
+			pingText = "FPS:" + Gdx.graphics.getFramesPerSecond();
+		} else if (world.showPing()) {
+			pingText = "Ping: " + world.getPing();
+		}
+
+		pingLabel.setText(pingText);
 	}
 
 	@Override
@@ -293,7 +412,7 @@ public class WorldScreen extends GameScreen {
 	@Override
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
-		mainTable.setWidth(stage.getWidth());
+		// mainTable.setWidth(stage.getWidth());
 	}
 
 }

@@ -1,11 +1,10 @@
 package xyz.arturinsh.Screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -13,11 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;
-import xyz.arturinsh.gameclient.MainGame;
 
 public class RegisterScreen extends GameScreen {
 	private Skin skin;
@@ -26,6 +23,7 @@ public class RegisterScreen extends GameScreen {
 	private TextButton registerButton, backButton;
 	private Label passwordLabel, passwordLabel2, userNameLabel, dialogMessage;
 	private TextField passwordTextField, passwordTextField2, userNameTextField;
+	private Button musicButton;
 	//private Dialog dialog;
 
 	//private boolean registerSuccesful;
@@ -55,7 +53,21 @@ public class RegisterScreen extends GameScreen {
 		passwordTextField2.setPasswordCharacter('*');
 		passwordTextField2.setPasswordMode(true);
 		passwordTextField2.setMaxLength(32);
-
+		
+		musicButton = new Button(new Image(AssetsLoader.getSound()), AssetsLoader.getSkin(), "toggle");
+		musicButton.setPosition(20, 20);
+		musicButton.setSize(64, 64);
+		musicButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				if (musicButton.isChecked()) {
+					world.musicPause();
+				} else {
+					world.musicResume();
+				}
+			}
+		});
+		
 		dialogMessage = new Label("", skin);
 		table = new Table();
 		table.setWidth(stage.getWidth());
@@ -76,6 +88,7 @@ public class RegisterScreen extends GameScreen {
 		table.add(registerButton).space(10).colspan(2);
 		table.row();
 		table.add(backButton).space(30).colspan(2).right();
+		stage.addActor(musicButton);
 		stage.addActor(table);
 
 		backButton.addListener(new ClickListener() {

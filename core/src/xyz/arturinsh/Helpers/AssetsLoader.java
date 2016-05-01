@@ -1,7 +1,9 @@
 package xyz.arturinsh.Helpers;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -16,17 +18,21 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class AssetsLoader {
+	private static Preferences preferences;
 	private static Skin skin;
-	private static Model humanModel, ground, dog, vladinator, attackCage, selecBox, dogAttack, graveStone, vladinatorAttack;
+	private static Model humanModel, ground, dog, vladinator, attackCage, selecBox, dogAttack, graveStone,
+			vladinatorAttack;
 	private static AssetManager assets;
-	private static Texture up, down, right, left, heightMapTexture, touchBackground, touchKnob, human1, human2,
-			human3, attack;
+	private static Texture up, down, right, left, heightMapTexture, touchBackground, touchKnob, human1, human2, human3,
+			attack, sound, settings;
 	private static Pixmap heightMapSmall, boundingPixmap;
 	private static BitmapFont font;
 	private static int[][] boundingMap;
 	private static BoundingBox playerBoundingBox, dogBoundingBox, vladinatorBoundingBox;
+	private static Music music;
 
 	public static void initUI() {
+		preferences = Gdx.app.getPreferences("World of Vladinator");
 		up = new Texture(Gdx.files.internal("triangle_up.png"));
 		down = new Texture(Gdx.files.internal("triangle_down.png"));
 		right = new Texture(Gdx.files.internal("triangle_right.png"));
@@ -40,6 +46,8 @@ public class AssetsLoader {
 		human1 = new Texture(Gdx.files.internal("TextureHuman.png"));
 		human2 = new Texture(Gdx.files.internal("TextureHuman2.png"));
 		human3 = new Texture(Gdx.files.internal("TextureHuman3.png"));
+		sound = new Texture(Gdx.files.internal("sound.png"));
+		settings = new Texture(Gdx.files.internal("settings.png"));
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
 		font = new BitmapFont(Gdx.files.internal("franklin.fnt"));
 		ModelBuilder modelBuilder = new ModelBuilder();
@@ -47,6 +55,7 @@ public class AssetsLoader {
 				Usage.Position | Usage.Normal);
 		selecBox = modelBuilder.createBox(1f, 0.5f, 1f, new Material(ColorAttribute.createDiffuse(Color.GREEN)),
 				Usage.Position | Usage.Normal);
+		music = Gdx.audio.newMusic(Gdx.files.internal("Jahzzar_-_10_-_Take_Me_Higher.mp3"));
 		assets = new AssetManager();
 		assets.load("human.g3db", Model.class);
 		assets.load("textDog.g3db", Model.class);
@@ -74,11 +83,11 @@ public class AssetsLoader {
 		playerBoundingBox = new BoundingBox();
 		ModelInstance playerInstance = new ModelInstance(humanModel);
 		playerInstance.calculateBoundingBox(playerBoundingBox);
-		
+
 		dogBoundingBox = new BoundingBox();
 		ModelInstance dogInstance = new ModelInstance(dog);
 		dogInstance.calculateBoundingBox(dogBoundingBox);
-		
+
 		vladinatorBoundingBox = new BoundingBox();
 		ModelInstance vladinatorInstance = new ModelInstance(vladinator);
 		vladinatorInstance.calculateBoundingBox(vladinatorBoundingBox);
@@ -214,5 +223,21 @@ public class AssetsLoader {
 
 	public static Texture getAttack() {
 		return attack;
+	}
+
+	public static Music getMusic() {
+		return music;
+	}
+
+	public static Texture getSound() {
+		return sound;
+	}
+
+	public static Texture getSettings() {
+		return settings;
+	}
+
+	public static Preferences getPreferences() {
+		return preferences;
 	}
 }

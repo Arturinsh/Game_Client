@@ -3,7 +3,8 @@ package xyz.arturinsh.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -21,9 +22,10 @@ public class LoginScreen extends GameScreen {
 	private Table table;
 
 	private TextButton loginButton, registerButton;
-	private Label passwordLabel, userNameLabel;//, errorMessage;
+	private Label passwordLabel, userNameLabel;// , errorMessage;
 	private TextField passwordTextField, userNameTextField;
-//	private Dialog dialog;
+	private Button musicButton;
+	// private Dialog dialog;
 
 	public LoginScreen(GameWorld _world) {
 		super(_world);
@@ -45,7 +47,23 @@ public class LoginScreen extends GameScreen {
 		passwordTextField.setPasswordMode(true);
 		passwordTextField.setMaxLength(32);
 
-		//errorMessage = new Label("", skin);
+		// errorMessage = new Label("", skin);
+		musicButton = new Button(new Image(AssetsLoader.getSound()), AssetsLoader.getSkin(), "toggle");
+		musicButton.setPosition(20, 20);
+		musicButton.setSize(64, 64);
+		if (!world.isMusicPlaying()) {
+			musicButton.setChecked(true);
+		}
+		musicButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				if (musicButton.isChecked()) {
+					world.musicPause();
+				} else {
+					world.musicResume();
+				}
+			}
+		});
 
 		registerButton.addListener(new ClickListener() {
 			@Override
@@ -79,6 +97,7 @@ public class LoginScreen extends GameScreen {
 		table.row();
 		table.add(registerButton).space(80).colspan(2).right();
 		stage.addActor(table);
+		stage.addActor(musicButton);
 
 		Gdx.input.setInputProcessor(stage);
 	}

@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -28,6 +30,7 @@ public class CharacterCreationScreen extends GameScreen {
 	private Table mainTable, nameTable, classTable, rightTable;
 	private TextField characterNameField;
 	private TextButton class1, class2, class3, submit, backButton;
+	private Button musicButton;
 	private Label charNameLabel, rightLabel;
 
 	private PerspectiveCamera camera;
@@ -45,7 +48,24 @@ public class CharacterCreationScreen extends GameScreen {
 
 	private void initUI() {
 		skin = AssetsLoader.getSkin();
-
+		
+		musicButton = new Button(new Image(AssetsLoader.getSound()), AssetsLoader.getSkin(), "toggle");
+		musicButton.setPosition(20, 20);
+		musicButton.setSize(64, 64);
+		if (!world.isMusicPlaying()) {
+			musicButton.setChecked(true);
+		}
+		musicButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				if (musicButton.isChecked()) {
+					world.musicPause();
+				} else {
+					world.musicResume();
+				}
+			}
+		});
+		
 		characterNameField = new TextField("", skin);
 		charNameLabel = new Label("Name", skin);
 		rightLabel = new Label("Text", skin);
@@ -125,6 +145,7 @@ public class CharacterCreationScreen extends GameScreen {
 		mainTable.add(nameTable).expand().bottom().padBottom(30).padLeft(-30).align(Align.center | Align.bottom);
 		mainTable.add(rightTable).expand().top().padTop(30).padRight(30).fillY();
 
+		stage.addActor(musicButton);
 		stage.addActor(mainTable);
 
 		Gdx.input.setInputProcessor(stage);

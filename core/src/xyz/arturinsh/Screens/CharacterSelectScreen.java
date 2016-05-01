@@ -2,9 +2,7 @@ package xyz.arturinsh.Screens;
 
 import java.util.List;
 
-import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -12,18 +10,13 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
-import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
-import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationDesc;
-import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationListener;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -32,7 +25,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.UBJsonReader;
 
 import xyz.arturinsh.GameObjects.CharacterClass;
 import xyz.arturinsh.GameObjects.CharacterInstance;
@@ -46,6 +38,7 @@ public class CharacterSelectScreen extends GameScreen {
 	private Table mainTable, centerTable, scrollTable, infoTable, leftTable;
 	private ScrollPane charScroll;
 	private TextButton enterCharacter, createCharacter;
+	private Button musicButton;
 	private Label charInfo;
 	private String[] testStrings;
 
@@ -73,7 +66,22 @@ public class CharacterSelectScreen extends GameScreen {
 
 	private void initUI() {
 		skin = AssetsLoader.getSkin();
-
+		musicButton = new Button(new Image(AssetsLoader.getSound()), AssetsLoader.getSkin(), "toggle");
+		musicButton.setPosition(20, 20);
+		musicButton.setSize(64, 64);
+		if (!world.isMusicPlaying()) {
+			musicButton.setChecked(true);
+		}
+		musicButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				if (musicButton.isChecked()) {
+					world.musicPause();
+				} else {
+					world.musicResume();
+				}
+			}
+		});
 		enterCharacter = new TextButton("Enter", skin);
 		enterCharacter.addListener(new ClickListener() {
 			@Override
@@ -128,7 +136,8 @@ public class CharacterSelectScreen extends GameScreen {
 		mainTable.add(infoTable).pad(20, 20, 0, 0).align(Align.top | Align.center);
 		mainTable.add(centerTable).expand().bottom().center().align(Align.bottom | Align.center).padBottom(20);
 		mainTable.add(leftTable).fillY();
-
+		
+		stage.addActor(musicButton);
 		stage.addActor(mainTable);
 
 		Gdx.input.setInputProcessor(stage);
