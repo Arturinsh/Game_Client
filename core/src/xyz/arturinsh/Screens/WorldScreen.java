@@ -221,21 +221,21 @@ public class WorldScreen extends GameScreen {
 		});
 
 		TextButton changeCharacter = new TextButton("Switch Character", AssetsLoader.getSkin());
-		changeCharacter.addListener(new ClickListener(){
+		changeCharacter.addListener(new ClickListener() {
 			@Override
-			public void clicked(InputEvent event, float x, float y){
+			public void clicked(InputEvent event, float x, float y) {
 				world.switchCharacter();
 			}
 		});
-		
+
 		TextButton logOut = new TextButton("Log Out", AssetsLoader.getSkin());
-		logOut.addListener(new ClickListener(){
+		logOut.addListener(new ClickListener() {
 			@Override
-			public void clicked(InputEvent event, float x, float y){
+			public void clicked(InputEvent event, float x, float y) {
 				world.logOut();
 			}
 		});
-		
+
 		TextButton exitGame = new TextButton("Exit Game", AssetsLoader.getSkin());
 		exitGame.addListener(new ClickListener() {
 			@Override
@@ -359,8 +359,13 @@ public class WorldScreen extends GameScreen {
 			if (mob.getNameDecal() == null) {
 				mob.initDecal(spriteFont);
 			}
-			mob.getNameDecal().lookAt(camera.position, camera.up);
-			decalBatch.add(mob.getNameDecal());
+			if (mob.getHP() > 0) {
+				mob.getNameDecal().lookAt(camera.position, camera.up);
+				decalBatch.add(mob.getNameDecal());
+			}else if (mob.isSelected()){
+				world.setSelectedMob(null);
+			}
+			
 		}
 	}
 
