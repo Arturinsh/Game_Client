@@ -22,16 +22,16 @@ public class AssetsLoader {
 	private static Preferences preferences;
 	private static Skin skin;
 	private static Model humanModel, ground, dog, vladinator, attackCage, selecBox, dogAttack, graveStone,
-			vladinatorAttack;
+			vladinatorAttack, croco, tentacleAttack;
 	private static AssetManager assets;
 	private static Texture up, down, right, left, heightMapTexture, touchBackground, touchKnob, human1, human2, human3,
 			attack, sound, settings;
 	private static Pixmap heightMapSmall, boundingPixmap;
 	private static BitmapFont font;
 	private static int[][] boundingMap;
-	private static BoundingBox playerBoundingBox, dogBoundingBox, vladinatorBoundingBox;
+	private static BoundingBox playerBoundingBox, dogBoundingBox, vladinatorBoundingBox, crocoBoundingBox;
 	private static Music music;
-	
+
 	public static void initUI() {
 		preferences = Gdx.app.getPreferences("World of Vladinator");
 		up = new Texture(Gdx.files.internal("triangle_up.png"));
@@ -65,6 +65,8 @@ public class AssetsLoader {
 		assets.load("gravestone.g3db", Model.class);
 		assets.load("vladinators.g3db", Model.class);
 		assets.load("vladinatorAttack.g3db", Model.class);
+		assets.load("croco.g3db", Model.class);
+		assets.load("tentacleAttack.g3db", Model.class);
 		// assets.load("testBox.g3db", Model.class);
 		assets.finishLoading();
 		humanModel = assets.get("human.g3db", Model.class);
@@ -74,6 +76,8 @@ public class AssetsLoader {
 		graveStone = assets.get("gravestone.g3db", Model.class);
 		vladinator = assets.get("vladinators.g3db", Model.class);
 		vladinatorAttack = assets.get("vladinatorAttack.g3db", Model.class);
+		croco = assets.get("croco.g3db", Model.class);
+		tentacleAttack = assets.get("tentacleAttack.g3db", Model.class);
 		// testBox = assets.get("testBox.g3db", Model.class);
 		// TODO add dispose
 		initBoundingMap();
@@ -92,6 +96,10 @@ public class AssetsLoader {
 		vladinatorBoundingBox = new BoundingBox();
 		ModelInstance vladinatorInstance = new ModelInstance(vladinator);
 		vladinatorInstance.calculateBoundingBox(vladinatorBoundingBox);
+		
+		crocoBoundingBox = new BoundingBox();
+		ModelInstance crocoInstance = new ModelInstance(croco);
+		crocoInstance.calculateBoundingBox(crocoBoundingBox);
 	}
 
 	private static void initBoundingMap() {
@@ -240,5 +248,17 @@ public class AssetsLoader {
 
 	public static Preferences getPreferences() {
 		return preferences;
+	}
+
+	public static Model getCroco() {
+		return croco;
+	}
+
+	public static Model getTentacleAttack() {
+		return tentacleAttack;
+	}
+
+	public static BoundingBox getCrocoBoundingBox() {
+		return crocoBoundingBox;
 	}
 }
