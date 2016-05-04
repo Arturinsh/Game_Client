@@ -274,14 +274,14 @@ public class MobInstance {
 
 	private void showCastingAnimation() {
 		casting = true;
-		 System.out.println("cast start");
-		 printTime();
+//		 System.out.println("cast start");
+//		 printTime();
 		modelAnimController.setAnimation(attackModelAnimation, 1, attackModelAnimSpeed, new AnimationListener() {
 			@Override
 			public void onEnd(AnimationDesc animation) {
 				damaging = true;
 				casting = false;
-				 System.out.println("cast end");
+//				 System.out.println("cast end");
 				showDamageAnimation();
 			}
 
@@ -296,8 +296,8 @@ public class MobInstance {
 			@Override
 			public void onEnd(AnimationDesc animation) {
 				damaging = false;
-				 System.out.println("dmg end");
-				 printTime();
+//				 System.out.println("dmg end");
+//				 printTime();
 			}
 
 			@Override

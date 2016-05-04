@@ -3,6 +3,7 @@ package xyz.arturinsh.Helpers;
 import java.util.List;
 
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
@@ -21,6 +22,7 @@ public class InputHandler implements InputProcessor {
 	private PersonCamera camera;
 	private Stage stage;
 	private Vector3 position = new Vector3();
+	private int startX = 0, startY = 0;
 
 	public InputHandler(GameWorld _world, PersonCamera _camera, Stage _stage) {
 		world = _world;
@@ -130,6 +132,8 @@ public class InputHandler implements InputProcessor {
 				world.setSelectedMob(null);
 			}
 		}
+		startX = screenX;
+		startY = screenY;
 		return false;
 	}
 
@@ -180,6 +184,9 @@ public class InputHandler implements InputProcessor {
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		int deltaX = startX - screenX;
+		startX = screenX;
+		camera.addAngle(deltaX/2);
 		return false;
 	}
 
@@ -190,7 +197,6 @@ public class InputHandler implements InputProcessor {
 
 	@Override
 	public boolean scrolled(int amount) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
