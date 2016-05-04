@@ -23,6 +23,7 @@ public class InputHandler implements InputProcessor {
 	private Stage stage;
 	private Vector3 position = new Vector3();
 	private int startX = 0, startY = 0;
+	private boolean stageHit = false;
 
 	public InputHandler(GameWorld _world, PersonCamera _camera, Stage _stage) {
 		world = _world;
@@ -117,6 +118,7 @@ public class InputHandler implements InputProcessor {
 		// System.out.println("Stage " + temp.x + " " + temp.y);
 		Actor test = stage.hit(temp.x, temp.y, true);
 		if (test == null) {
+			stageHit = false;
 			List<CharacterInstance> tempPlayerList = world.getOtherPlayers();
 			List<MobInstance> tempMobList = world.getMobs();
 			int playerIndex = getPlayer(screenX, screenY);
@@ -131,7 +133,10 @@ public class InputHandler implements InputProcessor {
 				world.setSelectedCharacterInstance(null);
 				world.setSelectedMob(null);
 			}
+		} else {
+			stageHit = true;
 		}
+
 		startX = screenX;
 		startY = screenY;
 		return false;
@@ -184,9 +189,11 @@ public class InputHandler implements InputProcessor {
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		int deltaX = startX - screenX;
-		startX = screenX;
-		camera.addAngle(deltaX/2);
+		if (!stageHit) {
+			int deltaX = startX - screenX;
+			startX = screenX;
+			camera.addAngle(deltaX / 2);
+		}
 		return false;
 	}
 

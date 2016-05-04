@@ -173,9 +173,12 @@ public class WorldScreen extends GameScreen {
 		initSettingsDialog();
 
 		stage.addActor(settings);
-		if (Gdx.app.getType() != ApplicationType.Android || Gdx.app.getType() != ApplicationType.iOS) {
-			touchpad.setVisible(false);
-			attack.setVisible(false);
+		
+		touchpad.setVisible(false);
+		attack.setVisible(false);
+		if (Gdx.app.getType() == ApplicationType.Android || Gdx.app.getType() == ApplicationType.iOS) {
+			touchpad.setVisible(true);
+			attack.setVisible(true);
 		}
 	}
 
