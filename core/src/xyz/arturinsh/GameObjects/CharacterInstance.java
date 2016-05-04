@@ -608,4 +608,26 @@ public class CharacterInstance {
 		return experience;
 	}
 
+	public LevelStatus getLevelStatus() {
+		return new LevelStatus(experience);
+	}
+
+	public class LevelStatus {
+		public int level;
+		public int totalExperience;
+		public int experienceForLevel;
+		public int experienceInLevel;
+
+		public LevelStatus(int totalExp) {
+			totalExperience = totalExp;
+			level = 1;
+			int tempExp = experience;
+			while ((tempExp - level * 100) > 0) {
+				tempExp -= level * 100;
+				level++;
+			}
+			experienceInLevel = tempExp;
+			experienceForLevel = level * 100;
+		}
+	}
 }

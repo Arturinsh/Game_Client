@@ -28,6 +28,7 @@ import com.badlogic.gdx.utils.Align;
 
 import xyz.arturinsh.GameObjects.CharacterClass;
 import xyz.arturinsh.GameObjects.CharacterInstance;
+import xyz.arturinsh.GameObjects.CharacterInstance.LevelStatus;
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;
 import xyz.arturinsh.Network.Packets.UserCharacter;
@@ -202,21 +203,32 @@ public class CharacterSelectScreen extends GameScreen {
 		switch (selectedChar.charClass) {
 		case RED:
 			characterInstance.changeClass(CharacterClass.RED);
-			charInfo.setText(userChar.charName + "\nHP:" + userChar.hp + "\nExp:" + userChar.experience);
+			charInfo.setText(userChar.charName + "\nHP:" + userChar.hp + "\nLVL:" + getLevel(userChar.experience));
 			break;
 		case GREEN:
 			characterInstance.changeClass(CharacterClass.GREEN);
-			charInfo.setText(userChar.charName + "\nHP:" + userChar.hp + "\nExp:" + userChar.experience);
+			charInfo.setText(userChar.charName + "\nHP:" + userChar.hp + "\nLVL:" + getLevel(userChar.experience));
 			break;
 		case BLUE:
 			characterInstance.changeClass(CharacterClass.BLUE);
-			charInfo.setText(userChar.charName + "\nHP:" + userChar.hp + "\nExp:" + userChar.experience);
+			charInfo.setText(userChar.charName + "\nHP:" + userChar.hp + "\nLVL:" + getLevel(userChar.experience));
 			break;
 		default:
 			selectedChar = null;
 			charInfo.setText("");
 		}
 	}
+	
+	private int getLevel(int exp){
+		int level = 1;
+		int tempExp = exp;
+		while ((tempExp - level * 100) > 0) {
+			tempExp -= level * 100;
+			level++;
+		}
+		return level;
+	}
+	
 
 	@Override
 	public void render(float delta) {

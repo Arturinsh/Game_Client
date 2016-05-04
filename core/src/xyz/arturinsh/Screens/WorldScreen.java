@@ -4,7 +4,6 @@ import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
@@ -25,7 +24,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
@@ -34,10 +32,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 import xyz.arturinsh.GameObjects.CharacterInstance;
+import xyz.arturinsh.GameObjects.CharacterInstance.LevelStatus;
 import xyz.arturinsh.GameObjects.MobInstance;
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Helpers.AssetsLoader;
-import xyz.arturinsh.Helpers.HeightField;
 import xyz.arturinsh.Helpers.HeightMap;
 import xyz.arturinsh.Helpers.InputHandler;
 import xyz.arturinsh.Helpers.PersonCamera;
@@ -121,7 +119,7 @@ public class WorldScreen extends GameScreen {
 			}
 		});
 
-		hpLabel = new Label("HP:100\nEXP:100", AssetsLoader.getSkin());
+		hpLabel = new Label("HP:100\nLVL:10\nEXP:100\200", AssetsLoader.getSkin());
 		hpLabel.setFontScale(2);
 		hpLabel.setPosition(30, stage.getHeight() - (hpLabel.getHeight() * 2));
 
@@ -130,7 +128,7 @@ public class WorldScreen extends GameScreen {
 		stage.addActor(hpLabel);
 		stage.addActor(touchpad);
 
-		targetLabel = new Label("Target HP:100", AssetsLoader.getSkin());
+		targetLabel = new Label("Target HP:100\nLVL:10", AssetsLoader.getSkin());
 		targetLabel.setFontScale(2);
 		targetLabel.setPosition(stage.getWidth() / 2 - targetLabel.getWidth(),
 				stage.getHeight() - targetLabel.getHeight() * 2 - 10);
@@ -173,7 +171,7 @@ public class WorldScreen extends GameScreen {
 		initSettingsDialog();
 
 		stage.addActor(settings);
-		
+
 		touchpad.setVisible(false);
 		attack.setVisible(false);
 		if (Gdx.app.getType() == ApplicationType.Android || Gdx.app.getType() == ApplicationType.iOS) {
@@ -365,26 +363,28 @@ public class WorldScreen extends GameScreen {
 			if (mob.getHP() > 0) {
 				mob.getNameDecal().lookAt(camera.position, camera.up);
 				decalBatch.add(mob.getNameDecal());
-			}else if (mob.isSelected()){
+			} else if (mob.isSelected()) {
 				world.setSelectedMob(null);
 			}
-			
+
 		}
 	}
 
 	private void updateUI() {
 		int hp = usersCharacterInstance.getHP();
-		int exp = usersCharacterInstance.getExperience();
+		LevelStatus levelStatus = usersCharacterInstance.getLevelStatus();
 		if (world.getSelectedPlayer() != null) {
 			int otherHP = world.getSelectedPlayer().getHP();
-			targetLabel.setText("Target HP:" + otherHP);
+			int level = world.getSelectedPlayer().getLevelStatus().level;
+			targetLabel.setText("Target HP:" + otherHP+"\nLVL:"+level);
 		} else if (world.getSelectedMob() != null) {
 			int otherHP = world.getSelectedMob().getHP();
 			targetLabel.setText("Target HP:" + otherHP);
 		} else {
 			targetLabel.setText("");
 		}
-		hpLabel.setText("HP:" + hp + "\nEXP:" + exp);
+		hpLabel.setText("HP:" + hp + "/" + (100 + levelStatus.level * 10) + "\nLVL:" + levelStatus.level + "\nEXP:"
+				+ levelStatus.experienceInLevel + "/" + levelStatus.experienceForLevel);
 
 		String pingText = "";
 		if (world.showFPS() && world.showPing()) {
