@@ -67,11 +67,11 @@ public class CharacterCreationScreen extends GameScreen {
 		});
 		
 		characterNameField = new TextField("", skin);
-		charNameLabel = new Label("Name", skin);
-		rightLabel = new Label("Text", skin);
+		charNameLabel = new Label("", skin);
+		rightLabel = new Label("", skin);
 
-		class1 = new TextButton("Green", skin);
-		class2 = new TextButton("Red", skin);
+		class1 = new TextButton("Yellow", skin);
+		class2 = new TextButton("White", skin);
 		class3 = new TextButton("Blue", skin);
 		submit = new TextButton("Submit", skin);
 		backButton = new TextButton("Back", skin);
