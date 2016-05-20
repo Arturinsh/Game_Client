@@ -45,7 +45,7 @@ import xyz.arturinsh.Network.Packets.ServerMessage;
 import xyz.arturinsh.Network.Packets.SnapShot;
 import xyz.arturinsh.Network.Packets.SwitchCharacter;
 import xyz.arturinsh.Network.Packets.UserCharacter;
-import xyz.arturinsh.Network.UDPSender;
+import xyz.arturinsh.Network.DataSender;
 import xyz.arturinsh.Screens.CharacterSelectScreen;
 import xyz.arturinsh.Screens.GameScreen;
 import xyz.arturinsh.Screens.LoginScreen;
@@ -55,7 +55,7 @@ import xyz.arturinsh.gameclient.MainGame;
 public class GameWorld {
 	private Client client = new Client();
 	private MainGame game;
-	private final String ipAddress = "192.168.1.6";
+	private final String ipAddress = "localhost";
 	private List<UserCharacter> characters;
 	private CharacterInstance usersCharacterInstance;
 	private List<CharacterInstance> otherPlayers;
@@ -226,7 +226,7 @@ public class GameWorld {
 				changeScreen(new WorldScreen(GameWorld.this));
 			}
 		});
-		timer.schedule(new UDPSender(client, this), 0, 50);
+		timer.schedule(new DataSender(client, this), 0, 50);
 	}
 
 	private void startNetworkClient() {

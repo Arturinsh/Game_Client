@@ -9,13 +9,13 @@ import com.esotericsoftware.kryonet.Client;
 import xyz.arturinsh.GameWorld.GameWorld;
 import xyz.arturinsh.Network.Packets.PlayerPositionUpdate;
 
-public class UDPSender extends TimerTask {
+public class DataSender extends TimerTask {
 
 	private Client client;
 	private GameWorld world;
 	private int counter = 0;
 
-	public UDPSender(Client _client, GameWorld _world) {
+	public DataSender(Client _client, GameWorld _world) {
 		client = _client;
 		world = _world;
 	}
