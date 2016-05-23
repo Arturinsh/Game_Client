@@ -56,6 +56,7 @@ public class GameWorld {
 	private Client client = new Client();
 	private MainGame game;
 	private final String ipAddress = "localhost";
+	private final int PORT1 = 2300, PORT2 = 54777;
 	private List<UserCharacter> characters;
 	private CharacterInstance usersCharacterInstance;
 	private List<CharacterInstance> otherPlayers;
@@ -97,15 +98,15 @@ public class GameWorld {
 			}
 		});
 	}
-	
-	public void switchCharacter(){
+
+	public void switchCharacter() {
 		otherPlayers = new ArrayList<CharacterInstance>();
 		mobs = new ArrayList<MobInstance>();
 		timer.cancel();
 		timer = new Timer();
 		characters = new ArrayList<UserCharacter>();
 		client.sendTCP(new SwitchCharacter());
-	}	
+	}
 
 	private void initPreferences() {
 		preferences = AssetsLoader.getPreferences();
@@ -233,7 +234,7 @@ public class GameWorld {
 		client.start();
 		client.addListener(new NetworkListener(this));
 		try {
-			client.connect(5000, ipAddress, 2300, 54777);
+			client.connect(5000, ipAddress, PORT1, PORT2);
 		} catch (IOException e) {
 			System.out.print(e);
 			Gdx.app.debug("Test", e.toString());
